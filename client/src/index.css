@@ -1,4 +1,38 @@
+/* Login and Register */
 .paragraph-auth:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+
+/* Dashboard */
+.container-dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+.container-dashboard__sidebar {
+  width: 18rem;
+  overflow: auto;
+}
+
+.container-dashboard__main {
+  flex: 1;
+  overflow: auto;
+}
+
+.divider-solid {
+  border-top: 0.12rem solid black;
+  width: 80%;
+  margin: auto;
+}
+
+.item-list {
+  list-style: none;
+}
+
+.item-list:hover {
+  cursor: pointer;
+  color: #2780e3;
+  font-size: 1.5rem;
+  font-weight: bold;
 }

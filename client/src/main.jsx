@@ -4,7 +4,7 @@ import App from "./App";
 import "./index.css";
 
 // Bootstrap
-import "bootswatch/dist/lux/bootstrap.min.css";
+import "bootswatch/dist/cosmo/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

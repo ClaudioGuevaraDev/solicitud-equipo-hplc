@@ -84,6 +84,12 @@ function RegisterPage() {
                 />
               </div>
               <div className="mb-3">
+                <label htmlFor="file-input" className="form-label">
+                  Foto de Perfil
+                </label>
+                <input type="file" id="file-input" className="form-control" />
+              </div>
+              <div className="mb-3">
                 <p
                   className="paragraph-auth text-center"
                   onClick={() => navigate("/")}
