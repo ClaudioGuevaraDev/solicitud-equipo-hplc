@@ -10,7 +10,7 @@ function SidebarComponent() {
   };
 
   return (
-    <aside className="container-dashboard__sidebar shadow">
+    <>
       <div className="d-flex justify-content-center align-items-center mt-4">
         <img
           src={Claudio}
@@ -79,7 +79,7 @@ function SidebarComponent() {
           CERRAR SESIÓN
         </button>
       </div>
-    </aside>
+    </>
   );
 }
 

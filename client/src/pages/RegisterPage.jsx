@@ -61,7 +61,7 @@ function RegisterPage() {
   return (
     <div className="container p-4">
       <div className="row">
-        <div className="col-xl-5 mx-auto">
+        <div className="col-xl-5 col-lg-7 col-md-9 col-sm-12 col-12 mx-auto">
           <div className="card border-0">
             <div className="card-body">
               <div className="text-center">
@@ -72,7 +72,7 @@ function RegisterPage() {
               <h3 className="text-center mt-3 mb-4">Registrarse</h3>
               <form onSubmit={handleSubmit}>
                 <div className="row">
-                  <div className="col-xl-6">
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label htmlFor="first-name-input" className="form-label">
                         Nombre
@@ -91,7 +91,7 @@ function RegisterPage() {
                       />
                     </div>
                   </div>
-                  <div className="col-xl-6">
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label htmlFor="last-name-input" className="form-label">
                         Apellido

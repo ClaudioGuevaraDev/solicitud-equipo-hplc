@@ -48,7 +48,7 @@ function LoginPage() {
   return (
     <div className="container p-4">
       <div className="row">
-        <div className="col-xl-4 mx-auto">
+        <div className="col-xl-4 col-lg-5 col-md-7 col-sm-9 col-12 mx-auto">
           <div className="card border-0">
             <div className="card-body">
               <div className="text-center">
