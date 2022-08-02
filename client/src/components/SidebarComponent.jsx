@@ -1,9 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Claudio from "../assets/claudio.jpeg";
 
 function SidebarComponent() {
   const navigate = useNavigate();
+
+  const handleSection = (section) => {
+    navigate(`/dashboard/${section}`);
+  };
 
   return (
     <aside className="container-dashboard__sidebar shadow">
@@ -21,16 +25,51 @@ function SidebarComponent() {
       <hr className="divider-solid" />
 
       <ul className="d-flex flex-column justify-content-center align-items-center my-3">
-        <li className="item-list h4">Mi Perfil</li>
+        <li
+          className={`item-list h4 ${
+            window.location.href.split("/")[4] === "perfil" && "active"
+          }`}
+          onClick={() => handleSection("perfil")}
+        >
+          Mi Perfil
+        </li>
       </ul>
 
       <hr className="divider-solid" />
 
       <ul className="d-flex flex-column justify-content-center align-items-center my-3">
-        <li className="item-list h4">Usuarios</li>
-        <li className="item-list h4">Equipos</li>
-        <li className="item-list h4">Grupos</li>
-        <li className="item-list h4">Proyectos</li>
+        <li
+          className={`item-list h4 ${
+            window.location.href.split("/")[4] === "usuarios" && "active"
+          }`}
+          onClick={() => handleSection("usuarios")}
+        >
+          Usuarios
+        </li>
+        <li
+          className={`item-list h4 ${
+            window.location.href.split("/")[4] === "equipos" && "active"
+          }`}
+          onClick={() => handleSection("equipos")}
+        >
+          Equipos
+        </li>
+        <li
+          className={`item-list h4 ${
+            window.location.href.split("/")[4] === "grupos" && "active"
+          }`}
+          onClick={() => handleSection("grupos")}
+        >
+          Grupos
+        </li>
+        <li
+          className={`item-list h4 ${
+            window.location.href.split("/")[4] === "proyectos" && "active"
+          }`}
+          onClick={() => handleSection("proyectos")}
+        >
+          Proyectos
+        </li>
       </ul>
 
       <hr className="divider-solid" />

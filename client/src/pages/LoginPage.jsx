@@ -52,7 +52,7 @@ function LoginPage() {
               <button
                 type="submit"
                 className="btn btn-primary w-100"
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/dashboard/perfil")}
               >
                 Iniciar Sesión
               </button>

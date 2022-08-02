@@ -97,7 +97,11 @@ function RegisterPage() {
                   ¿Ya tienes una cuenta registrada?
                 </p>
               </div>
-              <button type="submit" className="btn btn-primary w-100">
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                onClick={() => navigate("/")}
+              >
                 Registrarse
               </button>
             </div>

@@ -30,6 +30,12 @@
   list-style: none;
 }
 
+.item-list.active {
+  color: #2780e3;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
 .item-list:hover {
   cursor: pointer;
   color: #2780e3;

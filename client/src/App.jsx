@@ -3,7 +3,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 // Pages
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
+import DashboardPerfilPage from "./pages/DashboardPerfilPage";
+import DashboardUsuariosPage from "./pages/DashboardUsuariosPage";
+import DashboardEquiposPage from "./pages/DashboardEquiposPage";
+import DashboardGruposPage from "./pages/DashboardGruposPage";
+import DashboardProyectosPage from "./pages/DashboardProyectosPage";
 
 function App() {
   return (
@@ -11,7 +15,14 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/perfil" element={<DashboardPerfilPage />} />
+        <Route path="/dashboard/usuarios" element={<DashboardUsuariosPage />} />
+        <Route path="/dashboard/equipos" element={<DashboardEquiposPage />} />
+        <Route path="/dashboard/grupos" element={<DashboardGruposPage />} />
+        <Route
+          path="/dashboard/proyectos"
+          element={<DashboardProyectosPage />}
+        />
       </Routes>
     </BrowserRouter>
   );
