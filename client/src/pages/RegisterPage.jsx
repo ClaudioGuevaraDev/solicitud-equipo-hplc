@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function RegisterPage() {
   const [user, setUser] = useState({
@@ -11,26 +12,50 @@ function RegisterPage() {
     password: "",
     confirm_password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post(
-      "http://localhost:8000/api/auth/register",
-      user
-    );
-    console.log(response);
+    setLoading(true);
 
-    // setUser({
-    //   first_name: "",
-    //   last_name: "",
-    //   email: "",
-    //   password: "",
-    //   confirm_password: "",
-    //   image: null,
-    // });
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/api/auth/register",
+        user
+      );
+      toast.success(data.detail, {
+        duration: 10000,
+      });
+      setUser({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+        image: null,
+      });
+      setLoading(false);
+      navigate("/")
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+        setUser({
+          first_name: "",
+          last_name: "",
+          email: "",
+          password: "",
+          confirm_password: "",
+          image: null,
+        });
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -144,9 +169,20 @@ function RegisterPage() {
                     ¿Ya tienes una cuenta registrada?
                   </p>
                 </div>
-                <button type="submit" className="btn btn-primary w-100">
-                  Registrarse
-                </button>
+                {loading ? (
+                  <button className="btn btn-primary w-100" type="button">
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    <span className="visually-hidden">Loading...</span>
+                  </button>
+                ) : (
+                  <button type="submit" className="btn btn-primary w-100">
+                    Registrarse
+                  </button>
+                )}
               </form>
             </div>
           </div>

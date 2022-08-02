@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -11,20 +12,26 @@ import DashboardProyectosPage from "./pages/DashboardProyectosPage";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard/perfil" element={<DashboardPerfilPage />} />
-        <Route path="/dashboard/usuarios" element={<DashboardUsuariosPage />} />
-        <Route path="/dashboard/equipos" element={<DashboardEquiposPage />} />
-        <Route path="/dashboard/grupos" element={<DashboardGruposPage />} />
-        <Route
-          path="/dashboard/proyectos"
-          element={<DashboardProyectosPage />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard/perfil" element={<DashboardPerfilPage />} />
+          <Route
+            path="/dashboard/usuarios"
+            element={<DashboardUsuariosPage />}
+          />
+          <Route path="/dashboard/equipos" element={<DashboardEquiposPage />} />
+          <Route path="/dashboard/grupos" element={<DashboardGruposPage />} />
+          <Route
+            path="/dashboard/proyectos"
+            element={<DashboardProyectosPage />}
+          />
+        </Routes>
+      </BrowserRouter>
+      <Toaster />
+    </>
   );
 }
 
