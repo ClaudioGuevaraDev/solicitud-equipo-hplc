@@ -1,16 +1,48 @@
+import jwt
 from fastapi import APIRouter, HTTPException
 from fastapi.encoders import jsonable_encoder
 
-from models.auth import UserRegisterModel
+from models.auth import UserLoginModel, UserRegisterModel
 from utils.check_email import check_email
 from utils.send_email import send_email
-from utils.handle_password import encrypt_password
+from utils.handle_password import encrypt_password, compare_password
 from db.connection import cur, conn
 
 router = APIRouter(
     prefix="/api/auth",
     tags=["Auth"]
 )
+
+
+@router.post("/login", status_code=200)
+def login(user: UserLoginModel):
+    user = jsonable_encoder(user)
+
+    cur.execute("SELECT * FROM users WHERE email = %s", [user["email"]])
+    user_found = cur.fetchone()
+    if user_found == None:
+        raise HTTPException(status_code=401, detail="Error al iniciar sesión.")
+
+    if compare_password(user["password"], hashed_password=user_found[4]) == False:
+        raise HTTPException(status_code=401, detail="Error al iniciar sesión.")
+
+    if user_found[6] == False:
+        raise HTTPException(status_code=401, detail="Cuenta no verificada.")
+
+    try:
+        encoded_user = {
+            "id": user_found[0],
+            "first_name": user_found[1],
+            "last_name": user_found[2],
+            "image": user_found[5],
+        }
+        token = jwt.encode(encoded_user, "secret", algorithm="HS256")
+
+        return {"token": token}
+    except Exception as error:
+        print(error)
+        raise HTTPException(
+            status_code=500, detail="Error al iniciar sesión. Inténtelo en otro momento.")
 
 
 @router.post("/register", status_code=201)
