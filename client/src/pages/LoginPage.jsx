@@ -29,6 +29,7 @@ function LoginPage() {
         password: "",
       });
       setLoading(false);
+      navigate("/dashboard/perfil")
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;

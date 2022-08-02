@@ -1,6 +1,7 @@
 import jwt
 from fastapi import APIRouter, HTTPException
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import RedirectResponse
 
 from models.auth import UserLoginModel, UserRegisterModel
 from utils.check_email import check_email
@@ -21,12 +22,13 @@ def login(user: UserLoginModel):
     cur.execute("SELECT * FROM users WHERE email = %s", [user["email"]])
     user_found = cur.fetchone()
     if user_found == None:
-        raise HTTPException(status_code=401, detail="Error al iniciar sesión.")
+        raise HTTPException(
+            status_code=401, detail="Correo electrónico incorrecto.")
 
     if compare_password(user["password"], hashed_password=user_found[4]) == False:
-        raise HTTPException(status_code=401, detail="Error al iniciar sesión.")
+        raise HTTPException(status_code=401, detail="Contraseña incorrecta.")
 
-    if user_found[6] == False:
+    if user_found[6] != True:
         raise HTTPException(status_code=401, detail="Cuenta no verificada.")
 
     try:
@@ -80,6 +82,17 @@ def user_register(user: UserRegisterModel):
 
 @router.get("/account-verification/{user_id}")
 def account_verification(user_id: str):
-    print(user_id)
+    cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
+    user_found = cur.fetchone()
+    if user_found == None:
+        return RedirectResponse("http://localhost:5173/error/user-not-found")
 
-    return {"message": "verificada"}
+    try:
+        cur.execute("UPDATE users SET verified = %s WHERE id = %s",
+                    [True, user_id])
+        conn.commit()
+
+        return RedirectResponse("http://localhost:5173/success/cuenta-verificada")
+    except Exception as error:
+        print(error)
+        return RedirectResponse("http://localhost:5173/error/error-verificacion")

@@ -9,6 +9,9 @@ import DashboardUsuariosPage from "./pages/DashboardUsuariosPage";
 import DashboardEquiposPage from "./pages/DashboardEquiposPage";
 import DashboardGruposPage from "./pages/DashboardGruposPage";
 import DashboardProyectosPage from "./pages/DashboardProyectosPage";
+import UserNotFoundPage from "./pages/errors/UserNotFoundPage";
+import ErrorVerificacionPage from "./pages/errors/ErrorVerificacionPage";
+import CuentaVerificadaPage from "./pages/success/CuentaVerificadaPage";
 
 function App() {
   return (
@@ -27,6 +30,17 @@ function App() {
           <Route
             path="/dashboard/proyectos"
             element={<DashboardProyectosPage />}
+          />
+
+          <Route path="/error/user-not-found" element={<UserNotFoundPage />} />
+          <Route
+            path="/error/error-verificacion"
+            element={<ErrorVerificacionPage />}
+          />
+
+          <Route
+            path="/success/cuenta-verificada"
+            element={<CuentaVerificadaPage />}
           />
         </Routes>
       </BrowserRouter>
