@@ -10,6 +10,7 @@ CREATE TABLE "users" (
   "email" varchar(100) UNIQUE NOT NULL,
   "password" varchar(100) NOT NULL,
   "url_image" varchar(255) UNIQUE,
+  "verified" boolean DEFAULT false,
   "role_id" int
 );
 
