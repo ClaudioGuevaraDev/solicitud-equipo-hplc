@@ -18,7 +18,13 @@ def user_register(user: UserRegisterModel):
     if check_email(user["email"]) == False:
         raise HTTPException(
             status_code=400, detail="Correo electrónico inválido.")
-    
-    send_email(receiver_address=user["email"])
+
+    send_email(receiver_address=user["email"], user_id="1")
 
     return {"username": "hello"}
+
+@router.get("/account-verification/{user_id}")
+def account_verification(user_id: str):
+    print(user_id)
+
+    return {"message": "verificada"}
