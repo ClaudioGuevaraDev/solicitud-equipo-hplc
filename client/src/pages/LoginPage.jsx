@@ -1,8 +1,48 @@
 import { useNavigate } from "react-router-dom";
 import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 function LoginPage() {
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/api/auth/login",
+        user
+      );
+      console.log(data)
+      setUser({
+        email: "",
+        password: "",
+      });
+      setLoading(false);
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+        setUser({
+          email: "",
+          password: "",
+        });
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <div className="container p-4">
@@ -16,46 +56,63 @@ function LoginPage() {
                 </i>
               </div>
               <h3 className="text-center mt-3 mb-4">Iniciar Sesión</h3>
-              <div className="mb-3">
-                <label htmlFor="email-input" className="form-label">
-                  Correo Electrónico
-                </label>
-                <input
-                  type="email"
-                  id="email-input"
-                  className="form-control"
-                  placeholder="example@gmail.com"
-                  required
-                  autoFocus
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="" className="form-label">
-                  Contraseña
-                </label>
-                <input
-                  type="password"
-                  id="password-input"
-                  className="form-control"
-                  placeholder="********"
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <p
-                  className="paragraph-auth text-center"
-                  onClick={() => navigate("/register")}
-                >
-                  ¿No tienes una cuenta registrada?
-                </p>
-              </div>
-              <button
-                type="submit"
-                className="btn btn-primary w-100"
-                onClick={() => navigate("/dashboard/perfil")}
-              >
-                Iniciar Sesión
-              </button>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="email-input" className="form-label">
+                    Correo Electrónico
+                  </label>
+                  <input
+                    type="email"
+                    id="email-input"
+                    className="form-control"
+                    placeholder="example@gmail.com"
+                    required
+                    autoFocus
+                    value={user.email}
+                    onChange={(e) =>
+                      setUser({ ...user, email: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="" className="form-label">
+                    Contraseña
+                  </label>
+                  <input
+                    type="password"
+                    id="password-input"
+                    className="form-control"
+                    placeholder="********"
+                    required
+                    value={user.password}
+                    onChange={(e) =>
+                      setUser({ ...user, password: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <p
+                    className="paragraph-auth text-center"
+                    onClick={() => navigate("/register")}
+                  >
+                    ¿No tienes una cuenta registrada?
+                  </p>
+                </div>
+                {loading ? (
+                  <button className="btn btn-primary w-100" type="button">
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    <span className="visually-hidden">Loading...</span>
+                  </button>
+                ) : (
+                  <button type="submit" className="btn btn-primary w-100">
+                    Iniciar Sesión
+                  </button>
+                )}
+              </form>
             </div>
           </div>
         </div>
