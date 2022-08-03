@@ -3,6 +3,7 @@ import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import useRedirectDashboard from "../hooks/useRedirectDashboard";
 
 function RegisterPage() {
   const [user, setUser] = useState({
@@ -15,6 +16,7 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  useRedirectDashboard()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +40,7 @@ function RegisterPage() {
         image: null,
       });
       setLoading(false);
-      navigate("/")
+      navigate("/");
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;

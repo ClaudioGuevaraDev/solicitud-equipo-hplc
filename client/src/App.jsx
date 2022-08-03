@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { CookiesProvider } from "react-cookie";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -15,7 +16,7 @@ import CuentaVerificadaPage from "./pages/success/CuentaVerificadaPage";
 
 function App() {
   return (
-    <>
+    <CookiesProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LoginPage />} />
@@ -45,7 +46,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
-    </>
+    </CookiesProvider>
   );
 }
 

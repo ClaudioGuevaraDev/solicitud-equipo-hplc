@@ -1,6 +1,9 @@
+import useRedirectLogin from "../hooks/useRedirectLogin";
 import SidebarComponent from "./SidebarComponent";
 
 function LayoutDashboardComponent({ children }) {
+  useRedirectLogin()
+
   return (
     <div className="container-dashboard">
       <div className="container-dashboard__sidebar shadow d-none d-sm-block">

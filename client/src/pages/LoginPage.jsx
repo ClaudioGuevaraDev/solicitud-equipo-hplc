@@ -3,6 +3,8 @@ import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useCookies } from "react-cookie";
+import useRedirectDashboard from "../hooks/useRedirectDashboard";
 
 function LoginPage() {
   const [user, setUser] = useState({
@@ -10,8 +12,10 @@ function LoginPage() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [cookies, setCookie] = useCookies([]);
 
   const navigate = useNavigate();
+  useRedirectDashboard()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,13 +27,13 @@ function LoginPage() {
         "http://localhost:8000/api/auth/login",
         user
       );
-      console.log(data)
+      setCookie("token", data.token);
       setUser({
         email: "",
         password: "",
       });
       setLoading(false);
-      navigate("/dashboard/perfil")
+      navigate("/dashboard/perfil");
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;

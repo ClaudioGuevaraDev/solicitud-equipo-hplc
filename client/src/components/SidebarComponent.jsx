@@ -1,12 +1,21 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 import Claudio from "../assets/claudio.jpeg";
 
 function SidebarComponent() {
+  const [cookies, setCookie, removeCookie] = useCookies([]);
   const navigate = useNavigate();
 
   const handleSection = (section) => {
     navigate(`/dashboard/${section}`);
+  };
+
+  const logout = () => {
+    if (cookies.token) {
+      removeCookie("token");
+    }
+    navigate("/");
   };
 
   return (
@@ -75,7 +84,7 @@ function SidebarComponent() {
       <hr className="divider-solid" />
 
       <div className="d-flex justify-content-center mt-4">
-        <button className="btn btn-danger btn-md" onClick={() => navigate("/")}>
+        <button className="btn btn-danger btn-md" onClick={logout}>
           CERRAR SESIÓN
         </button>
       </div>
