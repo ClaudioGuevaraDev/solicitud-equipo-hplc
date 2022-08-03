@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import auth, roles
+from routes import auth, roles, users
 from db.initial_db import initial_roles
 
 # Initilized database
@@ -20,3 +20,4 @@ app.add_middleware(CORSMiddleware, allow_origins=origins,
 
 app.include_router(auth.router)
 app.include_router(roles.router)
+app.include_router(users.router)
