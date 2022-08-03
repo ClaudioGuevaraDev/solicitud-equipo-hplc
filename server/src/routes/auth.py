@@ -80,7 +80,7 @@ def user_register(user: UserRegisterModel):
             status_code=500, detail="Error al crear la cuenta. Inténtelo en otro momento.")
 
 
-@router.get("/account-verification/{user_id}")
+@router.get("/account-verification/{user_id}", status_code=200)
 def account_verification(user_id: str):
     cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
     user_found = cur.fetchone()

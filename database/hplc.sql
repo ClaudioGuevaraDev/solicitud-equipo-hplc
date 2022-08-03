@@ -1,5 +1,5 @@
 CREATE TABLE "roles" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL
 );
 
