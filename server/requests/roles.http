@@ -10,7 +10,7 @@ Content-Type: application/json
 ###
 GET {{api}}
 ###
-DELETE {{api}}/12
+DELETE {{api}}/16
 ###
 PUT {{api}}/13
 Content-Type: application/json

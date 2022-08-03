@@ -66,8 +66,10 @@ def user_register(user: UserRegisterModel):
             status_code=400, detail="Correo electrónico ya registrado.")
     try:
         hashed_password = encrypt_password(password=user["password"])
-        cur.execute("INSERT INTO users (first_name, last_name, email, password) VALUES (%s, %s, %s, %s) RETURNING id", [
-                    user["first_name"], user["last_name"], user["email"], hashed_password])
+        cur.execute("SELECT * FROM roles WHERE name = %s", ["user"])
+        role_found = cur.fetchone()
+        cur.execute("INSERT INTO users (first_name, last_name, email, password, role_id) VALUES (%s, %s, %s, %s, %s) RETURNING id", [
+                    user["first_name"], user["last_name"], user["email"], hashed_password, role_found[0]])
         conn.commit()
 
         created_user = cur.fetchone()
