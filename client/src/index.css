@@ -1,3 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Mukta", sans-serif;
+}
+
+.bg-container {
+  background-image: url("./assets/bg.jpg");
+  background-position: center;
+  background-size: auto;
+}
+
 /* Login and Register */
 .paragraph-auth:hover {
   cursor: pointer;
@@ -11,7 +26,7 @@
 }
 
 .container-dashboard__sidebar {
-  width: 15rem;
+  width: 17rem;
   overflow: auto;
 }
 

@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 
 import Claudio from "../assets/claudio.jpeg";
+import { useState } from "react";
 
 function SidebarComponent() {
-  const [cookies, setCookie, removeCookie] = useCookies([]);
+  const [loadingLogout, setLoadingLogout] = useState(false);
   const navigate = useNavigate();
 
   const handleSection = (section) => {
@@ -12,9 +12,9 @@ function SidebarComponent() {
   };
 
   const logout = () => {
-    if (cookies.token) {
-      removeCookie("token");
-    }
+    setLoadingLogout(true);
+    window.localStorage.removeItem("token");
+    setLoadingLogout(false);
     navigate("/");
   };
 
@@ -84,9 +84,20 @@ function SidebarComponent() {
       <hr className="divider-solid" />
 
       <div className="d-flex justify-content-center mt-4">
-        <button className="btn btn-danger btn-md" onClick={logout}>
-          CERRAR SESIÓN
-        </button>
+        {loadingLogout ? (
+          <button className="btn btn-danger btn-md w-100" type="button">
+            <span
+              className="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            <span className="visually-hidden">Loading...</span>
+          </button>
+        ) : (
+          <button className="btn btn-danger btn-md" onClick={logout}>
+            CERRAR SESIÓN
+          </button>
+        )}
       </div>
     </>
   );
