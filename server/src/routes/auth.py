@@ -8,7 +8,7 @@ from utils.check_email import check_email
 from utils.send_email import send_email
 from utils.handle_password import encrypt_password, compare_password
 from db.connection import cur, conn
-from config.config import backend_url, frontend_url
+from config.config import backend_url, frontend_url, secret_key_jwt
 
 router = APIRouter(
     prefix="/api/auth",
@@ -20,8 +20,10 @@ router = APIRouter(
 def login(user: UserLoginModel):
     user = jsonable_encoder(user)
 
-    cur.execute("SELECT * FROM users WHERE email = %s", [user["email"]])
+    cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.url_image, users.verified, roles.name FROM users JOIN roles ON users.role_id = roles.id WHERE users.email = %s", [
+                user["email"]])
     user_found = cur.fetchone()
+
     if user_found == None:
         raise HTTPException(
             status_code=401, detail="Error al iniciar sesión.")
@@ -37,9 +39,10 @@ def login(user: UserLoginModel):
             "id": user_found[0],
             "first_name": user_found[1],
             "last_name": user_found[2],
-            "image": user_found[5],
+            "url_image": user_found[5],
+            "role": user_found[7],
         }
-        token = jwt.encode(encoded_user, "secret", algorithm="HS256")
+        token = jwt.encode(encoded_user, secret_key_jwt, algorithm="HS256")
 
         return {"token": token}
     except Exception as error:
@@ -77,7 +80,7 @@ def user_register(user: UserRegisterModel):
         mail_content = f'''
             <a href="{backend_url}/api/auth/account-verification/{created_user[0]}">Presiona aquí para validar tu cuenta!</a>
         '''
-        send_email(receiver_address=user["email"], mail_content=mail_content)
+        send_email(receiver_address=user["email"], mail_content=mail_content, subject="Validación de cuenta.")
 
         return {"detail": "Cuenta registrada. Te enviamos un email para validar tu correo."}
     except Exception as error:
@@ -121,7 +124,7 @@ def password_recovery(user: UserPasswordRecoveryModel):
         mail_content = f'''
             <a href="{frontend_url}/new-password/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
         '''
-        send_email(receiver_address=user.email, mail_content=mail_content)
+        send_email(receiver_address=user.email, mail_content=mail_content, subject="Restaurar contraseña.")
 
         return {"detail": "Te envíamos un correo para poder restaurar tu contraseña."}
     except Exception as error:

@@ -14,3 +14,5 @@ database_port = os.environ["DATABASE_PORT"]
 
 backend_url = os.environ["BACKEND_URL"]
 frontend_url = os.environ["FRONTEND_URL"]
+
+secret_key_jwt = os.environ["SECRET_KET_JWT"]

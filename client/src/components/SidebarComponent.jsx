@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import useHandleToken from "../hooks/useHandleToken";
 
 import Claudio from "../assets/claudio.jpeg";
-import { useState } from "react";
+import UnknownProfile from "../assets/unknown_perfil.jpg";
 
 function SidebarComponent() {
   const [loadingLogout, setLoadingLogout] = useState(false);
   const navigate = useNavigate();
+  const { loggedUser } = useHandleToken();
 
   const handleSection = (section) => {
     navigate(`/dashboard/${section}`);
@@ -22,14 +25,16 @@ function SidebarComponent() {
     <>
       <div className="d-flex justify-content-center align-items-center mt-4">
         <img
-          src={Claudio}
-          alt="zoro"
+          src={loggedUser.url_image ? loggedUser.url_image : UnknownProfile}
+          alt={`${loggedUser.first_name} ${loggedUser.last_name}`}
           className="rounded-circle"
           style={{ width: "11rem", height: "11rem", maxWidth: "100%" }}
         />
       </div>
 
-      <h3 className="h5 my-3 text-center">Claudio Guevara</h3>
+      <h3 className="h5 my-3 text-center">
+        {`${loggedUser.first_name} ${loggedUser.last_name}`}
+      </h3>
 
       <hr className="divider-solid" />
 

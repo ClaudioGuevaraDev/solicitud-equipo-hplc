@@ -17,7 +17,7 @@ Content-Type: application/json
 
 {
     "email": "claudio.guevara.dev@gmail.com",
-    "password": "claudio123"
+    "password": "123"
 }
 ###
 POST {{api}}/password-recovery
