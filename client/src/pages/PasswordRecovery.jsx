@@ -1,19 +1,13 @@
-import { useNavigate } from "react-router-dom";
-import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import axios from "axios";
-import useRedirectDashboard from "../hooks/useRedirectDashboard";
+import toast from "react-hot-toast";
 
-function LoginPage() {
+function PasswordRecovery() {
   const [user, setUser] = useState({
     email: "",
-    password: "",
   });
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
-  useRedirectDashboard();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,16 +16,16 @@ function LoginPage() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/auth/login",
+        "http://localhost:8000/api/auth/password-recovery",
         user
       );
+      toast.success(data.detail, {
+        duration: 10000,
+      });
       setUser({
         email: "",
-        password: "",
       });
-      window.localStorage.setItem("token", data.token);
       setLoading(false);
-      navigate("/dashboard/perfil");
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -40,7 +34,6 @@ function LoginPage() {
         });
         setUser({
           email: "",
-          password: "",
         });
         setLoading(false);
       }
@@ -62,7 +55,7 @@ function LoginPage() {
                     <HiLockClosed />
                   </i>
                 </div>
-                <h3 className="text-center mt-3 mb-4">Iniciar Sesión</h3>
+                <h3 className="text-center mt-3 mb-4">Recuperar Contraseña</h3>
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="email-input" className="form-label">
@@ -81,39 +74,6 @@ function LoginPage() {
                       }
                     />
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="" className="form-label">
-                      Contraseña
-                    </label>
-                    <input
-                      type="password"
-                      id="password-input"
-                      className="form-control"
-                      placeholder="********"
-                      required
-                      value={user.password}
-                      onChange={(e) =>
-                        setUser({ ...user, password: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <p
-                      className="paragraph-auth text-center"
-                      onClick={() => navigate("/register")}
-                    >
-                      ¿No tienes una cuenta registrada?
-                    </p>
-                  </div>
-                  <div className="mb-4">
-                    <p
-                      className="paragraph-auth text-center"
-                      style={{ lineHeight: 0 }}
-                      onClick={() => navigate("/password-recovery")}
-                    >
-                      Recuperar contraseña
-                    </p>
-                  </div>
                   {loading ? (
                     <button className="btn btn-primary w-100" type="button">
                       <span
@@ -125,7 +85,7 @@ function LoginPage() {
                     </button>
                   ) : (
                     <button type="submit" className="btn btn-primary w-100">
-                      INICIAR SESIÓN
+                      RECUPERAR CONTRASEÑA
                     </button>
                   )}
                 </form>
@@ -138,4 +98,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default PasswordRecovery;

@@ -156,7 +156,7 @@ function RegisterPage() {
                       htmlFor="confirm-password-input"
                       className="form-label"
                     >
-                      Confirmar Contraseña
+                      Repetir Contraseña
                     </label>
                     <input
                       type="password"

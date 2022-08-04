@@ -12,6 +12,10 @@ import DashboardProyectosPage from "./pages/DashboardProyectosPage";
 import UserNotFoundPage from "./pages/errors/UserNotFoundPage";
 import ErrorVerificacionPage from "./pages/errors/ErrorVerificacionPage";
 import CuentaVerificadaPage from "./pages/success/CuentaVerificadaPage";
+import PasswordRecovery from "./pages/PasswordRecovery";
+import NewPassword from "./pages/NewPassword";
+import ChangePasswordErrorPage from "./pages/errors/ChangePasswordErrorPage";
+import ChangePasswordSuccessPage from "./pages/success/ChangePasswordSuccessPage";
 
 function App() {
   return (
@@ -20,6 +24,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/password-recovery" element={<PasswordRecovery />} />
+          <Route path="/new-password/:id" element={<NewPassword />} />
           <Route path="/dashboard/perfil" element={<DashboardPerfilPage />} />
           <Route
             path="/dashboard/usuarios"
@@ -37,10 +43,18 @@ function App() {
             path="/error/error-verificacion"
             element={<ErrorVerificacionPage />}
           />
+          <Route
+            path="/error/error-change-password"
+            element={<ChangePasswordErrorPage />}
+          />
 
           <Route
             path="/success/cuenta-verificada"
             element={<CuentaVerificadaPage />}
+          />
+          <Route
+            path="/success/change-password-success"
+            element={<ChangePasswordSuccessPage />}
           />
         </Routes>
       </BrowserRouter>

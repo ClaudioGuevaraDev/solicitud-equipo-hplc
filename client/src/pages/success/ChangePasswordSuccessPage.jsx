@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function ErrorVerificacionPage() {
+function ChangePasswordSuccessPage() {
   const navigate = useNavigate();
 
   return (
@@ -9,7 +9,7 @@ function ErrorVerificacionPage() {
       style={{ height: "100vh" }}
     >
       <div className="d-flex flex-column align-items-center text-center">
-        <h1>Hubo un error al intentar verificar su cuenta.</h1>
+        <h1>Tu contraseña fue cambiada con éxito! Ya puede iniciar sesión.</h1>
         <button
           className="btn btn-primary btn-lg"
           onClick={() => navigate("/")}
@@ -21,4 +21,4 @@ function ErrorVerificacionPage() {
   );
 }
 
-export default ErrorVerificacionPage;
+export default ChangePasswordSuccessPage;

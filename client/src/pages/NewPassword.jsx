@@ -1,19 +1,19 @@
-import { useNavigate } from "react-router-dom";
-import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import useRedirectDashboard from "../hooks/useRedirectDashboard";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-function LoginPage() {
+function NewPassword() {
   const [user, setUser] = useState({
-    email: "",
     password: "",
+    confirm_password: "",
   });
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-  useRedirectDashboard();
+
+  const { id } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,17 +21,12 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/auth/login",
+      await axios.post(
+        `http://localhost:8000/api/auth/change-password/${id}`,
         user
       );
-      setUser({
-        email: "",
-        password: "",
-      });
-      window.localStorage.setItem("token", data.token);
       setLoading(false);
-      navigate("/dashboard/perfil");
+      navigate("/success/change-password-success");
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -39,8 +34,8 @@ function LoginPage() {
           duration: 6000,
         });
         setUser({
-          email: "",
           password: "",
+          confirm_password: "",
         });
         setLoading(false);
       }
@@ -62,28 +57,11 @@ function LoginPage() {
                     <HiLockClosed />
                   </i>
                 </div>
-                <h3 className="text-center mt-3 mb-4">Iniciar Sesión</h3>
+                <h3 className="text-center mt-3 mb-4">Cambiar Contraseña</h3>
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
-                    <label htmlFor="email-input" className="form-label">
-                      Correo Electrónico
-                    </label>
-                    <input
-                      type="email"
-                      id="email-input"
-                      className="form-control"
-                      placeholder="example@gmail.com"
-                      required
-                      autoFocus
-                      value={user.email}
-                      onChange={(e) =>
-                        setUser({ ...user, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="" className="form-label">
-                      Contraseña
+                    <label htmlFor="password-input" className="form-label">
+                      Nueva Contraseña
                     </label>
                     <input
                       type="password"
@@ -97,22 +75,24 @@ function LoginPage() {
                       }
                     />
                   </div>
-                  <div>
-                    <p
-                      className="paragraph-auth text-center"
-                      onClick={() => navigate("/register")}
+                  <div className="mb-3">
+                    <label
+                      htmlFor="confirm-password-input"
+                      className="form-label"
                     >
-                      ¿No tienes una cuenta registrada?
-                    </p>
-                  </div>
-                  <div className="mb-4">
-                    <p
-                      className="paragraph-auth text-center"
-                      style={{ lineHeight: 0 }}
-                      onClick={() => navigate("/password-recovery")}
-                    >
-                      Recuperar contraseña
-                    </p>
+                      Repetir Contraseña
+                    </label>
+                    <input
+                      type="password"
+                      id="confirm-password-input"
+                      className="form-control"
+                      placeholder="********"
+                      required
+                      value={user.confirm_password}
+                      onChange={(e) =>
+                        setUser({ ...user, confirm_password: e.target.value })
+                      }
+                    />
                   </div>
                   {loading ? (
                     <button className="btn btn-primary w-100" type="button">
@@ -125,7 +105,7 @@ function LoginPage() {
                     </button>
                   ) : (
                     <button type="submit" className="btn btn-primary w-100">
-                      INICIAR SESIÓN
+                      CAMBIAR CONTRASEÑA
                     </button>
                   )}
                 </form>
@@ -138,4 +118,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default NewPassword;

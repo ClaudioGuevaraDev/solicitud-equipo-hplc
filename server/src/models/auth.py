@@ -13,3 +13,12 @@ class UserRegisterModel(BaseModel):
     email: str
     password: str
     confirm_password: str
+
+
+class UserPasswordRecoveryModel(BaseModel):
+    email: str
+
+
+class UserChangePasswordModel(BaseModel):
+    password: str
+    confirm_password: str
