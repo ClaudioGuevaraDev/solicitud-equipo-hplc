@@ -1,4 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-loading";
 import { Toaster } from "react-hot-toast";
 
 // Pages
@@ -16,45 +17,72 @@ import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
 import ChangePasswordErrorPage from "./pages/errors/ChangePasswordErrorPage";
 import ChangePasswordSuccessPage from "./pages/success/ChangePasswordSuccessPage";
+import LoadingPage from "./pages/LoadingPage";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/password-recovery" element={<PasswordRecovery />} />
-          <Route path="/new-password/:id" element={<NewPassword />} />
-          <Route path="/dashboard/perfil" element={<DashboardPerfilPage />} />
+        <Routes loadingScreen={LoadingPage}>
+          <Route path="/" element={<LoginPage />} loading />
+          <Route path="/register" element={<RegisterPage />} loading />
+          <Route
+            path="/password-recovery"
+            element={<PasswordRecovery />}
+            loading
+          />
+          <Route path="/new-password/:id" element={<NewPassword />} loading />
+          <Route
+            path="/dashboard/perfil"
+            element={<DashboardPerfilPage />}
+            loading
+          />
           <Route
             path="/dashboard/usuarios"
             element={<DashboardUsuariosPage />}
+            loading
           />
-          <Route path="/dashboard/equipos" element={<DashboardEquiposPage />} />
-          <Route path="/dashboard/grupos" element={<DashboardGruposPage />} />
+          <Route
+            path="/dashboard/equipos"
+            element={<DashboardEquiposPage />}
+            loading
+          />
+          <Route
+            path="/dashboard/grupos"
+            element={<DashboardGruposPage />}
+            loading
+          />
           <Route
             path="/dashboard/proyectos"
             element={<DashboardProyectosPage />}
+            loading
           />
 
-          <Route path="/error/user-not-found" element={<UserNotFoundPage />} />
+          <Route
+            path="/error/user-not-found"
+            element={<UserNotFoundPage />}
+            loading
+          />
           <Route
             path="/error/error-verificacion"
             element={<ErrorVerificacionPage />}
+            loading
           />
           <Route
             path="/error/error-change-password"
             element={<ChangePasswordErrorPage />}
+            loading
           />
 
           <Route
             path="/success/cuenta-verificada"
             element={<CuentaVerificadaPage />}
+            loading
           />
           <Route
             path="/success/change-password-success"
             element={<ChangePasswordSuccessPage />}
+            loading
           />
         </Routes>
       </BrowserRouter>

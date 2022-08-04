@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import useRedirectDashboard from "../hooks/useRedirectDashboard";
+import useLoadingPage from "../hooks/useLoadingPage";
 
 function LoginPage() {
+  useLoadingPage();
+
   const [user, setUser] = useState({
     email: "",
     password: "",

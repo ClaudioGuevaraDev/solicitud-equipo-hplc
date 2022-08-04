@@ -4,8 +4,11 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import useRedirectDashboard from "../hooks/useRedirectDashboard";
+import useLoadingPage from "../hooks/useLoadingPage";
 
 function RegisterPage() {
+  useLoadingPage();
+
   const [user, setUser] = useState({
     first_name: "",
     last_name: "",

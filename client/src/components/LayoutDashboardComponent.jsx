@@ -1,7 +1,9 @@
+import useLoadingPage from "../hooks/useLoadingPage";
 import useRedirectLogin from "../hooks/useRedirectLogin";
 import SidebarComponent from "./SidebarComponent";
 
 function LayoutDashboardComponent({ children }) {
+  useLoadingPage()
   useRedirectLogin();
 
   return (

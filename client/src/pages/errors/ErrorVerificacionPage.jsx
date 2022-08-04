@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import useLoadingPage from "../../hooks/useLoadingPage";
 
 function ErrorVerificacionPage() {
+  useLoadingPage()
+
   const navigate = useNavigate();
 
   return (

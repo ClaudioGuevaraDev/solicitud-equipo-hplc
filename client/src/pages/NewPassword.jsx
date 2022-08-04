@@ -4,8 +4,11 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useLoadingPage from "../hooks/useLoadingPage";
 
 function NewPassword() {
+  useLoadingPage();
+
   const [user, setUser] = useState({
     password: "",
     confirm_password: "",
