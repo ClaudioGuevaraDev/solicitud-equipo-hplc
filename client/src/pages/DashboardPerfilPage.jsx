@@ -4,7 +4,7 @@ function DashboardPerfilPage() {
   return (
     <LayoutDashboardComponent>
       <div>
-        <h1>Perfil</h1>
+        <h1><strong>Mi Perfil</strong></h1>
       </div>
     </LayoutDashboardComponent>
   );
