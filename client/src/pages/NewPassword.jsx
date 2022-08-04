@@ -5,9 +5,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useLoadingPage from "../hooks/useLoadingPage";
+import useRedirectDashboard from "../hooks/useRedirectDashboard";
 
 function NewPassword() {
   useLoadingPage();
+  useRedirectDashboard()
 
   const [user, setUser] = useState({
     password: "",

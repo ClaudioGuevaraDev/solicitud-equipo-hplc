@@ -3,9 +3,11 @@ import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
 import axios from "axios";
 import toast from "react-hot-toast";
 import useLoadingPage from "../hooks/useLoadingPage";
+import useRedirectDashboard from "../hooks/useRedirectDashboard";
 
 function PasswordRecovery() {
   useLoadingPage();
+  useRedirectDashboard()
 
   const [user, setUser] = useState({
     email: "",
