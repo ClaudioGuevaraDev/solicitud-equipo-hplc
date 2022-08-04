@@ -11,6 +11,7 @@ CREATE TABLE "users" (
   "password" varchar NOT NULL,
   "url_image" varchar UNIQUE,
   "verified" boolean DEFAULT false,
+  "change_password" boolean DEFAULT false,
   "role_id" int
 );
 

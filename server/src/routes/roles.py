@@ -25,7 +25,6 @@ def get_roles():
 
         return {"data": data}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los roles.")
 
@@ -52,7 +51,6 @@ def create_role(role: RolBaseModel):
 
         return {"data": data}
     except Exception as error:
-        print(error)
         raise HTTPException(status_code=500, detail="Error al crear el rol.")
 
 
@@ -74,7 +72,6 @@ def delete_role(role_id: int):
 
         return {"data": data}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al eliminar el rol.")
 
@@ -98,6 +95,5 @@ def update_role(role_id: int, role: RolBaseModel):
 
         return {"data": data}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al actualizar el rol.")

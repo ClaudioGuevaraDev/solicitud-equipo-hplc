@@ -47,7 +47,6 @@ def login(user: UserLoginModel):
 
         return {"token": token}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al iniciar sesión. Inténtelo en otro momento.")
 
@@ -86,7 +85,6 @@ def user_register(user: UserRegisterModel):
 
         return {"detail": "Cuenta registrada. Te enviamos un email para validar tu correo."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al crear la cuenta. Inténtelo en otro momento.")
 
@@ -105,7 +103,6 @@ def account_verification(user_id: str):
 
         return RedirectResponse(f"{frontend_url}/success/cuenta-verificada")
     except Exception as error:
-        print(error)
         return RedirectResponse(f"{frontend_url}/error/error-verificacion")
 
 
@@ -124,24 +121,50 @@ def password_recovery(user: UserPasswordRecoveryModel):
 
     try:
         mail_content = f'''
-            <a href="{frontend_url}/new-password/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
+            <a href="{backend_url}/api/auth/authorized-password-change/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
         '''
         send_email(receiver_address=user.email,
                    mail_content=mail_content, subject="Restaurar contraseña.")
 
         return {"detail": "Te envíamos un correo para poder restaurar tu contraseña."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al restaurar la contraseña.")
+
+
+@router.get("/authorized-password-change/{user_id}", status_code=200)
+def authorized_password_change(user_id: int):
+    cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
+    user_found = cur.fetchone()
+
+    if user_found == None:
+        return RedirectResponse(f"{frontend_url}/error/user-not-found")
+
+    try:
+        cur.execute("UPDATE users SET change_password = %s WHERE id = %s", [
+            True, user_id])
+        conn.commit()
+
+        return RedirectResponse(f"{frontend_url}/new-password/{user_id}")
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Hubo un error al intentar cambiar su contraseña.")
 
 
 @router.post("/change-password/{user_id}", status_code=200)
 def change_password(user_id: int, user: UserChangePasswordModel):
     cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
-    if cur.fetchone() == None:
+    user_found = cur.fetchone()
+    if user_found == None:
         raise HTTPException(
             status_code=404, detail="Error al cambiar la contraseña. Usuario no encontrado.")
+
+    if user_found[6] == False:
+        raise HTTPException(status_code=401, detail="Cuenta no verificada.")
+
+    if user_found[7] == False:
+        raise HTTPException(
+            status_code=401, detail="Error al cambiar la contraseña.")
 
     if user.password != user.confirm_password:
         raise HTTPException(
@@ -149,12 +172,11 @@ def change_password(user_id: int, user: UserChangePasswordModel):
 
     try:
         hashed_password = encrypt_password(password=user.password)
-        cur.execute("UPDATE users SET password = %s WHERE id = %s",
-                    [hashed_password, user_id])
+        cur.execute("UPDATE users SET password = %s, change_password = %s WHERE id = %s",
+                    [hashed_password, False, user_id])
         conn.commit()
 
         return {"detail": "Su contraseña se actualizó con éxito."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Hubo un error al intentar cambiar su contraseña.")

@@ -11,7 +11,7 @@ router = APIRouter(
 @router.get("/", status_code=200)
 def get_users():
     try:
-        cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.url_image, users.verified, roles.id, roles.name FROM users JOIN roles ON roles.id = users.role_id")
+        cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.url_image, users.verified, users.change_password, roles.id, roles.name FROM users JOIN roles ON roles.id = users.role_id")
         users = cur.fetchall()
 
         data = []
@@ -24,14 +24,14 @@ def get_users():
                 "password": user[4],
                 "url_image": user[5],
                 "verified": user[6],
+                "change_password": user[7],
                 "role": {
-                    "id": user[7],
-                    "name": user[8]
+                    "id": user[8],
+                    "name": user[9]
                 }
             })
 
         return {"data": data}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los usuarios.")
