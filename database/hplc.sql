@@ -1,7 +1,6 @@
 CREATE TABLE "roles" (
   "id" SERIAL PRIMARY KEY,
-  "name" varchar UNIQUE NOT NULL,
-  "created_at" timestamp DEFAULT (now())
+  "name" varchar UNIQUE NOT NULL
 );
 
 CREATE TABLE "users" (
@@ -12,8 +11,7 @@ CREATE TABLE "users" (
   "password" varchar NOT NULL,
   "url_image" varchar UNIQUE,
   "verified" boolean DEFAULT false,
-  "role_id" int,
-  "created_at" timestamp DEFAULT (now())
+  "role_id" int
 );
 
 ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
