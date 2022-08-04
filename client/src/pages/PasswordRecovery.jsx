@@ -7,7 +7,7 @@ import useRedirectDashboard from "../hooks/useRedirectDashboard";
 
 function PasswordRecovery() {
   useLoadingPage();
-  useRedirectDashboard()
+  useRedirectDashboard();
 
   const [user, setUser] = useState({
     email: "",
@@ -20,10 +20,7 @@ function PasswordRecovery() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/auth/password-recovery",
-        user
-      );
+      const { data } = await axios.post("/api/auth/password-recovery", user);
       toast.success(data.detail, {
         duration: 10000,
       });

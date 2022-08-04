@@ -24,10 +24,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/auth/login",
-        user
-      );
+      const { data } = await axios.post("/api/auth/login", user);
       setUser({
         email: "",
         password: "",

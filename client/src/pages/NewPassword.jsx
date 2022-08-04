@@ -9,7 +9,7 @@ import useRedirectDashboard from "../hooks/useRedirectDashboard";
 
 function NewPassword() {
   useLoadingPage();
-  useRedirectDashboard()
+  useRedirectDashboard();
 
   const [user, setUser] = useState({
     password: "",
@@ -26,10 +26,7 @@ function NewPassword() {
     setLoading(true);
 
     try {
-      await axios.post(
-        `http://localhost:8000/api/auth/change-password/${id}`,
-        user
-      );
+      await axios.post(`/api/auth/change-password/${id}`, user);
       setLoading(false);
       navigate("/success/change-password-success");
     } catch (error) {

@@ -27,10 +27,7 @@ function RegisterPage() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/auth/register",
-        user
-      );
+      const { data } = await axios.post("/api/auth/register", user);
       toast.success(data.detail, {
         duration: 10000,
       });
