@@ -8,6 +8,7 @@ from utils.check_email import check_email
 from utils.send_email import send_email
 from utils.handle_password import encrypt_password, compare_password
 from db.connection import cur, conn
+from config.config import backend_url, frontend_url
 
 router = APIRouter(
     prefix="/api/auth",
@@ -74,7 +75,7 @@ def user_register(user: UserRegisterModel):
 
         created_user = cur.fetchone()
         mail_content = f'''
-            <a href="http://localhost:8000/api/auth/account-verification/{created_user[0]}">Presiona aquí para validar tu cuenta!</a>
+            <a href="{backend_url}/api/auth/account-verification/{created_user[0]}">Presiona aquí para validar tu cuenta!</a>
         '''
         send_email(receiver_address=user["email"], mail_content=mail_content)
 
@@ -90,17 +91,17 @@ def account_verification(user_id: str):
     cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
     user_found = cur.fetchone()
     if user_found == None:
-        return RedirectResponse("http://localhost:5173/error/user-not-found")
+        return RedirectResponse(f"{frontend_url}/error/user-not-found")
 
     try:
         cur.execute("UPDATE users SET verified = %s WHERE id = %s",
                     [True, user_id])
         conn.commit()
 
-        return RedirectResponse("http://localhost:5173/success/cuenta-verificada")
+        return RedirectResponse(f"{frontend_url}/success/cuenta-verificada")
     except Exception as error:
         print(error)
-        return RedirectResponse("http://localhost:5173/error/error-verificacion")
+        return RedirectResponse(f"{frontend_url}/error/error-verificacion")
 
 
 @router.post("/password-recovery", status_code=200)
@@ -118,7 +119,7 @@ def password_recovery(user: UserPasswordRecoveryModel):
 
     try:
         mail_content = f'''
-            <a href="http://localhost:5173/new-password/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
+            <a href="{frontend_url}/new-password/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
         '''
         send_email(receiver_address=user.email, mail_content=mail_content)
 
