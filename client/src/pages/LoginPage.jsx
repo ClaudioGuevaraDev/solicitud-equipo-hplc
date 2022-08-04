@@ -124,7 +124,13 @@ function LoginPage() {
                       <span className="visually-hidden">Loading...</span>
                     </button>
                   ) : (
-                    <button type="submit" className="btn btn-primary w-100">
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
+                      disabled={
+                        (user.email === "" || user.password === "") ? true : false
+                      }
+                    >
                       INICIAR SESIÓN
                     </button>
                   )}

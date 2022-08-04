@@ -7,6 +7,7 @@ function useHandleToken() {
     id: 0,
     first_name: "",
     last_name: "",
+    email: "",
     url_image: "",
     role: "",
   });
@@ -18,6 +19,7 @@ function useHandleToken() {
         id: decoded.id,
         first_name: decoded.first_name,
         last_name: decoded.last_name,
+        email: decoded.email,
         url_image: decoded.url_image,
         role: decoded.role,
       });

@@ -188,7 +188,19 @@ function RegisterPage() {
                       <span className="visually-hidden">Loading...</span>
                     </button>
                   ) : (
-                    <button type="submit" className="btn btn-primary w-100">
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
+                      disabled={
+                        user.first_name === "" ||
+                        user.last_name === "" ||
+                        user.email === "" ||
+                        user.password === "" ||
+                        user.confirm_password === ""
+                          ? true
+                          : false
+                      }
+                    >
                       REGISTRARSE
                     </button>
                   )}

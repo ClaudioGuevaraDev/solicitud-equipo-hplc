@@ -39,6 +39,7 @@ def login(user: UserLoginModel):
             "id": user_found[0],
             "first_name": user_found[1],
             "last_name": user_found[2],
+            "email": user_found[3],
             "url_image": user_found[5],
             "role": user_found[7],
         }
@@ -80,7 +81,8 @@ def user_register(user: UserRegisterModel):
         mail_content = f'''
             <a href="{backend_url}/api/auth/account-verification/{created_user[0]}">Presiona aquí para validar tu cuenta!</a>
         '''
-        send_email(receiver_address=user["email"], mail_content=mail_content, subject="Validación de cuenta.")
+        send_email(
+            receiver_address=user["email"], mail_content=mail_content, subject="Validación de cuenta.")
 
         return {"detail": "Cuenta registrada. Te enviamos un email para validar tu correo."}
     except Exception as error:
@@ -124,7 +126,8 @@ def password_recovery(user: UserPasswordRecoveryModel):
         mail_content = f'''
             <a href="{frontend_url}/new-password/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
         '''
-        send_email(receiver_address=user.email, mail_content=mail_content, subject="Restaurar contraseña.")
+        send_email(receiver_address=user.email,
+                   mail_content=mail_content, subject="Restaurar contraseña.")
 
         return {"detail": "Te envíamos un correo para poder restaurar tu contraseña."}
     except Exception as error:
