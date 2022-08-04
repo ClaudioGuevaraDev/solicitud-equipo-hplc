@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes import auth, roles, users
 from db.initial_db import initial_roles
+from config.config import frontend_url
 
 # Initilized database
 initial_roles()
@@ -10,7 +11,7 @@ initial_roles()
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173",
+    frontend_url,
 ]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins,
