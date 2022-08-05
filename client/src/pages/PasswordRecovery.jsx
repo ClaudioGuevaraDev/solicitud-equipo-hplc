@@ -37,8 +37,8 @@ function PasswordRecovery() {
         setUser({
           email: "",
         });
-        setLoading(false);
       }
+      setLoading(false);
     }
   };
 

@@ -183,9 +183,7 @@ function DashboardPerfilPage() {
                       id="user-type-input"
                       className="form-control"
                       placeholder={
-                        userLogged.role === "root"
-                          ? "Root"
-                          : userLogged.role === "admin"
+                        userLogged.role === "admin"
                           ? "Administrador"
                           : "Usuario"
                       }

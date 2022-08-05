@@ -24,6 +24,7 @@ function useGetJerarquias() {
 
   return {
     jerarquias,
+    setJerarquias,
     jerarquiaValue,
     setJerarquiaValue,
   };

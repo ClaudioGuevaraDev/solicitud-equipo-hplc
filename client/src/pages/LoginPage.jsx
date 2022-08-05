@@ -33,7 +33,7 @@ function LoginPage() {
         password: "",
       });
       window.localStorage.setItem("token", data.token);
-      const decoded = decoded_token()
+      const decoded = decoded_token();
       handleUserLogged({
         id: decoded.id,
         first_name: decoded.first_name,
@@ -54,8 +54,8 @@ function LoginPage() {
           email: "",
           password: "",
         });
-        setLoading(false);
       }
+      setLoading(false);
     }
   };
 
@@ -86,7 +86,6 @@ function LoginPage() {
                       className="form-control"
                       placeholder="example@gmail.com"
                       required
-                      autoFocus
                       value={user.email}
                       onChange={(e) =>
                         setUser({ ...user, email: e.target.value })

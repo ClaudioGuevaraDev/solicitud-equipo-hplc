@@ -4,12 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from routes import auth, roles, users, jerarquias
-from db.initial_db import initial_roles
+from db.initial_db import initial_roles, initial_jerarquias, inital_user_admin
 from config.config import frontend_url
 from utils.initial_folders import initial_folders
 
 # Initilized database
 initial_roles()
+initial_jerarquias()
+inital_user_admin()
 
 # Initialzed folders
 initial_folders()

@@ -45,8 +45,8 @@ function NewPassword() {
           password: "",
           confirm_password: "",
         });
-        setLoading(false);
       }
+      setLoading(false);
     }
   };
 

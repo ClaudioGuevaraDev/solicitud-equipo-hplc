@@ -20,7 +20,7 @@ def get_users():
 
         data = []
         for user in users:
-            data.append({
+            data = data.append({
                 "id": user[0],
                 "first_name": user[1],
                 "last_name": user[2],

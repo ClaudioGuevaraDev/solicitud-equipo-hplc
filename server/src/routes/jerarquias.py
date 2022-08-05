@@ -62,6 +62,7 @@ def delete_jerarquia(jerarquia_id: int):
     try:
         cur.execute(
             "DELETE FROM jerarquias WHERE id = %s RETURNING *", [jerarquia_id])
+        conn.commit()
         deleted_jerarquia = cur.fetchone()
 
         data = {
@@ -81,6 +82,10 @@ def update_jerarquia(jerarquia_id: int, jerarquia: JerarquiaModel):
     cur.execute("SELECT * FROM jerarquias WHERE id = %s", [jerarquia_id])
     if cur.fetchone() == None:
         raise HTTPException(status_code=404, detail="La jerarquía no existe.")
+
+    cur.execute("SELECT * FROM jerarquias WHERE name = %s", [jerarquia.name])
+    if cur.fetchone():
+        raise HTTPException(status_code=400, detail="La jerarquía ya existe.")
 
     try:
         cur.execute("UPDATE jerarquias SET name = %s, score = %s WHERE id = %s RETURNING *",

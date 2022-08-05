@@ -11,7 +11,7 @@ Content-Type: application/json
     "score": 10
 }
 ###
-DELETE {{api}}/5
+DELETE {{api}}/1
 ###
 PUT {{api}}/1
 Content-Type: application/json

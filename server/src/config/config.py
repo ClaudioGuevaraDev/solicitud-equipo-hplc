@@ -16,3 +16,6 @@ backend_url = os.environ["BACKEND_URL"]
 frontend_url = os.environ["FRONTEND_URL"]
 
 secret_key_jwt = os.environ["SECRET_KET_JWT"]
+
+admin_email = os.environ["ADMIN_EMAIL"]
+admin_password = os.environ["ADMIN_PASSWORD"]

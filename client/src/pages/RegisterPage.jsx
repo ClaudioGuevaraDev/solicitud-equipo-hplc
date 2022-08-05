@@ -62,8 +62,8 @@ function RegisterPage() {
           confirm_password: "",
         });
         setJerarquiaValue(jerarquias[0].name);
-        setLoading(false);
       }
+      setLoading(false);
     }
   };
 
@@ -99,7 +99,6 @@ function RegisterPage() {
                           className="form-control"
                           placeholder="David"
                           required
-                          autoFocus
                           value={user.first_name}
                           onChange={(e) =>
                             setUser({ ...user, first_name: e.target.value })

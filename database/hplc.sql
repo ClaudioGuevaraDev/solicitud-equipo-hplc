@@ -62,7 +62,7 @@ CREATE TABLE "proyectos" (
 
 ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("jerarquia_id") REFERENCES "jerarquias" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("jerarquia_id") REFERENCES "jerarquias" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 CREATE TABLE "grupos_lideres" (
   "grupos_lider_id" int NOT NULL,

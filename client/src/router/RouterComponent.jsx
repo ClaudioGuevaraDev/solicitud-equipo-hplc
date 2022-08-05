@@ -9,6 +9,7 @@ import DashboardUsuariosPage from "../pages/DashboardUsuariosPage";
 import DashboardEquiposPage from "../pages/DashboardEquiposPage";
 import DashboardGruposPage from "../pages/DashboardGruposPage";
 import DashboardProyectosPage from "../pages/DashboardProyectosPage";
+import DashboardJerarquiasPage from '../pages/DashboardJerarquiasPage'
 import VerifiedAccountPage from "../pages/success/VerifiedAccountPage";
 import PasswordRecovery from "../pages/PasswordRecovery";
 import NewPassword from "../pages/NewPassword";
@@ -27,6 +28,11 @@ function RouterComponent() {
       <Route
         path="/dashboard/perfil"
         element={<DashboardPerfilPage />}
+        loading
+      />
+      <Route
+        path="/dashboard/jerarquias"
+        element={<DashboardJerarquiasPage />}
         loading
       />
       <Route

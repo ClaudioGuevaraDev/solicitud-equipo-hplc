@@ -50,6 +50,23 @@ function SidebarComponent() {
         </li>
       </ul>
 
+      {userLogged.role === "admin" && (
+        <>
+          <hr className="divider-solid" />
+
+          <ul className="d-flex flex-column justify-content-center align-items-center my-3">
+            <li
+              className={`item-list h4 ${
+                window.location.href.split("/")[4] === "jerarquias" && "active"
+              }`}
+              onClick={() => handleSection("jerarquias")}
+            >
+              Jerarquías
+            </li>
+          </ul>
+        </>
+      )}
+
       <hr className="divider-solid" />
 
       <ul className="d-flex flex-column justify-content-center align-items-center my-3">
