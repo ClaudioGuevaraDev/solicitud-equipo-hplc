@@ -41,11 +41,11 @@ function NewPassword() {
         toast.error(error_message, {
           duration: 6000,
         });
-        setUser({
-          password: "",
-          confirm_password: "",
-        });
       }
+      setUser({
+        password: "",
+        confirm_password: "",
+      });
       setLoading(false);
     }
   };

@@ -15,28 +15,21 @@ router = APIRouter(
 @router.get("/", status_code=200)
 def get_users():
     try:
-        cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.url_image, users.verified, users.change_password, roles.id, roles.name, jerarquias.id, jerarquias.name FROM users JOIN roles ON roles.id = users.role_id JOIN jerarquias ON jerarquias.id = users.jerarquia_id")
+        cur.execute(
+            "SELECT * FROM users")
         users = cur.fetchall()
 
         data = []
         for user in users:
-            data = data.append({
+            data.append({
                 "id": user[0],
                 "first_name": user[1],
                 "last_name": user[2],
                 "email": user[3],
-                "password": user[4],
-                "url_image": user[5],
+                "url_iamge": user[5],
                 "verified": user[6],
-                "change_password": user[7],
-                "role": {
-                    "id": user[8],
-                    "name": user[9]
-                },
-                "jerarquia": {
-                    "id": user[10],
-                    "name": user[11]
-                }
+                "jerarquia_id": user[8],
+                "role_id": user[9]
             })
 
         return {"data": data}
@@ -108,11 +101,17 @@ def change_image(user_id: int, image: UploadFile = File(...)):
         image_name = f"{str(uuid.uuid4())}_{str(user_id)}_{image.filename}"
         path_image = os.path.join(
             os.getcwd(), "static", "images", image_name)
+        new_url_image = f"/static/images/{image_name}"
+
+        cur.execute("SELECT * FROM users WHERE url_image = %s",
+                    [new_url_image])
+        if cur.fetchone():
+            raise HTTPException(
+                status_code=500, detail="Error al actualizar su foto de perfil.")
 
         with open(path_image, "wb") as buffer:
             shutil.copyfileobj(image.file, buffer)
 
-        new_url_image = f"/static/images/{image_name}"
         cur.execute("UPDATE users SET url_image = %s WHERE id = %s", [
                     new_url_image, user_id])
         conn.commit()

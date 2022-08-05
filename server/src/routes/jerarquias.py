@@ -37,7 +37,7 @@ def create_jerarquia(jerarquia: JerarquiaModel):
 
     try:
         cur.execute("INSERT INTO jerarquias (name, score) VALUES (%s, %s) RETURNING *",
-                    [jerarquia.name.lower(), jerarquia.score])
+                    [jerarquia.name, jerarquia.score])
         conn.commit()
 
         created_jerarquia = cur.fetchone()
@@ -89,7 +89,7 @@ def update_jerarquia(jerarquia_id: int, jerarquia: JerarquiaModel):
 
     try:
         cur.execute("UPDATE jerarquias SET name = %s, score = %s WHERE id = %s RETURNING *",
-                    [jerarquia.name.lower(), jerarquia.score, jerarquia_id])
+                    [jerarquia.name, jerarquia.score, jerarquia_id])
         conn.commit()
 
         updated_jerarquia = cur.fetchone()

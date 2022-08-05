@@ -87,28 +87,32 @@ def user_register(user: UserRegisterModel):
         conn.commit()
 
         created_user = cur.fetchone()
+        token = jwt.encode(
+            {"id": created_user[0]}, secret_key_jwt, algorithm="HS256")
         mail_content = f'''
-            <a href="{backend_url}/api/auth/account-verification/{created_user[0]}">Presiona aquí para validar tu cuenta!</a>
+            <a href="{backend_url}/api/auth/account-verification/{token}">Presiona aquí para validar tu cuenta!</a>
         '''
         send_email(
             receiver_address=user["email"], mail_content=mail_content, subject="Validación de cuenta.")
 
         return {"detail": "Cuenta registrada. Te enviamos un email para validar tu correo."}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al crear la cuenta. Inténtelo en otro momento.")
 
 
-@router.get("/account-verification/{user_id}", status_code=200)
-def account_verification(user_id: str):
-    cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
+@router.get("/account-verification/{token}", status_code=200)
+def account_verification(token: str):
+    decoded = jwt.decode(token, secret_key_jwt, algorithms="HS256")
+    cur.execute("SELECT * FROM users WHERE id = %s", [decoded["id"]])
     user_found = cur.fetchone()
     if user_found == None:
         return RedirectResponse(f"{frontend_url}/error-page")
 
     try:
         cur.execute("UPDATE users SET verified = %s WHERE id = %s",
-                    [True, user_id])
+                    [True, decoded["id"]])
         conn.commit()
 
         return RedirectResponse(f"{frontend_url}/success/verified-account")
@@ -130,8 +134,10 @@ def password_recovery(user: UserPasswordRecoveryModel):
             status_code=401, detail="Debes validar tu cuenta primero.")
 
     try:
+        token = jwt.encode(
+            {"id": user_found[0]}, secret_key_jwt, algorithm="HS256")
         mail_content = f'''
-            <a href="{backend_url}/api/auth/authorized-password-change/{user_found[0]}">Presiona aquí para recuperar tu contraseña!</a>
+            <a href="{backend_url}/api/auth/authorized-password-change/{token}">Presiona aquí para recuperar tu contraseña!</a>
         '''
         send_email(receiver_address=user.email,
                    mail_content=mail_content, subject="Restaurar contraseña.")
@@ -142,9 +148,10 @@ def password_recovery(user: UserPasswordRecoveryModel):
             status_code=500, detail="Error al restaurar la contraseña.")
 
 
-@router.get("/authorized-password-change/{user_id}", status_code=200)
-def authorized_password_change(user_id: int):
-    cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
+@router.get("/authorized-password-change/{token}", status_code=200)
+def authorized_password_change(token: str):
+    decoded = jwt.decode(token, secret_key_jwt, algorithms="HS256")
+    cur.execute("SELECT * FROM users WHERE id = %s", [decoded["id"]])
     user_found = cur.fetchone()
 
     if user_found == None:
@@ -152,11 +159,12 @@ def authorized_password_change(user_id: int):
 
     try:
         cur.execute("UPDATE users SET change_password = %s WHERE id = %s", [
-            True, user_id])
+            True, decoded["id"]])
         conn.commit()
 
-        return RedirectResponse(f"{frontend_url}/new-password/{user_id}")
+        return RedirectResponse(f"{frontend_url}/new-password/{user_found[0]}")
     except Exception as error:
+        print(error)
         return RedirectResponse(f"{frontend_url}/error-page")
 
 
