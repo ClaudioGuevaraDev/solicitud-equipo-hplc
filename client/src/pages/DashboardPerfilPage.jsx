@@ -8,10 +8,14 @@ import { useContext } from "react";
 import AppContext from "../context/AppContext";
 
 function DashboardPerfilPage() {
+  const { userLogged, handleUserLogged } = useContext(AppContext);
   const [userImage, setUserImage] = useState({
     image: null,
   });
-  const { userLogged, handleUserLogged } = useContext(AppContext);
+  const [userInfo, setUserInfo] = useState({
+    first_name: "",
+    last_name: "",
+  });
 
   const handleUserImage = async (e) => {
     e.preventDefault();
@@ -19,7 +23,7 @@ function DashboardPerfilPage() {
     try {
       const post = new FormData();
       post.append("image", userImage.image);
-      const { data } = await axios.post(
+      const { data } = await axios.put(
         `/api/users/change-image/${userLogged.id}`,
         post
       );
@@ -35,6 +39,49 @@ function DashboardPerfilPage() {
         });
         setUserImage({
           image: null,
+        });
+      }
+    }
+  };
+
+  const handleUserInfo = async (e) => {
+    e.preventDefault();
+
+    try {
+      const post = {
+        first_name:
+          userInfo.first_name === ""
+            ? userLogged.first_name
+            : userInfo.first_name,
+        last_name:
+          userInfo.last_name === "" ? userLogged.last_name : userInfo.last_name,
+      };
+
+      const { data } = await axios.put(
+        `/api/users/change-info-user/${userLogged.id}`,
+        post
+      );
+      toast.success(data.detail, {
+        duration: 5000,
+      });
+      handleUserLogged({
+        ...userLogged,
+        first_name: data.user.first_name,
+        last_name: data.user.last_name,
+      });
+      setUserInfo({
+        first_name: "",
+        last_name: "",
+      });
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+        setUserInfo({
+          first_name: userLogged.first_name,
+          last_name: userLogged.last_name,
         });
       }
     }
@@ -74,7 +121,7 @@ function DashboardPerfilPage() {
         </div>
         <div className="row mt-4">
           <div className="col-xl-3 col-lg-7 col-md-9 col-sm-12 col-12">
-            <form>
+            <form onSubmit={handleUserInfo}>
               <div className="row">
                 <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                   <div className="mb-3">
@@ -86,7 +133,10 @@ function DashboardPerfilPage() {
                       id="first-name-input"
                       className="form-control"
                       placeholder={userLogged.first_name}
-                      value={userLogged.first_name}
+                      value={userInfo.first_name}
+                      onChange={(e) =>
+                        setUserInfo({ ...userInfo, first_name: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -100,7 +150,10 @@ function DashboardPerfilPage() {
                       id="last-name-input"
                       className="form-control"
                       placeholder={userLogged.last_name}
-                      value={userLogged.last_name}
+                      value={userInfo.last_name}
+                      onChange={(e) =>
+                        setUserInfo({ ...userInfo, last_name: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -141,7 +194,17 @@ function DashboardPerfilPage() {
                   </div>
                 </div>
               </div>
-              <button className="btn btn-success">EDITAR</button>
+              <button
+                className="btn btn-success"
+                type="submit"
+                disabled={
+                  userInfo.first_name === "" && userInfo.last_name === ""
+                    ? true
+                    : false
+                }
+              >
+                EDITAR
+              </button>
             </form>
           </div>
         </div>
