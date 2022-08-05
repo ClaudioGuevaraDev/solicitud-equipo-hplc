@@ -1,0 +1,22 @@
+@api = http://localhost:8000/api/jerarquias
+
+###
+GET {{api}}
+###
+POST {{api}}
+Content-Type: application/json
+
+{
+    "name": "Jerarquía 4",
+    "score": 10
+}
+###
+DELETE {{api}}/4
+###
+PUT {{api}}/1
+Content-Type: application/json
+
+{
+    "name": "Jerarquía 1",
+    "score": 1000
+}
