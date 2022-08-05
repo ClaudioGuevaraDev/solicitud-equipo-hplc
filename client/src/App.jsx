@@ -10,14 +10,11 @@ import DashboardUsuariosPage from "./pages/DashboardUsuariosPage";
 import DashboardEquiposPage from "./pages/DashboardEquiposPage";
 import DashboardGruposPage from "./pages/DashboardGruposPage";
 import DashboardProyectosPage from "./pages/DashboardProyectosPage";
-import UserNotFoundPage from "./pages/errors/UserNotFoundPage";
-import ErrorVerificacionPage from "./pages/errors/ErrorVerificacionPage";
-import CuentaVerificadaPage from "./pages/success/CuentaVerificadaPage";
+import VerifiedAccountPage from "./pages/success/VerifiedAccountPage";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
-import ChangePasswordErrorPage from "./pages/errors/ChangePasswordErrorPage";
-import ChangePasswordSuccessPage from "./pages/success/ChangePasswordSuccessPage";
 import LoadingPage from "./pages/LoadingPage";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   return (
@@ -58,30 +55,11 @@ function App() {
             loading
           />
 
-          <Route
-            path="/error/user-not-found"
-            element={<UserNotFoundPage />}
-            loading
-          />
-          <Route
-            path="/error/error-verificacion"
-            element={<ErrorVerificacionPage />}
-            loading
-          />
-          <Route
-            path="/error/error-change-password"
-            element={<ChangePasswordErrorPage />}
-            loading
-          />
+          <Route path="/error-page" element={<ErrorPage />} loading />
 
           <Route
-            path="/success/cuenta-verificada"
-            element={<CuentaVerificadaPage />}
-            loading
-          />
-          <Route
-            path="/success/change-password-success"
-            element={<ChangePasswordSuccessPage />}
+            path="/success/verified-account"
+            element={<VerifiedAccountPage />}
             loading
           />
         </Routes>

@@ -94,16 +94,16 @@ def account_verification(user_id: str):
     cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
     user_found = cur.fetchone()
     if user_found == None:
-        return RedirectResponse(f"{frontend_url}/error/user-not-found")
+        return RedirectResponse(f"{frontend_url}/error-page")
 
     try:
         cur.execute("UPDATE users SET verified = %s WHERE id = %s",
                     [True, user_id])
         conn.commit()
 
-        return RedirectResponse(f"{frontend_url}/success/cuenta-verificada")
+        return RedirectResponse(f"{frontend_url}/success/verified-account")
     except Exception as error:
-        return RedirectResponse(f"{frontend_url}/error/error-verificacion")
+        return RedirectResponse(f"{frontend_url}/error-page")
 
 
 @router.post("/password-recovery", status_code=200)
@@ -138,7 +138,7 @@ def authorized_password_change(user_id: int):
     user_found = cur.fetchone()
 
     if user_found == None:
-        return RedirectResponse(f"{frontend_url}/error/user-not-found")
+        return RedirectResponse(f"{frontend_url}/error-page")
 
     try:
         cur.execute("UPDATE users SET change_password = %s WHERE id = %s", [
@@ -147,8 +147,7 @@ def authorized_password_change(user_id: int):
 
         return RedirectResponse(f"{frontend_url}/new-password/{user_id}")
     except Exception as error:
-        raise HTTPException(
-            status_code=500, detail="Hubo un error al intentar cambiar su contraseña.")
+        return RedirectResponse(f"{frontend_url}/error-page")
 
 
 @router.post("/change-password/{user_id}", status_code=200)

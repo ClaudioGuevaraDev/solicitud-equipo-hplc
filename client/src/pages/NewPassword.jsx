@@ -26,9 +26,15 @@ function NewPassword() {
     setLoading(true);
 
     try {
-      await axios.post(`/api/auth/change-password/${id}`, user);
+      const { data } = await axios.post(
+        `/api/auth/change-password/${id}`,
+        user
+      );
+      toast.success(data.detail, {
+        duration: 6000,
+      });
       setLoading(false);
-      navigate("/success/change-password-success");
+      navigate("/");
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;

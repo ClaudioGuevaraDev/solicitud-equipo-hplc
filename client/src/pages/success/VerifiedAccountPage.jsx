@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import useLoadingPage from "../../hooks/useLoadingPage";
 
-function ChangePasswordErrorPage() {
-  useLoadingPage()
+function VerifiedAccountPage() {
+  useLoadingPage();
 
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ function ChangePasswordErrorPage() {
       style={{ height: "100vh" }}
     >
       <div className="d-flex flex-column align-items-center text-center">
-        <h1>Hubo un error al intentar cambiar tu contraseña.</h1>
+        <h1 className="mb-3">Su cuenta ha sido verificada 😀. Ya puede iniciar sesión.</h1>
         <button
           className="btn btn-primary btn-lg"
           onClick={() => navigate("/")}
@@ -24,4 +24,4 @@ function ChangePasswordErrorPage() {
   );
 }
 
-export default ChangePasswordErrorPage;
+export default VerifiedAccountPage;

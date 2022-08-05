@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import useLoadingPage from "../../hooks/useLoadingPage";
+import useLoadingPage from "../hooks/useLoadingPage";
 
-function UserNotFoundPage() {
+function ErrorPage() {
   useLoadingPage();
 
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ function UserNotFoundPage() {
       style={{ height: "100vh" }}
     >
       <div className="d-flex flex-column align-items-center text-center">
-        <h1>Usuario no encontrado</h1>
+        <h1 className="mb-3">Algo salio mal 😔. Inténtalo en otro momento.</h1>
         <button
           className="btn btn-primary btn-lg"
           onClick={() => navigate("/")}
@@ -24,4 +24,4 @@ function UserNotFoundPage() {
   );
 }
 
-export default UserNotFoundPage;
+export default ErrorPage;
