@@ -3,8 +3,7 @@ Sistema de administración de solicitudes para el equipo HPLC por parte de usuar
 
 ### Pendientes
 
-### General
-* Enviar token en vez de id al validar y cambiar contraseña.
+#### General
 
 #### Backend
 

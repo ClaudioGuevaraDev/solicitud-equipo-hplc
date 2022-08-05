@@ -1,6 +1,7 @@
 import shutil
 import os
 import uuid
+from urllib.parse import urljoin
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from db.connection import conn, cur
@@ -94,7 +95,8 @@ def change_info_user(user_id: int, user: UserInfoModel):
 @router.put("/change-image/{user_id}", status_code=200)
 def change_image(user_id: int, image: UploadFile = File(...)):
     cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
-    if cur.fetchone() == None:
+    user_found = cur.fetchone()
+    if user_found == None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado.")
 
     try:
@@ -116,7 +118,12 @@ def change_image(user_id: int, image: UploadFile = File(...)):
                     new_url_image, user_id])
         conn.commit()
 
+        if (user_found[5] != None) and (len(user_found[5].split("/")) == 4):
+            os.remove(os.path.join(os.getcwd(), "static",
+                      "images", user_found[5].split("/")[3]))
+
         return {"detail": "Foto de perfil actualizada.", "url_image": new_url_image}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al actualizar su foto de perfil.")

@@ -1,8 +1,9 @@
 from .connection import cur, conn
+import jwt
 
 from utils.handle_password import encrypt_password
 from utils.send_email import send_email
-from config.config import admin_email, admin_password, backend_url
+from config.config import admin_email, admin_password, backend_url, secret_key_jwt
 
 
 def initial_roles():
@@ -54,8 +55,10 @@ def inital_user_admin():
 
                     created_user = cur.fetchone()
 
+                    token = jwt.encode(
+                        {"id": created_user[0]}, secret_key_jwt, algorithm="HS256")
                     mail_content = f'''
-                        <a href="{backend_url}/api/auth/account-verification/{created_user[0]}">Presiona aquí para validar tu cuenta!</a>
+                        <a href="{backend_url}/api/auth/account-verification/{token}">Presiona aquí para validar tu cuenta!</a>
                     '''
                     send_email(
                         receiver_address=admin_email, mail_content=mail_content, subject="Validación de cuenta.")
