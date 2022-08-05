@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import useHandleToken from "../hooks/useHandleToken";
 
 import UnknownProfile from "../assets/unknown_perfil.jpg";
+import { useContext } from "react";
+import AppContext from "../context/AppContext";
 
 function SidebarComponent() {
   const [loadingLogout, setLoadingLogout] = useState(false);
   const navigate = useNavigate();
-  const { loggedUser, loadingDataUser } = useHandleToken();
+  const { userLogged } = useContext(AppContext);
 
   const handleSection = (section) => {
     navigate(`/dashboard/${section}`);
@@ -15,26 +16,25 @@ function SidebarComponent() {
 
   const logout = () => {
     setLoadingLogout(true);
-    window.localStorage.removeItem("token");
+    if (window.localStorage.getItem("token"))
+      window.localStorage.removeItem("token");
     setLoadingLogout(false);
     navigate("/");
   };
-
-  if (loadingDataUser === true) return <h1>Loading...</h1>
 
   return (
     <>
       <div className="d-flex justify-content-center align-items-center mt-4">
         <img
-          src={loggedUser.url_image ? loggedUser.url_image : UnknownProfile}
-          alt={`${loggedUser.first_name} ${loggedUser.last_name}`}
+          src={userLogged.url_image ? userLogged.url_image : UnknownProfile}
+          alt={`${userLogged.first_name} ${userLogged.last_name}`}
           className="rounded-circle"
           style={{ width: "11rem", height: "11rem", maxWidth: "100%" }}
         />
       </div>
 
       <h3 className="h5 my-3 text-center">
-        {`${loggedUser.first_name} ${loggedUser.last_name}`}
+        {`${userLogged.first_name} ${userLogged.last_name}`}
       </h3>
 
       <hr className="divider-solid" />

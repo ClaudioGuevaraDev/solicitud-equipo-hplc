@@ -1,13 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { HiLockClosed } from "@react-icons/all-files/hi/HiLockClosed";
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import useRedirectDashboard from "../hooks/useRedirectDashboard";
 import useLoadingPage from "../hooks/useLoadingPage";
+import AppContext from "../context/AppContext";
+import { decoded_token } from "../utils/decoded_token";
 
 function LoginPage() {
   useLoadingPage();
+  const { handleUserLogged } = useContext(AppContext);
 
   const [user, setUser] = useState({
     email: "",
@@ -30,6 +33,15 @@ function LoginPage() {
         password: "",
       });
       window.localStorage.setItem("token", data.token);
+      const decoded = decoded_token()
+      handleUserLogged({
+        id: decoded.id,
+        first_name: decoded.first_name,
+        last_name: decoded.last_name,
+        email: decoded.email,
+        role: decoded.role,
+        url_image: decoded.url_image,
+      });
       setLoading(false);
       navigate("/dashboard/perfil");
     } catch (error) {
@@ -128,7 +140,7 @@ function LoginPage() {
                       type="submit"
                       className="btn btn-primary w-100"
                       disabled={
-                        (user.email === "" || user.password === "") ? true : false
+                        user.email === "" || user.password === "" ? true : false
                       }
                     >
                       INICIAR SESIÓN

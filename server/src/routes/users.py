@@ -87,8 +87,9 @@ def change_image(user_id: int, image: UploadFile = File(...)):
         new_url_image = f"/static/images/{image_name}"
         cur.execute("UPDATE users SET url_image = %s WHERE id = %s", [
                     new_url_image, user_id])
+        conn.commit()
 
-        return {"detail": "Foto de perfil actualizada."}
+        return {"detail": "Foto de perfil actualizada.", "url_image": new_url_image}
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al actualizar su foto de perfil.")

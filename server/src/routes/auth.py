@@ -20,7 +20,7 @@ router = APIRouter(
 def login(user: UserLoginModel):
     user = jsonable_encoder(user)
 
-    cur.execute("SELECT users.id, users.email, users.password, users.verified, roles.name FROM users JOIN roles ON users.role_id = roles.id WHERE users.email = %s", [
+    cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.verified, users.url_image, roles.name FROM users JOIN roles ON users.role_id = roles.id WHERE users.email = %s", [
                 user["email"]])
     user_found = cur.fetchone()
 
@@ -28,17 +28,20 @@ def login(user: UserLoginModel):
         raise HTTPException(
             status_code=401, detail="Error al iniciar sesión.")
 
-    if compare_password(user["password"], hashed_password=user_found[2]) == False:
+    if compare_password(user["password"], hashed_password=user_found[4]) == False:
         raise HTTPException(status_code=401, detail="Error al iniciar sesión.")
 
-    if user_found[3] != True:
+    if user_found[5] != True:
         raise HTTPException(status_code=401, detail="Cuenta no verificada.")
 
     try:
         encoded_user = {
             "id": user_found[0],
-            "email": user_found[1],
-            "role": user_found[4],
+            "first_name": user_found[1],
+            "last_name": user_found[2],
+            "email": user_found[3],
+            "url_image": user_found[6],
+            "role": user_found[7],
         }
         token = jwt.encode(encoded_user, secret_key_jwt, algorithm="HS256")
 

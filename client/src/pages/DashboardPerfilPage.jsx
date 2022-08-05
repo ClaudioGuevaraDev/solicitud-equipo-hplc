@@ -1,17 +1,17 @@
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
-import useHandleToken from "../hooks/useHandleToken";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 import UnknownProfile from "../assets/unknown_perfil.jpg";
 import { useState } from "react";
+import { useContext } from "react";
+import AppContext from "../context/AppContext";
 
 function DashboardPerfilPage() {
   const [userImage, setUserImage] = useState({
     image: null,
   });
-
-  const { loggedUser, loadingDataUser } = useHandleToken();
+  const { userLogged, handleUserLogged } = useContext(AppContext);
 
   const handleUserImage = async (e) => {
     e.preventDefault();
@@ -20,13 +20,13 @@ function DashboardPerfilPage() {
       const post = new FormData();
       post.append("image", userImage.image);
       const { data } = await axios.post(
-        `/api/users/change-image/${loggedUser.id}`,
+        `/api/users/change-image/${userLogged.id}`,
         post
       );
       toast.success(data.detail, {
-        duration: 6000,
+        duration: 4000,
       });
-      window.location.reload();
+      handleUserLogged({ ...userLogged, url_image: data.url_image });
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -40,8 +40,6 @@ function DashboardPerfilPage() {
     }
   };
 
-  if (loadingDataUser === true) return <h1>Loading...</h1>;
-
   return (
     <LayoutDashboardComponent>
       <div>
@@ -51,8 +49,8 @@ function DashboardPerfilPage() {
         <div className="row">
           <div className="col-xl-2 col-lg-5 col-md-9 col-sm-12 col-12">
             <img
-              src={loggedUser.url_image ? loggedUser.url_image : UnknownProfile}
-              alt={`${loggedUser.first_name} ${loggedUser.last_name}`}
+              src={userLogged.url_image ? userLogged.url_image : UnknownProfile}
+              alt={`${userLogged.first_name} ${userLogged.last_name}`}
               width="100%"
               style={{ height: 300 }}
             />
@@ -87,8 +85,8 @@ function DashboardPerfilPage() {
                       type="text"
                       id="first-name-input"
                       className="form-control"
-                      placeholder={loggedUser.first_name}
-                      value={loggedUser.first_name}
+                      placeholder={userLogged.first_name}
+                      value={userLogged.first_name}
                     />
                   </div>
                 </div>
@@ -101,8 +99,8 @@ function DashboardPerfilPage() {
                       type="text"
                       id="last-name-input"
                       className="form-control"
-                      placeholder={loggedUser.last_name}
-                      value={loggedUser.last_name}
+                      placeholder={userLogged.last_name}
+                      value={userLogged.last_name}
                     />
                   </div>
                 </div>
@@ -117,7 +115,7 @@ function DashboardPerfilPage() {
                       type="email"
                       id="email-input"
                       className="form-control"
-                      placeholder={loggedUser.email}
+                      placeholder={userLogged.email}
                       disabled={true}
                     />
                   </div>
@@ -132,9 +130,9 @@ function DashboardPerfilPage() {
                       id="user-type-input"
                       className="form-control"
                       placeholder={
-                        loggedUser.role === "root"
+                        userLogged.role === "root"
                           ? "Root"
-                          : loggedUser.role === "admin"
+                          : userLogged.role === "admin"
                           ? "Administrador"
                           : "Usuario"
                       }
