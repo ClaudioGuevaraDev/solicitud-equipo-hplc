@@ -13,6 +13,7 @@ class UserRegisterModel(BaseModel):
     email: str
     password: str
     confirm_password: str
+    jerarquia: str
 
 
 class UserPasswordRecoveryModel(BaseModel):

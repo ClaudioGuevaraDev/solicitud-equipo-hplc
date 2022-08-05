@@ -5,9 +5,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import useRedirectDashboard from "../hooks/useRedirectDashboard";
 import useLoadingPage from "../hooks/useLoadingPage";
+import useGetJerarquias from "../hooks/api/useGetJerarquias";
 
 function RegisterPage() {
   useLoadingPage();
+  const { jerarquias, jerarquiaValue, setJerarquiaValue } = useGetJerarquias();
 
   const [user, setUser] = useState({
     first_name: "",
@@ -27,7 +29,12 @@ function RegisterPage() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("/api/auth/register", user);
+      const post = {
+        ...user,
+        jerarquia: jerarquiaValue,
+      };
+
+      const { data } = await axios.post("/api/auth/register", post);
       toast.success(data.detail, {
         duration: 10000,
       });
@@ -37,8 +44,8 @@ function RegisterPage() {
         email: "",
         password: "",
         confirm_password: "",
-        image: null,
       });
+      setJerarquiaValue(jerarquias[0].name);
       setLoading(false);
       navigate("/");
     } catch (error) {
@@ -53,8 +60,8 @@ function RegisterPage() {
           email: "",
           password: "",
           confirm_password: "",
-          image: null,
         });
+        setJerarquiaValue(jerarquias[0].name);
         setLoading(false);
       }
     }
@@ -171,6 +178,24 @@ function RegisterPage() {
                     />
                   </div>
                   <div className="mb-3">
+                    <label htmlFor="jerarquia-input" className="form-label">
+                      Jerarquía
+                    </label>
+                    <select
+                      className="form-select"
+                      id="jerarquia-input"
+                      defaultValue={jerarquiaValue}
+                    >
+                      {jerarquias.map((j) => (
+                        <option key={j.name} value={j.name}>
+                          {`${j.name.charAt(0).toUpperCase()}${j.name.slice(
+                            1
+                          )}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-3">
                     <p
                       className="paragraph-auth text-center"
                       onClick={() => navigate("/")}
@@ -192,6 +217,7 @@ function RegisterPage() {
                       type="submit"
                       className="btn btn-primary w-100"
                       disabled={
+                        jerarquiaValue === "" ||
                         user.first_name === "" ||
                         user.last_name === "" ||
                         user.email === "" ||

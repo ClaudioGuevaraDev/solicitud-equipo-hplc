@@ -7,11 +7,11 @@ POST {{api}}
 Content-Type: application/json
 
 {
-    "name": "Jerarquía 4",
+    "name": "Jerarquía 5",
     "score": 10
 }
 ###
-DELETE {{api}}/4
+DELETE {{api}}/5
 ###
 PUT {{api}}/1
 Content-Type: application/json

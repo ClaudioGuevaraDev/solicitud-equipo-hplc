@@ -68,12 +68,22 @@ def user_register(user: UserRegisterModel):
     if user_found:
         raise HTTPException(
             status_code=400, detail="Correo electrónico ya registrado.")
+
+    cur.execute("SELECT * FROM roles WHERE name = %s", ["user"])
+    role_found = cur.fetchone()
+    if role_found == None:
+        raise HTTPException(status_code=404, detail="El rol no existe.")
+
+    cur.execute("SELECT * FROM jerarquias WHERE name = %s",
+                [user["jerarquia"]])
+    jerarquia_found = cur.fetchone()
+    if jerarquia_found == None:
+        raise HTTPException(status_code=404, detail="La jerarquía no existe.")
+
     try:
         hashed_password = encrypt_password(password=user["password"])
-        cur.execute("SELECT * FROM roles WHERE name = %s", ["user"])
-        role_found = cur.fetchone()
-        cur.execute("INSERT INTO users (first_name, last_name, email, password, role_id) VALUES (%s, %s, %s, %s, %s) RETURNING id", [
-                    user["first_name"], user["last_name"], user["email"], hashed_password, role_found[0]])
+        cur.execute("INSERT INTO users (first_name, last_name, email, password, jerarquia_id, role_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id", [
+                    user["first_name"], user["last_name"], user["email"], hashed_password, jerarquia_found[0], role_found[0]])
         conn.commit()
 
         created_user = cur.fetchone()

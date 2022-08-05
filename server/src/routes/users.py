@@ -15,7 +15,7 @@ router = APIRouter(
 @router.get("/", status_code=200)
 def get_users():
     try:
-        cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.url_image, users.verified, users.change_password, roles.id, roles.name FROM users JOIN roles ON roles.id = users.role_id")
+        cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.url_image, users.verified, users.change_password, roles.id, roles.name, jerarquias.id, jerarquias.name FROM users JOIN roles ON roles.id = users.role_id JOIN jerarquias ON jerarquias.id = users.jerarquia_id")
         users = cur.fetchall()
 
         data = []
@@ -32,6 +32,10 @@ def get_users():
                 "role": {
                     "id": user[8],
                     "name": user[9]
+                },
+                "jerarquia": {
+                    "id": user[10],
+                    "name": user[11]
                 }
             })
 
