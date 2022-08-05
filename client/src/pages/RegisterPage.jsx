@@ -90,7 +90,7 @@ function RegisterPage() {
                           type="text"
                           id="first-name-input"
                           className="form-control"
-                          placeholder="Claudio"
+                          placeholder="David"
                           required
                           autoFocus
                           value={user.first_name}
@@ -109,7 +109,7 @@ function RegisterPage() {
                           type="text"
                           id="last-name-input"
                           className="form-control"
-                          placeholder="Guevara"
+                          placeholder="Medina"
                           required
                           value={user.last_name}
                           onChange={(e) =>

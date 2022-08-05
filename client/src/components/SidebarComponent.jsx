@@ -2,13 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useHandleToken from "../hooks/useHandleToken";
 
-import Claudio from "../assets/claudio.jpeg";
 import UnknownProfile from "../assets/unknown_perfil.jpg";
 
 function SidebarComponent() {
   const [loadingLogout, setLoadingLogout] = useState(false);
   const navigate = useNavigate();
-  const { loggedUser } = useHandleToken();
+  const { loggedUser, loadingDataUser } = useHandleToken();
 
   const handleSection = (section) => {
     navigate(`/dashboard/${section}`);
@@ -20,6 +19,8 @@ function SidebarComponent() {
     setLoadingLogout(false);
     navigate("/");
   };
+
+  if (loadingDataUser === true) return <h1>Loading...</h1>
 
   return (
     <>
