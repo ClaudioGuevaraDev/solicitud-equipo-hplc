@@ -21,7 +21,9 @@ function useUpdateContext() {
           last_name: data.user.last_name,
           role: data.user.role.name,
           url_image: data.user.url_image,
-          jerarquia: data.user.jerarquia.name,
+          jerarquia: data.user.jerarquia
+            ? data.user.jerarquia.name
+            : data.user.jerarquia,
         });
       } catch (error) {}
     }

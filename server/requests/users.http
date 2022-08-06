@@ -3,4 +3,4 @@
 ###
 GET {{api}}
 ###
-GET {{api}}/1
+GET {{api}}/2
