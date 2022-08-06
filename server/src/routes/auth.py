@@ -20,8 +20,7 @@ router = APIRouter(
 def login(user: UserLoginModel):
     user = jsonable_encoder(user)
 
-    cur.execute("SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.verified, users.url_image, roles.name FROM users JOIN roles ON users.role_id = roles.id WHERE users.email = %s", [
-                user["email"]])
+    cur.execute("SELECT * FROM users WHERE email = %s", [user["email"]])
     user_found = cur.fetchone()
 
     if user_found == None:
@@ -31,8 +30,11 @@ def login(user: UserLoginModel):
     if compare_password(user["password"], hashed_password=user_found[4]) == False:
         raise HTTPException(status_code=401, detail="Error al iniciar sesión.")
 
-    if user_found[5] != True:
+    if user_found[6] != True:
         raise HTTPException(status_code=401, detail="Cuenta no verificada.")
+
+    if user_found[9] == None:
+        raise HTTPException(status_code=500, detail="Error al iniciar sesión.")
 
     try:
         encoded_user = {
@@ -40,9 +42,24 @@ def login(user: UserLoginModel):
             "first_name": user_found[1],
             "last_name": user_found[2],
             "email": user_found[3],
-            "url_image": user_found[6],
-            "role": user_found[7],
+            "url_image": user_found[5],
         }
+
+        if (user_found[8]):
+            cur.execute("SELECT * FROM jerarquias WHERE id = %s",
+                        [user_found[8]])
+            jerarquia_found = cur.fetchone()
+            encoded_user["jerarquia"] = jerarquia_found[1]
+        else:
+            encoded_user["jerarquia"] = None
+
+        if (user_found[9]):
+            cur.execute("SELECT * FROM roles WHERE id = %s", [user_found[9]])
+            role_found = cur.fetchone()
+            encoded_user["role"] = role_found[1]
+        else:
+            encoded_user["role"] = None
+
         token = jwt.encode(encoded_user, secret_key_jwt, algorithm="HS256")
 
         return {"token": token}

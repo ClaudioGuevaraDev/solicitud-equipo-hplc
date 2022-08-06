@@ -7,8 +7,7 @@ Sistema de administración de solicitudes para el equipo HPLC por parte de usuar
 
 #### Backend
 
-* Eliminar imágenes viejas de los usuarios cuando actualizan su perfil
-* Proteger roles, users routes con tokens (mmiddlewares)
+* Proteger roles, users, jerarquías routes con tokens (mmiddlewares)
 
 #### Frontend
 * Que el usuario pueda editar su jerarquía en su perfil

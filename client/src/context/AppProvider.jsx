@@ -9,6 +9,7 @@ function AppProvider({ children }) {
     email: "",
     url_image: "",
     role: "",
+    jerarquia: "",
   });
 
   const handleUserLogged = ({
@@ -18,6 +19,7 @@ function AppProvider({ children }) {
     email,
     url_image,
     role,
+    jerarquia,
   }) => {
     setUserLogged({
       id,
@@ -26,6 +28,7 @@ function AppProvider({ children }) {
       email,
       url_image,
       role,
+      jerarquia,
     });
   };
 

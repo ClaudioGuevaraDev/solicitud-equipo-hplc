@@ -34,6 +34,7 @@ function LoginPage() {
       });
       window.localStorage.setItem("token", data.token);
       const decoded = decoded_token();
+
       handleUserLogged({
         id: decoded.id,
         first_name: decoded.first_name,
@@ -41,6 +42,7 @@ function LoginPage() {
         email: decoded.email,
         role: decoded.role,
         url_image: decoded.url_image,
+        jerarquia: decoded.jerarquia,
       });
       setLoading(false);
       navigate("/dashboard/perfil");

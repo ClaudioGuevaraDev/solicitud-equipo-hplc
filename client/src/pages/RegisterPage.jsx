@@ -184,6 +184,7 @@ function RegisterPage() {
                       className="form-select"
                       id="jerarquia-input"
                       defaultValue={jerarquiaValue}
+                      onChange={(e) => setJerarquiaValue(e.target.value)}
                     >
                       {jerarquias.map((j) => (
                         <option key={j.name} value={j.name}>

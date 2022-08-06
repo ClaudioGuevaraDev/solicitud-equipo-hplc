@@ -33,9 +33,10 @@ function SidebarComponent() {
         />
       </div>
 
-      <h3 className="h5 my-3 text-center">
+      <h3 className="h5 mt-3 text-center">
         {`${userLogged.first_name} ${userLogged.last_name}`}
       </h3>
+      <h5 className="text-center h5 mb-4"><em>{userLogged.jerarquia}</em></h5>
 
       <hr className="divider-solid" />
 
