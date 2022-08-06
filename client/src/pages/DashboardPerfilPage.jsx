@@ -112,7 +112,7 @@ function DashboardPerfilPage() {
           <strong>Mi Perfil</strong>
         </h1>
         <div className="row">
-          <div className="col-xl-2 col-lg-5 col-md-9 col-sm-12 col-12">
+          <div className="col-xl-4 col-lg-6 col-md-8 col-sm-11 col-12" style={{ maxWidth: 500 }}>
             <img
               src={userLogged.url_image ? userLogged.url_image : UnknownProfile}
               alt={`${userLogged.first_name} ${userLogged.last_name}`}
@@ -138,7 +138,7 @@ function DashboardPerfilPage() {
           </div>
         </div>
         <div className="row mt-4">
-          <div className="col-xl-3 col-lg-7 col-md-9 col-sm-12 col-12">
+          <div className="col-xl-7 col-lg-7 col-md-10 col-sm-12 col-12" style={{ maxWidth: 600 }}>
             <form onSubmit={handleUserInfo}>
               <div className="row">
                 <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
