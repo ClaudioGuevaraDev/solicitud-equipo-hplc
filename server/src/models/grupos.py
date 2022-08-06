@@ -7,4 +7,4 @@ class GrupoModel(BaseModel):
     description: str
     date: datetime.date
     score: int
-    lider: int
+    lider: str

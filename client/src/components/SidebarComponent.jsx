@@ -64,14 +64,6 @@ function SidebarComponent() {
             >
               Jerarquías
             </li>
-            <li
-              className={`item-list h4 ${
-                window.location.href.split("/")[4] === "lideres" && "active"
-              }`}
-              onClick={() => handleSection("lideres")}
-            >
-              Líderes
-            </li>
           </ul>
         </>
       )}

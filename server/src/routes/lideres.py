@@ -45,7 +45,6 @@ def create_lider(lider: LiderModel):
 
         return {"data": data, "detail": "Líder creado con éxito."}
     except Exception as error:
-        print(error)
         raise HTTPException(status_code=500, detail="Error al crear el líder.")
 
 

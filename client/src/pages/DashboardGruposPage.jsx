@@ -2,10 +2,12 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
-import useGetLideres from "../hooks/api/useGetLideres";
+import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
+import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
+import useGetGrupos from "../hooks/api/useGetGrupos";
 
 function DashboardGruposPage() {
-  const { lideres, liderValue, setLiderValue } = useGetLideres();
+  const { grupos, setGrupos } = useGetGrupos();
   const [selectedGrupo, setSelectedGrupo] = useState(null);
   const [loading, setLoading] = useState({
     create: false,
@@ -17,21 +19,25 @@ function DashboardGruposPage() {
     description: "",
     date: new Date().toISOString().slice(0, 10),
     score: 1,
+    lider: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setLoading({ ...loading, create: true });
-
     try {
       if (selectedGrupo) {
-      } else {
-        const { data } = await axios.post("/api/grupos", {
-          ...grupo,
-          lider: liderValue,
+        setLoading({ ...loading, update: false });
+        const { data } = await axios.put(`/api/grupos/${selectedGrupo}`, grupo);
+        setGrupos(grupos.map((g) => (g.id === data.data.id ? data.data : g)));
+        toast.success(data.detail, {
+          duration: 5000,
         });
-        console.log(data.data);
+        setLoading({ ...loading, update: false });
+      } else {
+        setLoading({ ...loading, create: true });
+        const { data } = await axios.post("/api/grupos", grupo);
+        setGrupos([data.data, ...grupos]);
         toast.success(data.detail, {
           duration: 5000,
         });
@@ -43,8 +49,8 @@ function DashboardGruposPage() {
         description: "",
         date: new Date().toISOString().slice(0, 10),
         score: 1,
+        lider: "",
       });
-      setLiderValue(lideres[0].id);
       setSelectedGrupo(null);
     } catch (error) {
       if (error.response.data.detail) {
@@ -59,10 +65,42 @@ function DashboardGruposPage() {
         description: "",
         date: new Date().toISOString().slice(0, 10),
         score: 1,
+        lider: "",
       });
-      setLiderValue(lideres[0].id);
       setSelectedGrupo(null);
       setLoading({ ...loading, create: false, update: false });
+    }
+  };
+
+  const handleUpdate = (grupo) => {
+    setSelectedGrupo(grupo.id);
+    setGrupo({
+      date: grupo.creation_date.split("T")[0],
+      description: grupo.description,
+      name: grupo.name,
+      score: grupo.score,
+      lider: grupo.lider,
+    });
+  };
+
+  const deleteGrupo = async (id) => {
+    setLoading({ ...loading, delete: true });
+    try {
+      const { data } = await axios.delete(`/api/grupos/${id}`);
+      setGrupos(grupos.filter((f) => f.id !== data.data.id));
+      toast.success(data.detail, {
+        duration: 5000,
+      });
+
+      setLoading({ ...loading, delete: false });
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+      }
+      setLoading({ ...loading, delete: false });
     }
   };
 
@@ -110,6 +148,21 @@ function DashboardGruposPage() {
                     ></textarea>
                   </div>
                   <div className="mb-3">
+                    <label htmlFor="lider-label" className="form-label">
+                      Líder
+                    </label>
+                    <input
+                      type="text"
+                      id="lider-label"
+                      required
+                      className="form-control"
+                      value={grupo.lider}
+                      onChange={(e) =>
+                        setGrupo({ ...grupo, lider: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
                     <label htmlFor="date-input" className="form-label">
                       Fecha de Creación
                     </label>
@@ -142,27 +195,6 @@ function DashboardGruposPage() {
                       }
                     />
                   </div>
-                  {lideres.length > 0 && (
-                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                      <div className="mb-3">
-                        <label htmlFor="lider-input" className="form-label">
-                          Líder
-                        </label>
-                        <select
-                          className="form-select"
-                          id="lider-input"
-                          value={liderValue}
-                          onChange={(e) => setLiderValue(e.target.value)}
-                        >
-                          {lideres.map((l) => (
-                            <option key={l.full_name} value={l.id}>
-                              {l.full_name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  )}
                   {loading.create ? (
                     <button className="btn btn-success w-100" type="button">
                       <span
@@ -178,7 +210,7 @@ function DashboardGruposPage() {
                       disabled={
                         grupo.name === "" ||
                         grupo.description === "" ||
-                        liderValue == null
+                        grupo.lider === ""
                       }
                     >
                       {selectedGrupo ? "EDITAR" + " GRUPO" : "CREAR" + " GRUPO"}
@@ -188,67 +220,79 @@ function DashboardGruposPage() {
               </div>
             </div>
           </div>
-          {/* <div className="col-xl-7 col-12" style={{ maxWidth: 750 }}>
-            <table className="table table-hover table-stripped text-center table-bordered table-responsive shadow">
-              <thead className="table-dark">
-                <tr>
-                  <th>Nombre</th>
-                  <th>Score</th>
-                  <th>Opciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jerarquias.map((j) => (
-                  <tr key={j.name}>
-                    <td>{`${j.name.charAt(0).toUpperCase()}${j.name.slice(
-                      1
-                    )}`}</td>
-                    <td>{j.score}</td>
-                    <td>
-                      <div className="hstack gap-3 d-flex align-items-center justify-content-center">
-                        {loadingUpdate ? (
-                          <button className="btn btn-warning" type="button">
-                            <span
-                              className="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                            ></span>
-                            <span className="visually-hidden">Loading...</span>
-                          </button>
-                        ) : (
-                          <button
-                            className="btn btn-warning"
-                            onClick={() => handleUpdate(j)}
-                          >
-                            <AiFillEdit />
-                          </button>
-                        )}
-
-                        {loadingDelete ? (
-                          <button className="btn btn-danger" type="button">
-                            <span
-                              className="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                            ></span>
-                            <span className="visually-hidden">Loading...</span>
-                          </button>
-                        ) : (
-                          <button
-                            className="btn btn-danger"
-                            onClick={() => deleteJerarquia(j.id)}
-                          >
-                            <AiFillDelete />{" "}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
         </div>
+        {grupos.length > 0 && (
+          <div className="row mt-3">
+            <div className="col-12" style={{ maxWidth: 1400 }}>
+              <table className="table table-hover table-stripped text-center table-bordered table-responsive shadow">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Líder</th>
+                    <th>Fecha de Creación</th>
+                    <th>Score</th>
+                    <th>Opciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {grupos.map((g) => (
+                    <tr key={g.id}>
+                      <td>{g.name}</td>
+                      <td>{g.description}</td>
+                      <td>{g.lider}</td>
+                      <td>{g.creation_date.split("T")[0]}</td>
+                      <td>{g.score}</td>
+                      <td>
+                        <div className="hstack gap-3 d-flex align-items-center justify-content-center">
+                          {loading.update ? (
+                            <button className="btn btn-warning" type="button">
+                              <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-warning"
+                              onClick={() => handleUpdate(g)}
+                            >
+                              <AiFillEdit />
+                            </button>
+                          )}
+
+                          {loading.delete ? (
+                            <button className="btn btn-danger" type="button">
+                              <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => deleteGrupo(g.id)}
+                            >
+                              <AiFillDelete />{" "}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </LayoutDashboardComponent>
   );

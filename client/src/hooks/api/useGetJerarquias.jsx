@@ -12,7 +12,9 @@ function useGetJerarquias() {
       const { data } = await axios.get("/api/jerarquias");
 
       setJerarquias(data.data);
-      setJerarquiaValue(data.data[0].name);
+      if (data.data.length > 0) {
+        setJerarquiaValue(data.data[0].name);
+      }
     } catch (error) {
       toast.error("Error al listar las jerarquías", {
         duration: 5000,

@@ -17,21 +17,14 @@ def get_grupos():
 
         data = []
         for grupo in grupos:
-            new_data = {
+            data.append({
                 "id": grupo[0],
                 "name": grupo[1],
                 "description": grupo[2],
                 "creation_date": grupo[3],
-                "score": grupo[4]
-            }
-
-            if grupo[5]:
-                cur.execute("SELECT * FROM lideres WHERE id = %s", [grupo[5]])
-                new_data["lider"] = cur.fetchone()[1]
-            else:
-                new_data["lider"] = None
-
-            data.append(new_data)
+                "score": grupo[4],
+                "lider": grupo[5]
+            })
 
         return {"data": data}
     except Exception as error:
@@ -45,25 +38,73 @@ def create_grupo(grupo: GrupoModel):
     if cur.fetchone():
         raise HTTPException(status_code=400, detail="El grupo ya existe.")
 
-    cur.execute("SELECT * FROM lideres WHERE id = %s", [grupo.lider])
-    lider_found = cur.fetchone()
-    if lider_found == None:
-        raise HTTPException(status_code=404, detail="El líder no existe.")
-
     try:
-        cur.execute("INSERT INTO grupos (name, description, creation_date, score, lider_id) VALUES (%s, %s, %s, %s, %s) RETURNING *",
-                    [grupo.name, grupo.description, grupo.date, grupo.score, lider_found[0]])
+        cur.execute("INSERT INTO grupos (name, description, creation_date, score, lider) VALUES (%s, %s, %s, %s, %s) RETURNING *",
+                    [grupo.name, grupo.description, grupo.date, grupo.score, grupo.lider])
         conn.commit()
 
         created_grupo = cur.fetchone()
+
         data = {
             "id": created_grupo[0],
             "name": created_grupo[1],
             "description": created_grupo[2],
             "creation_date": created_grupo[3],
-            "score": created_grupo[4]
+            "score": created_grupo[4],
+            "lider": created_grupo[5]
         }
 
         return {"data": data, "detail": "Grupo creado con éxito."}
     except Exception as error:
         raise HTTPException(status_code=500, detail="Error al crear el grupo.")
+
+
+@router.delete("/{grupo_id}")
+def delete_grupo(grupo_id):
+    cur.execute("SELECT * FROM grupos WHERE id = %s", [grupo_id])
+    if cur.fetchone() == None:
+        raise HTTPException(status_code=404, detail="El grupo no existe.")
+
+    try:
+        cur.execute("DELETE FROM grupos WHERE id = %s RETURNING *", [grupo_id])
+        conn.commit()
+
+        deleted_grupo = cur.fetchone()
+
+        data = {
+            "id": deleted_grupo[0],
+        }
+
+        return {"data": data, "detail": "Grupo eliminado."}
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Error al eliminar el grupo.")
+
+
+@router.put("/{grupo_id}")
+def update_grupo(grupo_id: int, grupo: GrupoModel):
+    cur.execute("SELECT * FROM grupos WHERE id = %s", [grupo_id])
+    if cur.fetchone() == None:
+        raise HTTPException(status_code=404, detail="El grupo no existe.")
+
+    try:
+        cur.execute("UPDATE grupos SET name = %s, description = %s, creation_date = %s, score = %s, lider = %s WHERE id = %s RETURNING *",
+                    [grupo.name, grupo.description, grupo.date, grupo.score, grupo.lider, grupo_id])
+        conn.commit()
+
+        updated_grupo = cur.fetchone()
+
+        new_data = {
+            "id": updated_grupo[0],
+            "name": updated_grupo[1],
+            "description": updated_grupo[2],
+            "creation_date": updated_grupo[3],
+            "score": updated_grupo[4],
+            "lider": updated_grupo[5]
+        }
+
+        return {"data": new_data, "detail": "Grupo actualizado con éxito."}
+    except Exception as error:
+        print(error)
+        raise HTTPException(
+            status_code=500, detail="Error al actualizar el grupo.")

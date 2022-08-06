@@ -114,7 +114,6 @@ def user_register(user: UserRegisterModel):
 
         return {"detail": "Cuenta registrada. Te enviamos un email para validar tu correo."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al crear la cuenta. Inténtelo en otro momento.")
 
@@ -181,7 +180,6 @@ def authorized_password_change(token: str):
 
         return RedirectResponse(f"{frontend_url}/new-password/{user_found[0]}")
     except Exception as error:
-        print(error)
         return RedirectResponse(f"{frontend_url}/error-page")
 
 

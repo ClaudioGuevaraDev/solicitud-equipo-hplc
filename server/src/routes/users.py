@@ -136,7 +136,6 @@ def change_info_user(user_id: int, user: UserInfoModel):
             cur.execute("SELECT * FROM jerarquias WHERE id = %s",
                         [updated_user[2]])
             jerarquia_found_updated = cur.fetchone()[1]
-            print(jerarquia_found_updated)
 
         data = {
             "first_name": updated_user[0],
@@ -146,7 +145,6 @@ def change_info_user(user_id: int, user: UserInfoModel):
 
         return {"user": data, "detail": "Información actualizada."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al actualizar los datos.")
 
@@ -183,6 +181,5 @@ def change_image(user_id: int, image: UploadFile = File(...)):
 
         return {"detail": "Foto de perfil actualizada.", "url_image": new_url_image}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al actualizar su foto de perfil.")
