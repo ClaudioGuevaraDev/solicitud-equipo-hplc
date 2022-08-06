@@ -54,15 +54,15 @@ function RegisterPage() {
         toast.error(error_message, {
           duration: 6000,
         });
-        setUser({
-          first_name: "",
-          last_name: "",
-          email: "",
-          password: "",
-          confirm_password: "",
-        });
-        setJerarquiaValue(jerarquias[0].name);
       }
+      setUser({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+      });
+      setJerarquiaValue(jerarquias[0].name);
       setLoading(false);
     }
   };

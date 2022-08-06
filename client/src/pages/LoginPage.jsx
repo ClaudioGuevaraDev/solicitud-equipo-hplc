@@ -52,11 +52,11 @@ function LoginPage() {
         toast.error(error_message, {
           duration: 6000,
         });
-        setUser({
-          email: "",
-          password: "",
-        });
       }
+      setUser({
+        email: "",
+        password: "",
+      });
       setLoading(false);
     }
   };

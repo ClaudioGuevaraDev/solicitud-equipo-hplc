@@ -51,10 +51,10 @@ function DashboardPerfilPage() {
         toast.error(error_message, {
           duration: 6000,
         });
-        setUserImage({
-          image: null,
-        });
       }
+      setUserImage({
+        image: null,
+      });
     }
   };
 

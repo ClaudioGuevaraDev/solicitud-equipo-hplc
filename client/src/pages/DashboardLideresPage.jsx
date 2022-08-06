@@ -130,7 +130,10 @@ function DashboardLideresPage() {
                       <span className="visually-hidden">Loading...</span>
                     </button>
                   ) : (
-                    <button className="btn btn-success w-100">
+                    <button
+                      className="btn btn-success w-100"
+                      disabled={lider.full_name === "" ? true : false}
+                    >
                       {selectedLider ? "EDITAR" + " LÍDER" : "CREAR" + " LÍDER"}
                     </button>
                   )}
@@ -140,7 +143,7 @@ function DashboardLideresPage() {
           </div>
 
           <div className="col-xl-7 col-12" style={{ maxWidth: 550 }}>
-            <table className="table table-hover table-stripped text-center table-bordered shadow">
+            <table className="table table-hover table-stripped text-center table-bordered table-responsive shadow">
               <thead className="table-dark">
                 <tr>
                   <th>Nombre Completo</th>

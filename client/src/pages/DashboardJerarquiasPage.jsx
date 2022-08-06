@@ -165,7 +165,7 @@ function DashboardJerarquiasPage() {
             </div>
           </div>
           <div className="col-xl-7 col-12" style={{ maxWidth: 750 }}>
-            <table className="table table-hover table-stripped text-center table-bordered shadow">
+            <table className="table table-hover table-stripped text-center table-bordered table-responsive shadow">
               <thead className="table-dark">
                 <tr>
                   <th>Nombre</th>
@@ -183,10 +183,7 @@ function DashboardJerarquiasPage() {
                     <td>
                       <div className="hstack gap-3 d-flex align-items-center justify-content-center">
                         {loadingUpdate ? (
-                          <button
-                            className="btn btn-warning"
-                            type="button"
-                          >
+                          <button className="btn btn-warning" type="button">
                             <span
                               className="spinner-border spinner-border-sm"
                               role="status"
@@ -204,10 +201,7 @@ function DashboardJerarquiasPage() {
                         )}
 
                         {loadingDelete ? (
-                          <button
-                            className="btn btn-danger"
-                            type="button"
-                          >
+                          <button className="btn btn-danger" type="button">
                             <span
                               className="spinner-border spinner-border-sm"
                               role="status"

@@ -34,10 +34,10 @@ function PasswordRecovery() {
         toast.error(error_message, {
           duration: 6000,
         });
-        setUser({
-          email: "",
-        });
       }
+      setUser({
+        email: "",
+      });
       setLoading(false);
     }
   };
