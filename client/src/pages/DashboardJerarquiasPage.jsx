@@ -30,13 +30,10 @@ function DashboardJerarquiasPage() {
           `/api/jerarquias/${selectedJerarquia}`,
           jerarquia
         );
-        setJerarquias(
-          jerarquias.map((j) => (j.id === data.data["id"] ? data.data : j))
-        );
         toast.success(data.detail, {
           duration: 5000,
         });
-        setSelectedJerarquia(null);
+        window.location.href = "/dashboard/jerarquias"
       } else {
         const { data } = await axios.post("/api/jerarquias", jerarquia);
         setJerarquias([...jerarquias, data.data]);
@@ -73,8 +70,7 @@ function DashboardJerarquiasPage() {
       toast.success(data.detail, {
         duration: 5000,
       });
-      setJerarquias(jerarquias.filter((j) => j.id !== data.data["id"]));
-      setLoadingDelete(false);
+      window.location.href = "/dashboard/jerarquias"
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;

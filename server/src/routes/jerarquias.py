@@ -83,10 +83,6 @@ def update_jerarquia(jerarquia_id: int, jerarquia: JerarquiaModel):
     if cur.fetchone() == None:
         raise HTTPException(status_code=404, detail="La jerarquía no existe.")
 
-    cur.execute("SELECT * FROM jerarquias WHERE name = %s", [jerarquia.name])
-    if cur.fetchone():
-        raise HTTPException(status_code=400, detail="La jerarquía ya existe.")
-
     try:
         cur.execute("UPDATE jerarquias SET name = %s, score = %s WHERE id = %s RETURNING *",
                     [jerarquia.name, jerarquia.score, jerarquia_id])
