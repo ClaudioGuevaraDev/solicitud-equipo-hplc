@@ -25,7 +25,10 @@ function useUpdateContext() {
             ? data.user.jerarquia.name
             : data.user.jerarquia,
         });
-      } catch (error) {}
+      } catch (error) {
+        window.localStorage.removeItem("token");
+        window.location.href = "/";
+      }
     }
   };
 
