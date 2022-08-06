@@ -1,0 +1,20 @@
+@api = http://localhost:8000/api/lideres
+
+###
+GET {{api}}
+###
+POST {{api}}
+Content-Type: application/json
+
+{
+    "full_name": "David Medina"
+}
+###
+DELETE {{api}}/2
+###
+PUT {{api}}/2
+Content-Type: application/json
+
+{
+    "full_name": "David Medina"
+}

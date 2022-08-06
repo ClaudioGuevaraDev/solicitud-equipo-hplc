@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 function useGetJerarquias() {
   const [jerarquias, setJerarquias] = useState([]);
@@ -13,6 +14,9 @@ function useGetJerarquias() {
       setJerarquias(data.data);
       setJerarquiaValue(data.data[0].name);
     } catch (error) {
+      toast.error("Error al listar las jerarquías", {
+        duration: 5000,
+      });
       setJerarquias([]);
       setJerarquiaValue("");
     }

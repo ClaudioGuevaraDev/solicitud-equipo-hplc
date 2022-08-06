@@ -9,12 +9,13 @@ import DashboardUsuariosPage from "../pages/DashboardUsuariosPage";
 import DashboardEquiposPage from "../pages/DashboardEquiposPage";
 import DashboardGruposPage from "../pages/DashboardGruposPage";
 import DashboardProyectosPage from "../pages/DashboardProyectosPage";
-import DashboardJerarquiasPage from '../pages/DashboardJerarquiasPage'
+import DashboardJerarquiasPage from "../pages/DashboardJerarquiasPage";
 import VerifiedAccountPage from "../pages/success/VerifiedAccountPage";
 import PasswordRecovery from "../pages/PasswordRecovery";
 import NewPassword from "../pages/NewPassword";
 import LoadingPage from "../pages/LoadingPage";
 import ErrorPage from "../pages/ErrorPage";
+import DashboardLideresPage from "../pages/DashboardLideresPage";
 
 function RouterComponent() {
   useUpdateContext();
@@ -33,6 +34,11 @@ function RouterComponent() {
       <Route
         path="/dashboard/jerarquias"
         element={<DashboardJerarquiasPage />}
+        loading
+      />
+      <Route
+        path="/dashboard/lideres"
+        element={<DashboardLideresPage />}
         loading
       />
       <Route

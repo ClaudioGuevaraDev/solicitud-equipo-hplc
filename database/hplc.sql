@@ -33,7 +33,7 @@ CREATE TABLE "grupos" (
 
 CREATE TABLE "lideres" (
   "id" SERIAL PRIMARY KEY,
-  "name" varchar NOT NULL
+  "full_name" varchar NOT NULL
 );
 
 CREATE TABLE "equipos" (
@@ -60,7 +60,7 @@ CREATE TABLE "proyectos" (
   "score" int NOT NULL
 );
 
-ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE "users" ADD FOREIGN KEY ("jerarquia_id") REFERENCES "jerarquias" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
