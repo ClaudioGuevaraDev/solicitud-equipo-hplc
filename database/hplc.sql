@@ -25,8 +25,7 @@ CREATE TABLE "jerarquias" (
 CREATE TABLE "grupos" (
   "id" SERIAL PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL,
-  "description" text NOT NULL,
-  "creation_date" timestamp DEFAULT (now()),
+  "creation_date" timestamp NOT NULL,
   "score" int NOT NULL,
   "lider" varchar NOT NULL
 );
@@ -34,7 +33,6 @@ CREATE TABLE "grupos" (
 CREATE TABLE "equipos" (
   "id" SERIAL PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL,
-  "description" text NOT NULL,
   "url_image" varchar UNIQUE,
   "date_obtained" timestamp,
   "estado_id" int
@@ -49,7 +47,6 @@ CREATE TABLE "proyectos" (
   "id" SERIAL PRIMARY KEY,
   "folio" varchar UNIQUE,
   "name" varchar UNIQUE NOT NULL,
-  "description" text NOT NULL,
   "start_date" timestamp,
   "termination_date" timestamp,
   "score" int NOT NULL

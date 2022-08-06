@@ -16,7 +16,6 @@ function DashboardGruposPage() {
   });
   const [grupo, setGrupo] = useState({
     name: "",
-    description: "",
     date: new Date().toISOString().slice(0, 10),
     score: 1,
     lider: "",
@@ -46,7 +45,6 @@ function DashboardGruposPage() {
       }
       setGrupo({
         name: "",
-        description: "",
         date: new Date().toISOString().slice(0, 10),
         score: 1,
         lider: "",
@@ -62,7 +60,6 @@ function DashboardGruposPage() {
 
       setGrupo({
         name: "",
-        description: "",
         date: new Date().toISOString().slice(0, 10),
         score: 1,
         lider: "",
@@ -76,7 +73,6 @@ function DashboardGruposPage() {
     setSelectedGrupo(grupo.id);
     setGrupo({
       date: grupo.creation_date.split("T")[0],
-      description: grupo.description,
       name: grupo.name,
       score: grupo.score,
       lider: grupo.lider,
@@ -132,20 +128,6 @@ function DashboardGruposPage() {
                         setGrupo({ ...grupo, name: e.target.value })
                       }
                     />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="description-label" className="form-label">
-                      Descripción
-                    </label>
-                    <textarea
-                      id="description-label"
-                      rows={4}
-                      className="form-control"
-                      value={grupo.description}
-                      onChange={(e) =>
-                        setGrupo({ ...grupo, description: e.target.value })
-                      }
-                    ></textarea>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="lider-label" className="form-label">
@@ -207,11 +189,7 @@ function DashboardGruposPage() {
                   ) : (
                     <button
                       className="btn btn-success w-100"
-                      disabled={
-                        grupo.name === "" ||
-                        grupo.description === "" ||
-                        grupo.lider === ""
-                      }
+                      disabled={grupo.name === "" || grupo.lider === ""}
                     >
                       {selectedGrupo ? "EDITAR" + " GRUPO" : "CREAR" + " GRUPO"}
                     </button>
@@ -223,12 +201,11 @@ function DashboardGruposPage() {
         </div>
         {grupos.length > 0 && (
           <div className="row mt-3">
-            <div className="col-12" style={{ maxWidth: 1400 }}>
-              <table className="table table-hover table-stripped text-center table-bordered table-responsive shadow">
+            <div className="col-12 table-responsive" style={{ maxWidth: 1300 }}>
+              <table className="table table-hover table-stripped text-center table-bordered shadow">
                 <thead className="table-dark">
                   <tr>
                     <th>Nombre</th>
-                    <th>Descripción</th>
                     <th>Líder</th>
                     <th>Fecha de Creación</th>
                     <th>Score</th>
@@ -239,7 +216,6 @@ function DashboardGruposPage() {
                   {grupos.map((g) => (
                     <tr key={g.id}>
                       <td>{g.name}</td>
-                      <td>{g.description}</td>
                       <td>{g.lider}</td>
                       <td>{g.creation_date.split("T")[0]}</td>
                       <td>{g.score}</td>

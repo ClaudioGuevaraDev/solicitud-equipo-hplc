@@ -36,7 +36,9 @@ function SidebarComponent() {
       <h3 className="h5 mt-3 text-center">
         {`${userLogged.first_name} ${userLogged.last_name}`}
       </h3>
-      <h5 className="text-center h5 mb-4"><em>{userLogged.jerarquia}</em></h5>
+      <h5 className="text-center h5 mb-4">
+        <em>{userLogged.jerarquia}</em>
+      </h5>
 
       <hr className="divider-solid" />
 
@@ -50,23 +52,6 @@ function SidebarComponent() {
           Mi Perfil
         </li>
       </ul>
-
-      {userLogged.role === "admin" && (
-        <>
-          <hr className="divider-solid" />
-
-          <ul className="d-flex flex-column justify-content-center align-items-center my-3">
-            <li
-              className={`item-list h4 ${
-                window.location.href.split("/")[4] === "jerarquias" && "active"
-              }`}
-              onClick={() => handleSection("jerarquias")}
-            >
-              Jerarquías
-            </li>
-          </ul>
-        </>
-      )}
 
       <hr className="divider-solid" />
 
@@ -104,6 +89,23 @@ function SidebarComponent() {
           Proyectos
         </li>
       </ul>
+
+      {userLogged.role === "admin" && (
+        <>
+          <hr className="divider-solid" />
+
+          <ul className="d-flex flex-column justify-content-center align-items-center my-3">
+            <li
+              className={`item-list h4 ${
+                window.location.href.split("/")[4] === "jerarquias" && "active"
+              }`}
+              onClick={() => handleSection("jerarquias")}
+            >
+              Jerarquías
+            </li>
+          </ul>
+        </>
+      )}
 
       <hr className="divider-solid" />
 

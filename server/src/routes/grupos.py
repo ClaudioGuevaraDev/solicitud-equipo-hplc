@@ -20,10 +20,9 @@ def get_grupos():
             data.append({
                 "id": grupo[0],
                 "name": grupo[1],
-                "description": grupo[2],
-                "creation_date": grupo[3],
-                "score": grupo[4],
-                "lider": grupo[5]
+                "creation_date": grupo[2],
+                "score": grupo[3],
+                "lider": grupo[4]
             })
 
         return {"data": data}
@@ -39,8 +38,8 @@ def create_grupo(grupo: GrupoModel):
         raise HTTPException(status_code=400, detail="El grupo ya existe.")
 
     try:
-        cur.execute("INSERT INTO grupos (name, description, creation_date, score, lider) VALUES (%s, %s, %s, %s, %s) RETURNING *",
-                    [grupo.name, grupo.description, grupo.date, grupo.score, grupo.lider])
+        cur.execute("INSERT INTO grupos (name, creation_date, score, lider) VALUES (%s, %s, %s, %s) RETURNING *",
+                    [grupo.name, grupo.date, grupo.score, grupo.lider])
         conn.commit()
 
         created_grupo = cur.fetchone()
@@ -48,10 +47,9 @@ def create_grupo(grupo: GrupoModel):
         data = {
             "id": created_grupo[0],
             "name": created_grupo[1],
-            "description": created_grupo[2],
-            "creation_date": created_grupo[3],
-            "score": created_grupo[4],
-            "lider": created_grupo[5]
+            "creation_date": created_grupo[2],
+            "score": created_grupo[3],
+            "lider": created_grupo[4]
         }
 
         return {"data": data, "detail": "Grupo creado con éxito."}
@@ -88,8 +86,8 @@ def update_grupo(grupo_id: int, grupo: GrupoModel):
         raise HTTPException(status_code=404, detail="El grupo no existe.")
 
     try:
-        cur.execute("UPDATE grupos SET name = %s, description = %s, creation_date = %s, score = %s, lider = %s WHERE id = %s RETURNING *",
-                    [grupo.name, grupo.description, grupo.date, grupo.score, grupo.lider, grupo_id])
+        cur.execute("UPDATE grupos SET name = %s, creation_date = %s, score = %s, lider = %s WHERE id = %s RETURNING *",
+                    [grupo.name, grupo.date, grupo.score, grupo.lider, grupo_id])
         conn.commit()
 
         updated_grupo = cur.fetchone()
@@ -97,10 +95,9 @@ def update_grupo(grupo_id: int, grupo: GrupoModel):
         new_data = {
             "id": updated_grupo[0],
             "name": updated_grupo[1],
-            "description": updated_grupo[2],
-            "creation_date": updated_grupo[3],
-            "score": updated_grupo[4],
-            "lider": updated_grupo[5]
+            "creation_date": updated_grupo[2],
+            "score": updated_grupo[3],
+            "lider": updated_grupo[4]
         }
 
         return {"data": new_data, "detail": "Grupo actualizado con éxito."}

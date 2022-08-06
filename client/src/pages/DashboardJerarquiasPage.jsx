@@ -164,8 +164,8 @@ function DashboardJerarquiasPage() {
               </div>
             </div>
           </div>
-          <div className="col-xl-7 col-12" style={{ maxWidth: 750 }}>
-            <table className="table table-hover table-stripped text-center table-bordered table-responsive shadow">
+          <div className="col-xl-7 col-12 table-responsive" style={{ maxWidth: 750 }}>
+            <table className="table table-hover table-stripped text-center table-bordered shadow">
               <thead className="table-dark">
                 <tr>
                   <th>Nombre</th>
