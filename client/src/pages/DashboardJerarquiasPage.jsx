@@ -33,7 +33,7 @@ function DashboardJerarquiasPage() {
         toast.success(data.detail, {
           duration: 5000,
         });
-        window.location.href = "/dashboard/jerarquias"
+        window.location.href = "/dashboard/jerarquias";
       } else {
         const { data } = await axios.post("/api/jerarquias", jerarquia);
         setJerarquias([...jerarquias, data.data]);
@@ -70,7 +70,7 @@ function DashboardJerarquiasPage() {
       toast.success(data.detail, {
         duration: 5000,
       });
-      window.location.href = "/dashboard/jerarquias"
+      window.location.href = "/dashboard/jerarquias";
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -98,8 +98,8 @@ function DashboardJerarquiasPage() {
             <strong>Jerarquías</strong>
           </h1>
         </div>
-        <div className="row">
-          <div className="col-xl-2">
+        <div className="row gy-4">
+          <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
             <div className="card shadow">
               <div className="card-body">
                 <form onSubmit={handleSubmit}>
@@ -155,14 +155,16 @@ function DashboardJerarquiasPage() {
                           : false
                       }
                     >
-                      {selectedJerarquia ? "EDITAR" : "CREAR" + " JERARQUÍA"}
+                      {selectedJerarquia
+                        ? "EDITAR" + " JERARQUÍA"
+                        : "CREAR" + " JERARQUÍA"}
                     </button>
                   )}
                 </form>
               </div>
             </div>
           </div>
-          <div className="col-xl-3">
+          <div className="col-xl-7 col-12" style={{ maxWidth: 750 }}>
             <table className="table table-hover table-stripped text-center table-bordered shadow">
               <thead className="table-dark">
                 <tr>
