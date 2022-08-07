@@ -19,6 +19,20 @@ def initial_roles():
             conn.commit()
 
 
+def initial_estados():
+    cur.execute("SELECT * FROM estados")
+
+    if (len(cur.fetchall()) == 0):
+        estados = [
+            ("Operativo"),
+            ("En mantención"),
+            ("Defectuoso")
+        ]
+
+        for estado in estados:
+            cur.execute("INSERT INTO estados (name) VALUES (%s)", [estado])
+            conn.commit()
+
 def initial_jerarquias():
     cur.execute("SELECT * FROM jerarquias")
 
