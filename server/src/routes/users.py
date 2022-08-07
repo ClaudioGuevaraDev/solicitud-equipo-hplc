@@ -25,7 +25,7 @@ def get_users():
                 "first_name": user[1],
                 "last_name": user[2],
                 "email": user[3],
-                "url_iamge": user[5],
+                "url_image": user[5],
                 "verified": user[6],
             }
 

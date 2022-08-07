@@ -262,7 +262,7 @@ function DashboardEquiposPage() {
           <div className="row mt-3 gy-4">
             {equipos.length > 0 &&
               equipos.map((e) => (
-                <div className="col-xl-3" key={e.id}>
+                <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" key={e.id} style={{ maxWidth: 600 }}>
                   <div className="card shadow" style={{ height: "100%" }}>
                     <img
                       src={e.url_image}
