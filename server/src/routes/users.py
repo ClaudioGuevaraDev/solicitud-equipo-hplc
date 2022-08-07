@@ -1,7 +1,6 @@
 import shutil
 import os
 import uuid
-from urllib.parse import urljoin
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from db.connection import conn, cur
