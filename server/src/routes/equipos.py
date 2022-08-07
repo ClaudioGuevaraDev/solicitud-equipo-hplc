@@ -48,6 +48,10 @@ def create_equipo(file: UploadFile = File(...), name: str = Form(...), date_obta
     path_image = os.path.join(os.getcwd(), "static", "images", image_name)
     url_image = f"/static/images/{image_name}"
 
+    cur.execute("SELECT * FROM equipos WHERE name = %s", [name])
+    if cur.fetchone():
+        raise HTTPException(status_code=400, detail="El equipo ya existe.")
+
     cur.execute("SELECT * FROM equipos WHERE url_image = %s", [url_image])
     if cur.fetchone():
         raise HTTPException(
