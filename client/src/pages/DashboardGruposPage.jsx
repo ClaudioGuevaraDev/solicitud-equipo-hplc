@@ -1,13 +1,15 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import useGetGrupos from "../hooks/api/useGetGrupos";
 import DeleteModal from "../components/DeleteModal";
+import AppContext from "../context/AppContext";
 
 function DashboardGruposPage() {
+  const { userLogged } = useContext(AppContext);
   const { grupos, setGrupos } = useGetGrupos();
   const [selectedGrupo, setSelectedGrupo] = useState(null);
   const [selectedDeleteGrupo, setSelectedDeleteGrupo] = useState(null);
@@ -101,101 +103,103 @@ function DashboardGruposPage() {
               <strong>Grupos</strong>
             </h1>
           </div>
-          <div className="row gy-4">
-            <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
-              <div className="card shadow">
-                <div className="card-body">
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                      <label htmlFor="name-input" className="form-label">
-                        Nombre
-                      </label>
-                      <input
-                        type="text"
-                        id="name-input"
-                        className="form-control"
-                        required
-                        placeholder="Ej: Grupo 1"
-                        value={grupo.name}
-                        onChange={(e) =>
-                          setGrupo({ ...grupo, name: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="lider-label" className="form-label">
-                        Líder
-                      </label>
-                      <input
-                        type="text"
-                        id="lider-label"
-                        required
-                        className="form-control"
-                        value={grupo.lider}
-                        onChange={(e) =>
-                          setGrupo({ ...grupo, lider: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="date-input" className="form-label">
-                        Fecha de Creación
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        required
-                        id="date-input"
-                        value={grupo.date}
-                        onChange={(e) =>
-                          setGrupo({ ...grupo, date: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="score-input" className="form-label">
-                        Score
-                      </label>
-                      <input
-                        type="number"
-                        id="score-input"
-                        className="form-control"
-                        placeholder="1-100"
-                        min={1}
-                        max={100}
-                        required
-                        value={grupo.score}
-                        onChange={(e) =>
-                          setGrupo({ ...grupo, score: e.target.value })
-                        }
-                      />
-                    </div>
-                    {loading ? (
-                      <button className="btn btn-success w-100" type="button">
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                        <span className="visually-hidden">Loading...</span>
-                      </button>
-                    ) : (
-                      <button
-                        className="btn btn-success w-100"
-                        disabled={grupo.name === "" || grupo.lider === ""}
-                      >
-                        {selectedGrupo
-                          ? "EDITAR" + " GRUPO"
-                          : "CREAR" + " GRUPO"}
-                      </button>
-                    )}
-                  </form>
+          {userLogged.role === "admin" && (
+            <div className="row mb-3 gy-4">
+              <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
+                <div className="card shadow">
+                  <div className="card-body">
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-3">
+                        <label htmlFor="name-input" className="form-label">
+                          Nombre
+                        </label>
+                        <input
+                          type="text"
+                          id="name-input"
+                          className="form-control"
+                          required
+                          placeholder="Ej: Grupo 1"
+                          value={grupo.name}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, name: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="lider-label" className="form-label">
+                          Líder
+                        </label>
+                        <input
+                          type="text"
+                          id="lider-label"
+                          required
+                          className="form-control"
+                          value={grupo.lider}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, lider: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="date-input" className="form-label">
+                          Fecha de Creación
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          required
+                          id="date-input"
+                          value={grupo.date}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, date: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="score-input" className="form-label">
+                          Score
+                        </label>
+                        <input
+                          type="number"
+                          id="score-input"
+                          className="form-control"
+                          placeholder="1-100"
+                          min={1}
+                          max={100}
+                          required
+                          value={grupo.score}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, score: e.target.value })
+                          }
+                        />
+                      </div>
+                      {loading ? (
+                        <button className="btn btn-success w-100" type="button">
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="visually-hidden">Loading...</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-success w-100"
+                          disabled={grupo.name === "" || grupo.lider === ""}
+                        >
+                          {selectedGrupo
+                            ? "EDITAR" + " GRUPO"
+                            : "CREAR" + " GRUPO"}
+                        </button>
+                      )}
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           {grupos.length > 0 && (
-            <div className="row mt-3">
+            <div className="row">
               <div
                 className="col-12 table-responsive"
                 style={{ maxWidth: 1300 }}
@@ -219,22 +223,26 @@ function DashboardGruposPage() {
                         <td>{g.score}</td>
                         <td>
                           <div className="hstack gap-3 d-flex align-items-center justify-content-center">
-                            <button
-                              className="btn btn-warning"
-                              onClick={() => handleUpdate(g)}
-                            >
-                              <AiFillEdit />
-                            </button>
+                            {userLogged.role === "admin" && (
+                              <>
+                                <button
+                                  className="btn btn-warning"
+                                  onClick={() => handleUpdate(g)}
+                                >
+                                  <AiFillEdit />
+                                </button>
 
-                            <button
-                              className="btn btn-danger"
-                              onClick={() => setSelectedDeleteGrupo(g.id)}
-                              type="button"
-                              data-bs-toggle="modal"
-                              data-bs-target="#deleteModal"
-                            >
-                              <AiFillDelete />{" "}
-                            </button>
+                                <button
+                                  className="btn btn-danger"
+                                  onClick={() => setSelectedDeleteGrupo(g.id)}
+                                  type="button"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#deleteModal"
+                                >
+                                  <AiFillDelete />{" "}
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>

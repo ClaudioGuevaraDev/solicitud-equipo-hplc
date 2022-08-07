@@ -56,14 +56,16 @@ function SidebarComponent() {
       <hr className="divider-solid" />
 
       <ul className="d-flex flex-column justify-content-center align-items-center my-3">
-        <li
-          className={`item-list h4 ${
-            window.location.href.split("/")[4] === "usuarios" && "active"
-          }`}
-          onClick={() => handleSection("usuarios")}
-        >
-          Usuarios
-        </li>
+        {userLogged.role === "admin" && (
+          <li
+            className={`item-list h4 ${
+              window.location.href.split("/")[4] === "usuarios" && "active"
+            }`}
+            onClick={() => handleSection("usuarios")}
+          >
+            Usuarios
+          </li>
+        )}
         <li
           className={`item-list h4 ${
             window.location.href.split("/")[4] === "equipos" && "active"

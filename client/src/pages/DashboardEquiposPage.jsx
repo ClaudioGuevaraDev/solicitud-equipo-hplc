@@ -1,12 +1,14 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
+import AppContext from "../context/AppContext";
 
 function DashboardEquiposPage() {
+  const { userLogged } = useContext(AppContext);
   const [estados, setEstados] = useState([]);
   const [equipo, setEquipo] = useState({
     name: "",
@@ -150,119 +152,125 @@ function DashboardEquiposPage() {
               <strong>Equipos</strong>
             </h1>
           </div>
-          <div className="row gy-4">
-            <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
-              <div className="card shadow">
-                <div className="card-body">
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                      <label htmlFor="name-input" className="form-label">
-                        Nombre
-                      </label>
-                      <input
-                        type="text"
-                        id="name-input"
-                        className="form-control"
-                        required
-                        placeholder="Ej: HPLC"
-                        value={equipo.name}
-                        onChange={(e) =>
-                          setEquipo({ ...equipo, name: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="file-input" className="form-label">
-                        Imagen
-                      </label>
-                      <input
-                        type="file"
-                        ref={inputRef}
-                        id="file-input"
-                        className="form-control"
-                        required={selectedEquipo ? false : true}
-                        onChange={(e) =>
-                          setEquipo({ ...equipo, image: e.target.files[0] })
-                        }
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="termination-date-input"
-                        className="form-label"
-                      >
-                        Fecha de Obtención
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        required
-                        id="termination-date-input"
-                        value={equipo.date_obtained}
-                        onChange={(e) =>
-                          setEquipo({
-                            ...equipo,
-                            date_obtained: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    {estados.length > 0 && (
+          {userLogged.role === "admin" && (
+            <div className="row mb-3 gy-4">
+              <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
+                <div className="card shadow">
+                  <div className="card-body">
+                    <form onSubmit={handleSubmit}>
                       <div className="mb-3">
-                        <label htmlFor="estados-input" className="form-label">
-                          Estados
+                        <label htmlFor="name-input" className="form-label">
+                          Nombre
                         </label>
-                        <select
-                          className="form-select"
-                          id="jerarquia-input"
-                          value={equipo.estado}
+                        <input
+                          type="text"
+                          id="name-input"
+                          className="form-control"
+                          required
+                          placeholder="Ej: HPLC"
+                          value={equipo.name}
                           onChange={(e) =>
-                            setEquipo({ ...equipo, estado: e.target.value })
+                            setEquipo({ ...equipo, name: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="file-input" className="form-label">
+                          Imagen
+                        </label>
+                        <input
+                          type="file"
+                          ref={inputRef}
+                          id="file-input"
+                          className="form-control"
+                          required={selectedEquipo ? false : true}
+                          onChange={(e) =>
+                            setEquipo({ ...equipo, image: e.target.files[0] })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label
+                          htmlFor="termination-date-input"
+                          className="form-label"
+                        >
+                          Fecha de Obtención
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          required
+                          id="termination-date-input"
+                          value={equipo.date_obtained}
+                          onChange={(e) =>
+                            setEquipo({
+                              ...equipo,
+                              date_obtained: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      {estados.length > 0 && (
+                        <div className="mb-3">
+                          <label htmlFor="estados-input" className="form-label">
+                            Estados
+                          </label>
+                          <select
+                            className="form-select"
+                            id="jerarquia-input"
+                            value={equipo.estado}
+                            onChange={(e) =>
+                              setEquipo({ ...equipo, estado: e.target.value })
+                            }
+                          >
+                            {estados.map((e) => (
+                              <option key={e.name} value={e.name}>
+                                {e.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      {loading ? (
+                        <button className="btn btn-success w-100" type="button">
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="visually-hidden">Loading...</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-success w-100"
+                          disabled={
+                            selectedEquipo
+                              ? equipo.name === "" || equipo.estado === null
+                              : equipo.name === "" ||
+                                equipo.image === null ||
+                                equipo.image === undefined ||
+                                equipo.estado === null
                           }
                         >
-                          {estados.map((e) => (
-                            <option key={e.name} value={e.name}>
-                              {e.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                    {loading ? (
-                      <button className="btn btn-success w-100" type="button">
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                        <span className="visually-hidden">Loading...</span>
-                      </button>
-                    ) : (
-                      <button
-                        className="btn btn-success w-100"
-                        disabled={
-                          selectedEquipo
-                            ? equipo.name === "" || equipo.estado === null
-                            : equipo.name === "" ||
-                              equipo.image === null ||
-                              equipo.image === undefined ||
-                              equipo.estado === null
-                        }
-                      >
-                        {selectedEquipo
-                          ? "EDITAR" + " EQUIPO"
-                          : "CREAR" + " EQUIPO"}
-                      </button>
-                    )}
-                  </form>
+                          {selectedEquipo
+                            ? "EDITAR" + " EQUIPO"
+                            : "CREAR" + " EQUIPO"}
+                        </button>
+                      )}
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="row mt-3 gy-4">
+          )}
+          <div className="row gy-4">
             {equipos.length > 0 &&
               equipos.map((e) => (
-                <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" key={e.id} style={{ maxWidth: 600 }}>
+                <div
+                  className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
+                  key={e.id}
+                  style={{ maxWidth: 600 }}
+                >
                   <div className="card shadow" style={{ height: "100%" }}>
                     <img
                       src={e.url_image}
@@ -282,26 +290,28 @@ function DashboardEquiposPage() {
                         <strong>Estado: </strong> <span>{e.estado}</span>
                       </h5>
                     </div>
-                    <div className="card-footer">
-                      <div className="hstack gap-3 d-flex align-items-center justify-content-start">
-                        <button
-                          className="btn btn-warning btn-lg"
-                          type="button"
-                          onClick={() => handleUpdate(e)}
-                        >
-                          <AiFillEdit />
-                        </button>
-                        <button
-                          className="btn btn-danger btn-lg"
-                          type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#deleteModal"
-                          onClick={() => setSelectedDeleteEquipo(e.id)}
-                        >
-                          <AiFillDelete />
-                        </button>
+                    {userLogged.role === "admin" && (
+                      <div className="card-footer">
+                        <div className="hstack gap-3 d-flex align-items-center justify-content-start">
+                          <button
+                            className="btn btn-warning btn-lg"
+                            type="button"
+                            onClick={() => handleUpdate(e)}
+                          >
+                            <AiFillEdit />
+                          </button>
+                          <button
+                            className="btn btn-danger btn-lg"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            onClick={() => setSelectedDeleteEquipo(e.id)}
+                          >
+                            <AiFillDelete />
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))}
