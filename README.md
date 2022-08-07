@@ -10,4 +10,5 @@ Sistema de administración de solicitudes para el equipo HPLC por parte de usuar
 * Proteger roles, users, jerarquías routes con tokens (mmiddlewares)
 
 #### Frontend
-* Arreglar laoding de los botones para eliminar y actualizar
+* Eliminar y actualizar equipos
+* Mostrar usuarios en el frontend

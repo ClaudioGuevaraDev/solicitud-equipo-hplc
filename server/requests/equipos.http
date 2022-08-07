@@ -2,3 +2,5 @@
 
 ###
 GET {{api}}
+###
+DELETE {{api}}/2

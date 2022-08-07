@@ -1,8 +1,10 @@
 import axios from "axios";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
+import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
+import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
+import DeleteModal from "../components/DeleteModal";
 
 function DashboardEquiposPage() {
   const [estados, setEstados] = useState([]);
@@ -14,7 +16,10 @@ function DashboardEquiposPage() {
   });
   const [equipos, setEquipos] = useState([]);
   const [selectedEquipo, setSelectedEquipo] = useState(null);
+  const [selectedDeleteEquipo, setSelectedDeleteEquipo] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const inputRef = useRef(null);
 
   const getEstados = async () => {
     try {
@@ -23,7 +28,7 @@ function DashboardEquiposPage() {
       if (data.data.length > 0) {
         setEquipo({
           ...equipo,
-          estado: data.data[0].id,
+          estado: data.data[0].name,
         });
       }
     } catch (error) {
@@ -58,12 +63,22 @@ function DashboardEquiposPage() {
 
     try {
       const post = new FormData();
-      post.append("file", equipo.image);
+      if (equipo.image !== null && equipo.image !== undefined) {
+        post.append("file", equipo.image);
+      }
       post.append("name", equipo.name);
       post.append("estado", equipo.estado);
       post.append("date_obtained", equipo.date_obtained);
 
       if (selectedEquipo) {
+        const { data } = await axios.put(
+          `/api/equipos/${selectedEquipo}`,
+          post
+        );
+        setEquipos(equipos.map((e) => (e.id === data.data.id ? data.data : e)));
+        toast.success(data.detail, {
+          duration: 5000,
+        });
       } else {
         const { data } = await axios.post("/api/equipos", post);
         setEquipos([data.data, ...equipos]);
@@ -72,6 +87,14 @@ function DashboardEquiposPage() {
         });
       }
 
+      setSelectedEquipo(null);
+      setEquipo({
+        name: "",
+        image: null,
+        date_obtained: new Date().toISOString().slice(0, 10),
+        estado: estados.length > 0 && estados[0].name,
+      });
+      inputRef.current.value = null;
       setLoading(false);
     } catch (error) {
       if (error.response.data.detail) {
@@ -80,8 +103,42 @@ function DashboardEquiposPage() {
           duration: 6000,
         });
       }
+      inputRef.current.value = null;
+      setEquipo({
+        name: "",
+        image: null,
+        date_obtained: new Date().toISOString().slice(0, 10),
+        estado: estados.length > 0 && estados[0].name,
+      });
       setLoading(false);
     }
+  };
+
+  const deleteEquipo = async (id) => {
+    try {
+      const { data } = await axios.delete(`/api/equipos/${id}`);
+      setEquipos(equipos.filter((f) => f.id !== data.data.id));
+      toast.success(data.detail, {
+        duration: 5000,
+      });
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+      }
+    }
+  };
+
+  const handleUpdate = (equipo) => {
+    setSelectedEquipo(equipo.id);
+    setEquipo({
+      date_obtained: equipo.date_obtained.split("T")[0],
+      estado: equipo.estado,
+      name: equipo.name,
+      image: null,
+    });
   };
 
   return (
@@ -120,9 +177,10 @@ function DashboardEquiposPage() {
                       </label>
                       <input
                         type="file"
+                        ref={inputRef}
                         id="file-input"
                         className="form-control"
-                        required
+                        required={selectedEquipo ? false : true}
                         onChange={(e) =>
                           setEquipo({ ...equipo, image: e.target.files[0] })
                         }
@@ -163,7 +221,7 @@ function DashboardEquiposPage() {
                           }
                         >
                           {estados.map((e) => (
-                            <option key={e.id} value={e.id}>
+                            <option key={e.name} value={e.name}>
                               {e.name}
                             </option>
                           ))}
@@ -183,10 +241,12 @@ function DashboardEquiposPage() {
                       <button
                         className="btn btn-success w-100"
                         disabled={
-                          equipo.name === "" ||
-                          equipo.image === null ||
-                          equipo.image === undefined ||
-                          equipo.estado === null
+                          selectedEquipo
+                            ? equipo.name === "" || equipo.estado === null
+                            : equipo.name === "" ||
+                              equipo.image === null ||
+                              equipo.image === undefined ||
+                              equipo.estado === null
                         }
                       >
                         {selectedEquipo
@@ -222,11 +282,35 @@ function DashboardEquiposPage() {
                         <strong>Estado: </strong> <span>{e.estado}</span>
                       </h5>
                     </div>
+                    <div className="card-footer">
+                      <div className="hstack gap-3 d-flex align-items-center justify-content-start">
+                        <button
+                          className="btn btn-warning btn-lg"
+                          type="button"
+                          onClick={() => handleUpdate(e)}
+                        >
+                          <AiFillEdit />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-lg"
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"
+                          onClick={() => setSelectedDeleteEquipo(e.id)}
+                        >
+                          <AiFillDelete />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
           </div>
         </div>
+        <DeleteModal
+          title="el equipo"
+          handleDelete={() => deleteEquipo(selectedDeleteEquipo)}
+        />
       </>
     </LayoutDashboardComponent>
   );
