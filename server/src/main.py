@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routes import auth, roles, users, jerarquias, lideres, grupos, proyectos, estados, equipos
+from routes import auth, roles, users, jerarquias, lideres, grupos, proyectos, estados, equipos, users_grupos
 from db.initial_db import initial_roles, initial_jerarquias, inital_user_admin, initial_estados
 from config.config import frontend_url
 from utils.initial_folders import initial_folders
@@ -43,6 +43,7 @@ app.include_router(grupos.router)
 app.include_router(proyectos.router)
 app.include_router(estados.router)
 app.include_router(equipos.router)
+app.include_router(users_grupos.router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

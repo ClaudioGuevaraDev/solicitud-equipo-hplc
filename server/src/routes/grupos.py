@@ -31,6 +31,37 @@ def get_grupos():
             status_code=500, detail="Error al listar los grupos.")
 
 
+@router.get("/{user_id}", status_code=200)
+def get_grupos_by_user(user_id: int):
+    try:
+        cur.execute("SELECT * FROM grupos")
+        grupos = cur.fetchall()
+
+        data = []
+        for grupo in grupos:
+            new_data = {
+                "id": grupo[0],
+                "name": grupo[1],
+                "creation_date": grupo[2],
+                "score": grupo[3],
+                "lider": grupo[4]
+            }
+
+            data.append(new_data)
+
+        data_users_grupos = []
+        cur.execute(
+            "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
+        users_grupos = cur.fetchall()
+        for user_grupo in users_grupos:
+            data_users_grupos.append(user_grupo[1])
+
+        return {"data": data, "users_grupos": data_users_grupos}
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Error al listar los grupos.")
+
+
 @router.post("/", status_code=201)
 def create_grupo(grupo: GrupoModel):
     cur.execute("SELECT * FROM grupos WHERE name = %s", [grupo.name])
