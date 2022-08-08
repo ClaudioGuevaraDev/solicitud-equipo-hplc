@@ -20,21 +20,29 @@ function DashboardEquiposPage() {
   const [selectedEquipo, setSelectedEquipo] = useState(null);
   const [selectedDeleteEquipo, setSelectedDeleteEquipo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [authorizedGetEquipos, setAuthorizedGetEquipos] = useState(false);
 
   const inputRef = useRef(null);
 
   const getEstados = async () => {
     try {
       const { data } = await axios.get("/api/estados");
-      setEstados(data.data);
       if (data.data.length > 0) {
+        setEstados(data.data);
         setEquipo({
           ...equipo,
           estado: data.data[0].name,
         });
+      } else {
+        setEstados([]);
+        setShowAlert(true);
       }
+      setAuthorizedGetEquipos(true);
     } catch (error) {
       toast.error("Error al listar los estados.");
+      setEstados([]);
+      setAuthorizedGetEquipos(true);
     }
   };
 
@@ -51,12 +59,12 @@ function DashboardEquiposPage() {
   };
 
   useEffect(() => {
-    if (estados.length > 0) {
+    if (authorizedGetEquipos === true) {
       getEquipos();
     } else {
       getEstados();
     }
-  }, [estados]);
+  }, [authorizedGetEquipos]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +145,7 @@ function DashboardEquiposPage() {
     setSelectedEquipo(equipo.id);
     setEquipo({
       date_obtained: equipo.date_obtained.split("T")[0],
-      estado: equipo.estado,
+      estado: equipo.estado ? equipo.estado : null,
       name: equipo.name,
       image: null,
     });
@@ -152,6 +160,17 @@ function DashboardEquiposPage() {
               <strong>Equipos</strong>
             </h1>
           </div>
+          {showAlert === true && userLogged.role === "admin" && (
+            <div
+              className="alert alert-warning"
+              role="alert"
+              style={{ maxWidth: 450 }}
+            >
+              <strong>
+                Debe haber estados registrados para poder crear equipos.
+              </strong>
+            </div>
+          )}
           {userLogged.role === "admin" && (
             <div className="row mb-3 gy-4">
               <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
@@ -223,6 +242,11 @@ function DashboardEquiposPage() {
                               setEquipo({ ...equipo, estado: e.target.value })
                             }
                           >
+                            {equipo.estado === null && (
+                              <option selected value={null}>
+                                Sin estado
+                              </option>
+                            )}
                             {estados.map((e) => (
                               <option key={e.name} value={e.name}>
                                 {e.name}
@@ -287,7 +311,8 @@ function DashboardEquiposPage() {
                         <span>{e.date_obtained.split("T")[0]}</span>
                       </h5>
                       <h5 className="card-title">
-                        <strong>Estado: </strong> <span>{e.estado}</span>
+                        <strong>Estado: </strong>{" "}
+                        <span>{e.estado ? e.estado : "Sin estado"}</span>
                       </h5>
                     </div>
                     {userLogged.role === "admin" && (
