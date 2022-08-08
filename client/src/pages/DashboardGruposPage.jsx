@@ -4,14 +4,12 @@ import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
-import useGetGrupos from "../hooks/api/useGetGrupos";
 import DeleteModal from "../components/DeleteModal";
 import AppContext from "../context/AppContext";
 import { useEffect } from "react";
 
 function DashboardGruposPage() {
   const { userLogged } = useContext(AppContext);
-  // const { grupos, setGrupos } = useGetGrupos();
   const [grupos, setGrupos] = useState([]);
   const [selectedGrupo, setSelectedGrupo] = useState(null);
   const [selectedDeleteGrupo, setSelectedDeleteGrupo] = useState(null);
@@ -24,6 +22,7 @@ function DashboardGruposPage() {
   });
   const [disableCheckboxs, setDisableCheckboxs] = useState(false);
   const [usersGrupos, setUsersGrupos] = useState([]);
+  const [handleShowGrupos, setHandleShowGrupos] = useState("all");
 
   const getGrupos = async () => {
     try {
@@ -148,6 +147,32 @@ function DashboardGruposPage() {
             <h1>
               <strong>Grupos</strong>
             </h1>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              id="inlineRadio1"
+              value="all"
+              checked={handleShowGrupos === "all" ? true : false}
+              onChange={(e) => setHandleShowGrupos(e.target.value)}
+            />
+            <label className="form-check-label" for="inlineRadio1">
+              Todos los grupos
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              id="inlineRadio2"
+              value="filter"
+              checked={handleShowGrupos === "filter" ? true : false}
+              onChange={(e) => setHandleShowGrupos(e.target.value)}
+            />
+            <label className="form-check-label" for="inlineRadio2">
+              Mis grupos
+            </label>
           </div>
           {userLogged.role === "admin" && (
             <div className="row mb-3 gy-4">

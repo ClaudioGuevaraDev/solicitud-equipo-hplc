@@ -67,9 +67,9 @@ CREATE TABLE "users_grupos" (
   PRIMARY KEY ("users_id", "grupos_id")
 );
 
-ALTER TABLE "users_grupos" ADD FOREIGN KEY ("users_id") REFERENCES "users" ("id");
+ALTER TABLE "users_grupos" ADD FOREIGN KEY ("users_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "users_grupos" ADD FOREIGN KEY ("grupos_id") REFERENCES "grupos" ("id");
+ALTER TABLE "users_grupos" ADD FOREIGN KEY ("grupos_id") REFERENCES "grupos" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 CREATE TABLE "users_proyectos" (

@@ -34,6 +34,13 @@ def get_grupos():
 @router.get("/{user_id}", status_code=200)
 def get_grupos_by_user(user_id: int):
     try:
+        data_users_grupos = []
+        cur.execute(
+            "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
+        users_grupos = cur.fetchall()
+        for user_grupo in users_grupos:
+            data_users_grupos.append(user_grupo[1])
+
         cur.execute("SELECT * FROM grupos")
         grupos = cur.fetchall()
 
@@ -48,13 +55,6 @@ def get_grupos_by_user(user_id: int):
             }
 
             data.append(new_data)
-
-        data_users_grupos = []
-        cur.execute(
-            "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
-        users_grupos = cur.fetchall()
-        for user_grupo in users_grupos:
-            data_users_grupos.append(user_grupo[1])
 
         return {"data": data, "users_grupos": data_users_grupos}
     except Exception as error:
