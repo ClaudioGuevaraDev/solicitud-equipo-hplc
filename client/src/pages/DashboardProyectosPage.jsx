@@ -323,7 +323,7 @@ function DashboardProyectosPage() {
                       <th>Folio</th>
                       <th>Fecha de Inicio</th>
                       <th>Fecha de Termino</th>
-                      <th>Score</th>
+                      {userLogged.role === "admin" && <th>Score</th>}
                       <th>Grupo</th>
                       <th>Opciones</th>
                     </tr>
@@ -335,7 +335,7 @@ function DashboardProyectosPage() {
                         <td>{p.folio ? p.folio : "Sin folio"}</td>
                         <td>{p.start_date.split("T")[0]}</td>
                         <td>{p.termination_date.split("T")[0]}</td>
-                        <td>{p.score}</td>
+                        {userLogged.role === "admin" && <td>{p.score}</td>}
                         <td>{p.grupo ? p.grupo : "Grupo sin asignar"}</td>
                         <td>
                           <div className="hstack gap-3 d-flex align-items-center justify-content-center">

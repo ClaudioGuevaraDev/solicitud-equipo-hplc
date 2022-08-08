@@ -56,13 +56,7 @@ function DashboardUsuariosPage() {
                         {u.jerarquia ? u.jerarquia.name : "Sin jerarquía"}
                       </td>
                       <td>
-                        {u.role
-                          ? u.role.name
-                            ? "admin"
-                              ? "Administrador"
-                              : "Usuario"
-                            : "Sin rol"
-                          : "Sin Rol"}
+                        {u.role.name === "admin" ? "Administrador" : "Usuario"}
                       </td>
                       <td>
                         {u.verified ? (

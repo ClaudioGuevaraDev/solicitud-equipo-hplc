@@ -210,7 +210,7 @@ function DashboardGruposPage() {
                       <th>Nombre</th>
                       <th>Líder</th>
                       <th>Fecha de Creación</th>
-                      <th>Score</th>
+                      {userLogged.role === "admin" && <th>Score</th>}
                       <th>Opciones</th>
                     </tr>
                   </thead>
@@ -220,7 +220,7 @@ function DashboardGruposPage() {
                         <td>{g.name}</td>
                         <td>{g.lider}</td>
                         <td>{g.creation_date.split("T")[0]}</td>
-                        <td>{g.score}</td>
+                        {userLogged.role === "admin" && <td>{g.score}</td>}
                         <td>
                           <div className="hstack gap-3 d-flex align-items-center justify-content-center">
                             {userLogged.role === "admin" && (
