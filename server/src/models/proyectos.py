@@ -9,3 +9,4 @@ class ProyectoModel(BaseModel):
     start_date: datetime.date
     termination_date: datetime.date
     score: int
+    grupo: Union[str, None] = None

@@ -17,14 +17,22 @@ def get_proyectos():
 
         data = []
         for proyecto in proyectos:
-            data.append({
+            new_data = {
                 "id": proyecto[0],
                 "folio": proyecto[1],
                 "name": proyecto[2],
                 "start_date": proyecto[3],
                 "termination_date": proyecto[4],
                 "score": proyecto[5]
-            })
+            }
+            cur.execute("SELECT * FROM grupos WHERE id = %s", [proyecto[6]])
+            grupo_found = cur.fetchone()
+            if grupo_found == None:
+                new_data["grupo"] = None
+            else:
+                new_data["grupo"] = grupo_found[1]
+
+            data.append(new_data)
 
         return {"data": data}
     except Exception as error:
@@ -38,28 +46,54 @@ def create_proyecto(proyecto: ProyectoModel):
     if cur.fetchone():
         raise HTTPException(status_code=400, detail="El proyecto ya existe.")
 
-    cur.execute("SELECT * FROM proyectos WHERE folio = %s", [proyecto.folio])
-    if cur.fetchone():
-        raise HTTPException(
-            status_code=400, detail="Folio ingresado ya existe.")
+    if proyecto.folio != "":
+        cur.execute("SELECT * FROM proyectos WHERE folio = %s",
+                    [proyecto.folio])
+        if cur.fetchone():
+            raise HTTPException(
+                status_code=400, detail="Folio ingresado ya existe.")
+
+    grupo_found = None
+    if proyecto.grupo != None:
+        cur.execute("SELECT * FROM grupos WHERE name = %s", [proyecto.grupo])
+        grupo_found = cur.fetchone()
+        if grupo_found == None:
+            raise HTTPException(status_code=404, detail="El grupo no existe.")
 
     try:
-        cur.execute("INSERT INTO proyectos (folio, name, start_date, termination_date, score) VALUES (%s, %s, %s, %s, %s) RETURNING *",
-                    [proyecto.folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score])
+        if grupo_found == None:
+            cur.execute("INSERT INTO proyectos (folio, name, start_date, termination_date, score, grupo_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *",
+                        [proyecto.folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, None])
+        else:
+            cur.execute("INSERT INTO proyectos (folio, name, start_date, termination_date, score, grupo_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *",
+                        [proyecto.folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, grupo_found[0]])
         conn.commit()
 
         created_proyecto = cur.fetchone()
-        data = {
-            "id": created_proyecto[0],
-            "folio": created_proyecto[1],
-            "name": created_proyecto[2],
-            "start_date": created_proyecto[3],
-            "termination_date": created_proyecto[4],
-            "score": created_proyecto[5]
-        }
+        if grupo_found == None:
+            data = {
+                "id": created_proyecto[0],
+                "folio": created_proyecto[1],
+                "name": created_proyecto[2],
+                "start_date": created_proyecto[3],
+                "termination_date": created_proyecto[4],
+                "score": created_proyecto[5],
+                "grupo": None
+            }
+        else:
+            data = {
+                "id": created_proyecto[0],
+                "folio": created_proyecto[1],
+                "name": created_proyecto[2],
+                "start_date": created_proyecto[3],
+                "termination_date": created_proyecto[4],
+                "score": created_proyecto[5],
+                "grupo": grupo_found[1]
+            }
 
         return {"data": data, "detail": "Proyecto creado con éxito."}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al crear el proyecto.")
 

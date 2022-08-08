@@ -7,10 +7,13 @@ import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
 import AppContext from "../context/AppContext";
+import { useEffect } from "react";
 
 function DashboardProyectosPage() {
   const { userLogged } = useContext(AppContext);
-  const { proyectos, setProyectos } = useGetProyectos();
+  const [proyectos, setProyectos] = useState([]);
+  const [grupos, setGrupos] = useState([]);
+  const [authorized, setAuthorized] = useState(false);
 
   const [proyecto, setProyecto] = useState({
     folio: "",
@@ -18,10 +21,46 @@ function DashboardProyectosPage() {
     start_date: new Date().toISOString().slice(0, 10),
     termination_date: new Date().toISOString().slice(0, 10),
     score: 1,
+    grupo: null,
   });
   const [selectedProyecto, setSelectedProyecto] = useState(null);
   const [selectedDeleteProyecto, setSelectedDeleteProyecto] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const getGrupos = async () => {
+    try {
+      const { data } = await axios.get("/api/grupos");
+      setGrupos(data.data);
+      if (data.data.length > 0)
+        setProyecto({ ...proyecto, grupo: data.data[0].name });
+      setAuthorized(true)
+    } catch (error) {
+      toast.error("Error al listar los equipos.", {
+        duration: 5000,
+      });
+      setAuthorized(true);
+    }
+  };
+
+  const getProyectos = async () => {
+    try {
+      const { data } = await axios.get("/api/proyectos");
+      setProyectos(data.data);
+    } catch (error) {
+      toast.error("Error al listar los proyectos.", {
+        duration: 5000,
+      });
+      setProyectos([]);
+    }
+  };
+
+  useEffect(() => {
+    if (authorized === true) {
+      getProyectos();
+    } else {
+      getGrupos();
+    }
+  }, [authorized]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +93,7 @@ function DashboardProyectosPage() {
         start_date: new Date().toISOString().slice(0, 10),
         termination_date: new Date().toISOString().slice(0, 10),
         score: 1,
+        grupo: grupos.length > 0 && grupos[0].name
       });
       setSelectedProyecto(null);
       setLoading(false);
@@ -71,6 +111,7 @@ function DashboardProyectosPage() {
         start_date: new Date().toISOString().slice(0, 10),
         termination_date: new Date().toISOString().slice(0, 10),
         score: 1,
+        grupo: grupos.length > 0 && grupos[0].name
       });
       setSelectedProyecto(null);
       setLoading(false);
@@ -211,6 +252,30 @@ function DashboardProyectosPage() {
                           }
                         />
                       </div>
+                      {grupos.length > 0 && (
+                        <div className="mb-3">
+                          <label htmlFor="grupos-input" className="form-label">
+                            Grupos
+                          </label>
+                          <select
+                            className="form-select"
+                            id="jerarquia-input"
+                            defaultValue={proyecto.grupo}
+                            onChange={(e) =>
+                              setProyecto({
+                                ...proyecto,
+                                grupo: e.target.value,
+                              })
+                            }
+                          >
+                            {grupos.map((g) => (
+                              <option key={g.id} value={g.name}>
+                                {g.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                       {loading ? (
                         <button className="btn btn-success w-100" type="button">
                           <span
@@ -250,6 +315,7 @@ function DashboardProyectosPage() {
                       <th>Fecha de Inicio</th>
                       <th>Fecha de Termino</th>
                       <th>Score</th>
+                      <th>Grupo</th>
                       <th>Opciones</th>
                     </tr>
                   </thead>
@@ -261,6 +327,7 @@ function DashboardProyectosPage() {
                         <td>{p.start_date.split("T")[0]}</td>
                         <td>{p.termination_date.split("T")[0]}</td>
                         <td>{p.score}</td>
+                        <td>{p.grupo ? p.grupo : "Grupo sin asignar"}</td>
                         <td>
                           <div className="hstack gap-3 d-flex align-items-center justify-content-center">
                             {userLogged.role === "admin" && (
