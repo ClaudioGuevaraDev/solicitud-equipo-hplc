@@ -135,9 +135,20 @@ def update_proyecto(proyecto_id: int, proyecto: ProyectoModel):
             raise HTTPException(
                 status_code=400, detail="El folio ingresado ya existe.")
 
+    grupo_found = None
+    if proyecto.grupo:
+        cur.execute("SELECT * FROM grupos WHERE name = %s", [proyecto.grupo])
+        grupo_found = cur.fetchone()
+        if grupo_found == None:
+            raise HTTPException(status_code=404, detail="El grupo no existe.")
+
     try:
-        cur.execute("UPDATE proyectos SET folio = %s, name = %s, start_date = %s, termination_date = %s, score = %s WHERE id = %s RETURNING *",
-                    [value_folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, proyecto_id])
+        if grupo_found == None:
+            cur.execute("UPDATE proyectos SET folio = %s, name = %s, start_date = %s, termination_date = %s, score = %s, grupo_id = %s WHERE id = %s RETURNING *",
+                        [value_folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, None, proyecto_id])
+        else:
+            cur.execute("UPDATE proyectos SET folio = %s, name = %s, start_date = %s, termination_date = %s, score = %s, grupo_id = %s WHERE id = %s RETURNING *",
+                        [value_folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, grupo_found[0], proyecto_id])
         conn.commit()
 
         updated_proyecto = cur.fetchone()
@@ -147,7 +158,8 @@ def update_proyecto(proyecto_id: int, proyecto: ProyectoModel):
             "name": updated_proyecto[2],
             "start_date": updated_proyecto[3],
             "termination_date": updated_proyecto[4],
-            "score": updated_proyecto[5]
+            "score": updated_proyecto[5],
+            "grupo": grupo_found[1]
         }
 
         return {"data": data, "detail": "Proyeto actualizado con éxito."}

@@ -33,7 +33,7 @@ function DashboardProyectosPage() {
       setGrupos(data.data);
       if (data.data.length > 0)
         setProyecto({ ...proyecto, grupo: data.data[0].name });
-      setAuthorized(true)
+      setAuthorized(true);
     } catch (error) {
       toast.error("Error al listar los equipos.", {
         duration: 5000,
@@ -93,7 +93,7 @@ function DashboardProyectosPage() {
         start_date: new Date().toISOString().slice(0, 10),
         termination_date: new Date().toISOString().slice(0, 10),
         score: 1,
-        grupo: grupos.length > 0 && grupos[0].name
+        grupo: grupos.length > 0 && grupos[0].name,
       });
       setSelectedProyecto(null);
       setLoading(false);
@@ -111,7 +111,7 @@ function DashboardProyectosPage() {
         start_date: new Date().toISOString().slice(0, 10),
         termination_date: new Date().toISOString().slice(0, 10),
         score: 1,
-        grupo: grupos.length > 0 && grupos[0].name
+        grupo: grupos.length > 0 && grupos[0].name,
       });
       setSelectedProyecto(null);
       setLoading(false);
@@ -143,6 +143,7 @@ function DashboardProyectosPage() {
       start_date: proyecto.start_date.split("T")[0],
       termination_date: proyecto.termination_date.split("T")[0],
       score: proyecto.score,
+      grupo: proyecto.grupo,
     });
   };
 
@@ -268,6 +269,14 @@ function DashboardProyectosPage() {
                               })
                             }
                           >
+                            {proyecto.grupo === null && (
+                              <option
+                                selected={proyecto.grupo ? false : true}
+                                value={null}
+                              >
+                                Grupo sin asignar
+                              </option>
+                            )}
                             {grupos.map((g) => (
                               <option key={g.id} value={g.name}>
                                 {g.name}

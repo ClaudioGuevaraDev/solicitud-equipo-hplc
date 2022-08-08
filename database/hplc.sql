@@ -45,7 +45,7 @@ CREATE TABLE "estados" (
 
 CREATE TABLE "proyectos" (
   "id" SERIAL PRIMARY KEY,
-  "folio" varchar UNIQUE,
+  "folio" varchar,
   "name" varchar UNIQUE NOT NULL,
   "start_date" timestamp,
   "termination_date" timestamp,
