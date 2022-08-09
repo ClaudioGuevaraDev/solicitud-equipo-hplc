@@ -40,9 +40,16 @@ def get_proyectos():
             status_code=500, detail="Error al listar los proyectos")
 
 
-@router.get("/{user_id}", status_code=200)
-def get_proyectos_by_user(user_id):
+@router.get("/{user_id}/{type_filter}", status_code=200)
+def get_proyectos_by_user(user_id, type_filter: str):
     try:
+        data_users_proyectos = []
+        cur.execute(
+            "SELECT * FROM users_proyectos WHERE users_id = %s", [user_id])
+        users_proyectos = cur.fetchall()
+        for user_proyecto in users_proyectos:
+            data_users_proyectos.append(user_proyecto[1])
+
         cur.execute(
             "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
         users_grupos = cur.fetchall()
@@ -55,26 +62,46 @@ def get_proyectos_by_user(user_id):
                         "SELECT * FROM proyectos WHERE grupo_id = %s", [user_grupo[1]])
                     proyecto_found = cur.fetchall()
                     for p in proyecto_found:
-                        new_data = {
-                            "id": p[0],
-                            "folio": p[1],
-                            "name": p[2],
-                            "start_date": p[3],
-                            "termination_date": p[4],
-                            "score": p[5]
-                        }
+                        if ((type_filter == "filter") and (p[0] in data_users_proyectos)):
+                            new_data = {
+                                "id": p[0],
+                                "folio": p[1],
+                                "name": p[2],
+                                "start_date": p[3],
+                                "termination_date": p[4],
+                                "score": p[5]
+                            }
 
-                        cur.execute(
-                            "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
-                        grupo_found = cur.fetchone()
-                        if grupo_found == None:
-                            new_data["grupo"] = None
-                        else:
-                            new_data["grupo"] = grupo_found[1]
+                            cur.execute(
+                                "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
+                            grupo_found = cur.fetchone()
+                            if grupo_found == None:
+                                new_data["grupo"] = None
+                            else:
+                                new_data["grupo"] = grupo_found[1]
 
-                        data.append(new_data)
+                            data.append(new_data)
+                        elif type_filter == "all":
+                            new_data = {
+                                "id": p[0],
+                                "folio": p[1],
+                                "name": p[2],
+                                "start_date": p[3],
+                                "termination_date": p[4],
+                                "score": p[5]
+                            }
 
-        return {"data": data}
+                            cur.execute(
+                                "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
+                            grupo_found = cur.fetchone()
+                            if grupo_found == None:
+                                new_data["grupo"] = None
+                            else:
+                                new_data["grupo"] = grupo_found[1]
+
+                            data.append(new_data)
+
+        return {"data": data, "users_proyectos": data_users_proyectos}
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al listar los proyectos.")

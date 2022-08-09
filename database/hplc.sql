@@ -78,7 +78,7 @@ CREATE TABLE "users_proyectos" (
   PRIMARY KEY ("users_id", "proyectos_id")
 );
 
-ALTER TABLE "users_proyectos" ADD FOREIGN KEY ("users_id") REFERENCES "users" ("id");
+ALTER TABLE "users_proyectos" ADD FOREIGN KEY ("users_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "users_proyectos" ADD FOREIGN KEY ("proyectos_id") REFERENCES "proyectos" ("id");
+ALTER TABLE "users_proyectos" ADD FOREIGN KEY ("proyectos_id") REFERENCES "proyectos" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

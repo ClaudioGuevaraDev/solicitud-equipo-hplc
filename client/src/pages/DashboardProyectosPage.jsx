@@ -26,6 +26,9 @@ function DashboardProyectosPage() {
   const [selectedProyecto, setSelectedProyecto] = useState(null);
   const [selectedDeleteProyecto, setSelectedDeleteProyecto] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [disableCheckboxs, setDisableCheckboxs] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [usersProyectos, setUsersProyectos] = useState([]);
 
   const getGrupos = async () => {
     try {
@@ -35,7 +38,7 @@ function DashboardProyectosPage() {
         setProyecto({ ...proyecto, grupo: data.data[0].name });
       setAuthorized(true);
     } catch (error) {
-      toast.error("Error al listar los equipos.", {
+      toast.error("Error al listar los grupos.", {
         duration: 5000,
       });
       setAuthorized(true);
@@ -56,13 +59,17 @@ function DashboardProyectosPage() {
 
   const getProyectosByUser = async () => {
     try {
-      const { data } = await axios.get(`/api/proyectos/${userLogged.id}`);
+      const { data } = await axios.get(
+        `/api/proyectos/${userLogged.id}/${typeFilter}`
+      );
       setProyectos(data.data);
+      setUsersProyectos(data.users_proyectos);
     } catch (error) {
       toast.error("Error al listar los proyectos.", {
         duration: 5000,
       });
       setProyectos([]);
+      setUsersProyectos([]);
     }
   };
 
@@ -78,7 +85,7 @@ function DashboardProyectosPage() {
     } else {
       getGrupos();
     }
-  }, [authorized, userLogged.role]);
+  }, [authorized, userLogged.role, typeFilter]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,6 +172,31 @@ function DashboardProyectosPage() {
     });
   };
 
+  const handleUsuariosProyectos = async (e, p) => {
+    setDisableCheckboxs(true);
+
+    try {
+      const post = {
+        user: userLogged.id,
+        proyecto: p.id,
+        checked: e.target.checked,
+      };
+      const { data } = await axios.post("/api/users-proyectos", post);
+
+      setUsersProyectos(data.users_proyectos);
+
+      setDisableCheckboxs(false);
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+      }
+      setDisableCheckboxs(false);
+    }
+  };
+
   return (
     <LayoutDashboardComponent>
       <>
@@ -174,8 +206,56 @@ function DashboardProyectosPage() {
               <strong>Proyectos</strong>
             </h1>
           </div>
+          {userLogged.role === "user" && (
+            <>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="inlineRadio1"
+                  value="all"
+                  checked={typeFilter === "all" ? true : false}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio1">
+                  Todos los proyectos
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="inlineRadio2"
+                  value="filter"
+                  checked={typeFilter === "filter" ? true : false}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio2">
+                  Mis proyectos
+                </label>
+              </div>
+            </>
+          )}
+          {userLogged.role === "user" && proyectos.length === 0 && typeFilter === "all" && (
+            <div
+              className="alert alert-warning mt-3"
+              role="alert"
+              style={{ maxWidth: 300 }}
+            >
+              <strong>No estas inscrito en ningún grupo.</strong>
+            </div>
+          )}
+          {userLogged.role === "user" && (usersProyectos.length === 0 || proyectos.length === 0) && typeFilter === "filter" && (
+            <div
+              className="alert alert-warning mt-3"
+              role="alert"
+              style={{ maxWidth: 300 }}
+            >
+              <strong>No estas inscrito en ningún proyecto.</strong>
+            </div>
+          )}
           {userLogged.role === "admin" && (
-            <div className="row mb-3 gy-4">
+            <div className="row gy-4">
               <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
                 <div className="card shadow">
                   <div className="card-body">
@@ -329,7 +409,7 @@ function DashboardProyectosPage() {
             </div>
           )}
           {proyectos.length > 0 && (
-            <div className="row">
+            <div className="row mt-3">
               <div
                 className="col-12 table-responsive"
                 style={{ maxWidth: 1300 }}
@@ -343,7 +423,9 @@ function DashboardProyectosPage() {
                       <th>Fecha de Termino</th>
                       {userLogged.role === "admin" && <th>Score</th>}
                       <th>Grupo</th>
-                      <th>{userLogged.role === "admin" ? "Opciones" : "Inscribir"}</th>
+                      <th>
+                        {userLogged.role === "admin" ? "Opciones" : "Inscribir"}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -357,7 +439,7 @@ function DashboardProyectosPage() {
                         <td>{p.grupo ? p.grupo : "Grupo sin asignar"}</td>
                         <td>
                           <div className="hstack gap-3 d-flex align-items-center justify-content-center">
-                            {userLogged.role === "admin" && (
+                            {userLogged.role === "admin" ? (
                               <>
                                 <button
                                   className="btn btn-warning"
@@ -377,6 +459,23 @@ function DashboardProyectosPage() {
                                 >
                                   <AiFillDelete />{" "}
                                 </button>
+                              </>
+                            ) : (
+                              <>
+                                <div className="form-check">
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id="checkbox-input"
+                                    onChange={(e) =>
+                                      handleUsuariosProyectos(e, p)
+                                    }
+                                    disabled={
+                                      disableCheckboxs === true ? true : false
+                                    }
+                                    checked={usersProyectos.includes(p.id)}
+                                  />
+                                </div>
                               </>
                             )}
                           </div>

@@ -35,6 +35,7 @@ function DashboardGruposPage() {
         duration: 5000,
       });
       setGrupos([]);
+      setUsersGrupos([]);
     }
   };
 
@@ -180,7 +181,7 @@ function DashboardGruposPage() {
             </>
           )}
           {userLogged.role === "admin" && (
-            <div className="row mb-3 gy-4">
+            <div className="row gy-4">
               <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
                 <div className="card shadow">
                   <div className="card-body">
