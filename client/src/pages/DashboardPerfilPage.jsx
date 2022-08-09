@@ -8,9 +8,10 @@ import { useContext } from "react";
 import AppContext from "../context/AppContext";
 import useGetJerarquias from "../hooks/api/useGetJerarquias";
 import { useEffect } from "react";
+import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardPerfilPage() {
-  const { jerarquias } = useGetJerarquias();
+  const { jerarquias, loadingJerarquias } = useGetJerarquias();
   const { userLogged, handleUserLogged } = useContext(AppContext);
   const [userImage, setUserImage] = useState({
     image: null,
@@ -221,40 +222,48 @@ function DashboardPerfilPage() {
                     />
                   </div>
                 </div>
-                {showSelect === true && (
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                {loadingJerarquias ? (
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 d-flex align-items-center justify-content-center">
                     <div className="mb-3">
-                      <label htmlFor="jerarquia-input" className="form-label">
-                        Jerarquía
-                      </label>
-                      <select
-                        className="form-select"
-                        id="jerarquia-input"
-                        value={userInfo.jerarquia}
-                        onChange={(e) =>
-                          setUserInfo({
-                            ...userInfo,
-                            jerarquia: e.target.value,
-                          })
-                        }
-                      >
-                        {userInfo.jerarquia === "" && (
-                          <option selected>Sin jerarquía</option>
-                        )}
-                        {jerarquias.map((j) => (
-                          <option
-                            selected={j.name === userLogged.jerarquia}
-                            key={j.name}
-                            value={j.name}
-                          >
-                            {`${j.name.charAt(0).toUpperCase()}${j.name.slice(
-                              1
-                            )}`}
-                          </option>
-                        ))}
-                      </select>
+                      <LoadingComponent />
                     </div>
                   </div>
+                ) : (
+                  showSelect === true && (
+                    <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                      <div className="mb-3">
+                        <label htmlFor="jerarquia-input" className="form-label">
+                          Jerarquía
+                        </label>
+                        <select
+                          className="form-select"
+                          id="jerarquia-input"
+                          value={userInfo.jerarquia}
+                          onChange={(e) =>
+                            setUserInfo({
+                              ...userInfo,
+                              jerarquia: e.target.value,
+                            })
+                          }
+                        >
+                          {userInfo.jerarquia === "" && (
+                            <option selected>Sin jerarquía</option>
+                          )}
+                          {jerarquias.map((j) => (
+                            <option
+                              selected={j.name === userLogged.jerarquia}
+                              key={j.name}
+                              value={j.name}
+                            >
+                              {`${j.name.charAt(0).toUpperCase()}${j.name.slice(
+                                1
+                              )}`}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )
                 )}
               </div>
               <button

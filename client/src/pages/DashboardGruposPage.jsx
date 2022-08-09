@@ -6,6 +6,7 @@ import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
 import AppContext from "../context/AppContext";
+import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardGruposPage() {
   const { userLogged } = useContext(AppContext);
@@ -22,6 +23,7 @@ function DashboardGruposPage() {
   const [disableCheckboxs, setDisableCheckboxs] = useState(false);
   const [usersGrupos, setUsersGrupos] = useState([]);
   const [handleShowGrupos, setHandleShowGrupos] = useState("all");
+  const [loadingGrupos, setLoadingGrupos] = useState(true);
 
   const getGrupos = async () => {
     try {
@@ -30,12 +32,14 @@ function DashboardGruposPage() {
       );
       setGrupos(data.data);
       setUsersGrupos(data.users_grupos);
+      setLoadingGrupos(false);
     } catch (error) {
       toast.error("Error al listar los grupos.", {
         duration: 5000,
       });
       setGrupos([]);
       setUsersGrupos([]);
+      setLoadingGrupos(false);
     }
   };
 
@@ -180,6 +184,17 @@ function DashboardGruposPage() {
               </div>
             </>
           )}
+          {usersGrupos.length === 0 &&
+            handleShowGrupos === "filter" &&
+            userLogged.role === "user" && (
+              <div
+                className="alert alert-warning mt-3"
+                role="alert"
+                style={{ maxWidth: 300 }}
+              >
+                <strong>No estas inscrito en ningún grupo.</strong>
+              </div>
+            )}
           {userLogged.role === "admin" && (
             <div className="row gy-4">
               <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
@@ -275,78 +290,92 @@ function DashboardGruposPage() {
               </div>
             </div>
           )}
-          {grupos.length > 0 && (
-            <>
-              <div className="row">
-                <div
-                  className="col-12 table-responsive"
-                  style={{ maxWidth: 1300 }}
-                >
-                  <div className="mb-3"></div>
-                  <table className="table table-hover table-stripped text-center table-bordered shadow">
-                    <thead className="table-dark">
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Líder</th>
-                        <th>Fecha de Creación</th>
-                        {userLogged.role === "admin" && <th>Score</th>}
-                        <th>Opciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {grupos.map((g) => (
-                        <tr key={g.id}>
-                          <td>{g.name}</td>
-                          <td>{g.lider}</td>
-                          <td>{g.creation_date.split("T")[0]}</td>
-                          {userLogged.role === "admin" && <td>{g.score}</td>}
-                          <td>
-                            <div className="hstack gap-3 d-flex align-items-center justify-content-center">
-                              {userLogged.role === "admin" ? (
-                                <>
-                                  <button
-                                    className="btn btn-warning"
-                                    onClick={() => handleUpdate(g)}
-                                  >
-                                    <AiFillEdit />
-                                  </button>
-
-                                  <button
-                                    className="btn btn-danger"
-                                    onClick={() => setSelectedDeleteGrupo(g.id)}
-                                    type="button"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal"
-                                  >
-                                    <AiFillDelete />{" "}
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="form-check">
-                                    <input
-                                      type="checkbox"
-                                      className="form-check-input"
-                                      id="checkbox-input"
-                                      onChange={(e) => handleUsuarioGrupo(e, g)}
-                                      disabled={
-                                        disableCheckboxs === true ? true : false
-                                      }
-                                      checked={usersGrupos.includes(g.id)}
-                                    />
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+          <div className="row mt-4">
+            {loadingGrupos ? (
+              <div
+                className="col-12 d-flex align-items-center justify-content-center"
+                style={{ maxWidth: 1300 }}
+              >
+                <LoadingComponent />
               </div>
-            </>
-          )}
+            ) : (
+              grupos.length > 0 && (
+                <>
+                  <div
+                    className="col-12 table-responsive"
+                    style={{ maxWidth: 1300 }}
+                  >
+                    <table className="table table-hover table-stripped text-center table-bordered shadow">
+                      <thead className="table-dark">
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Líder</th>
+                          <th>Fecha de Creación</th>
+                          {userLogged.role === "admin" && <th>Score</th>}
+                          <th>Opciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {grupos.map((g) => (
+                          <tr key={g.id}>
+                            <td>{g.name}</td>
+                            <td>{g.lider}</td>
+                            <td>{g.creation_date.split("T")[0]}</td>
+                            {userLogged.role === "admin" && <td>{g.score}</td>}
+                            <td>
+                              <div className="hstack gap-3 d-flex align-items-center justify-content-center">
+                                {userLogged.role === "admin" ? (
+                                  <>
+                                    <button
+                                      className="btn btn-warning"
+                                      onClick={() => handleUpdate(g)}
+                                    >
+                                      <AiFillEdit />
+                                    </button>
+
+                                    <button
+                                      className="btn btn-danger"
+                                      onClick={() =>
+                                        setSelectedDeleteGrupo(g.id)
+                                      }
+                                      type="button"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#deleteModal"
+                                    >
+                                      <AiFillDelete />{" "}
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="form-check">
+                                      <input
+                                        type="checkbox"
+                                        className="form-check-input"
+                                        id="checkbox-input"
+                                        onChange={(e) =>
+                                          handleUsuarioGrupo(e, g)
+                                        }
+                                        disabled={
+                                          disableCheckboxs === true
+                                            ? true
+                                            : false
+                                        }
+                                        checked={usersGrupos.includes(g.id)}
+                                      />
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )
+            )}
+          </div>
         </div>
         <DeleteModal
           title="el grupo"

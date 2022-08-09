@@ -7,9 +7,10 @@ import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import axios from "axios";
 import toast from "react-hot-toast";
 import DeleteModal from "../components/DeleteModal";
+import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardJerarquiasPage() {
-  const { jerarquias, setJerarquias } = useGetJerarquias();
+  const { jerarquias, setJerarquias, loadingJerarquias } = useGetJerarquias();
   const [loading, setLoading] = useState(false);
   const [selectedJerarquia, setSelectedJerarquia] = useState(null);
   const [selectedDeleteJerarquia, setSelectedDeleteJerarquia] = useState(null);
@@ -162,50 +163,61 @@ function DashboardJerarquiasPage() {
                 </div>
               </div>
             </div>
-            <div
-              className="col-xl-7 col-12 table-responsive"
-              style={{ maxWidth: 750 }}
-            >
-              <table className="table table-hover table-stripped text-center table-bordered shadow">
-                <thead className="table-dark">
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Score</th>
-                    <th>Opciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jerarquias.map((j) => (
-                    <tr key={j.name}>
-                      <td>{`${j.name.charAt(0).toUpperCase()}${j.name.slice(
-                        1
-                      )}`}</td>
-                      <td>{j.score}</td>
-                      <td>
-                        <div className="hstack gap-3 d-flex align-items-center justify-content-center">
-                          <button
-                            className="btn btn-warning"
-                            onClick={() => handleUpdate(j)}
-                          >
-                            <AiFillEdit />
-                          </button>
+            {loadingJerarquias ? (
+              <div
+                className="col-xl-7 col-12 d-flex align-items-center justify-content-center"
+                style={{ maxWidth: 750 }}
+              >
+                <LoadingComponent />
+              </div>
+            ) : (
+              jerarquias.length > 0 && (
+                <div
+                  className="col-xl-7 col-12 table-responsive"
+                  style={{ maxWidth: 750 }}
+                >
+                  <table className="table table-hover table-stripped text-center table-bordered shadow">
+                    <thead className="table-dark">
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Score</th>
+                        <th>Opciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jerarquias.map((j) => (
+                        <tr key={j.name}>
+                          <td>{`${j.name.charAt(0).toUpperCase()}${j.name.slice(
+                            1
+                          )}`}</td>
+                          <td>{j.score}</td>
+                          <td>
+                            <div className="hstack gap-3 d-flex align-items-center justify-content-center">
+                              <button
+                                className="btn btn-warning"
+                                onClick={() => handleUpdate(j)}
+                              >
+                                <AiFillEdit />
+                              </button>
 
-                          <button
-                            className="btn btn-danger"
-                            onClick={() => setSelectedDeleteJerarquia(j.id)}
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
-                          >
-                            <AiFillDelete />{" "}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                              <button
+                                className="btn btn-danger"
+                                onClick={() => setSelectedDeleteJerarquia(j.id)}
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                              >
+                                <AiFillDelete />{" "}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            )}
           </div>
         </div>
         <DeleteModal

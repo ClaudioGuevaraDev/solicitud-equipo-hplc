@@ -6,6 +6,7 @@ import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
 import AppContext from "../context/AppContext";
+import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardEquiposPage() {
   const { userLogged } = useContext(AppContext);
@@ -22,6 +23,10 @@ function DashboardEquiposPage() {
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [authorizedGetEquipos, setAuthorizedGetEquipos] = useState(false);
+  const [loadingData, setLoadingData] = useState({
+    estados: true,
+    equipos: true,
+  });
 
   const inputRef = useRef(null);
 
@@ -34,9 +39,11 @@ function DashboardEquiposPage() {
           ...equipo,
           estado: data.data[0].name,
         });
+        setLoadingData({ ...loadingData, estados: false });
       } else {
         setEstados([]);
         setShowAlert(true);
+        setLoadingData({ ...loadingData, estados: false });
       }
       setAuthorizedGetEquipos(true);
     } catch (error) {
@@ -50,11 +57,13 @@ function DashboardEquiposPage() {
     try {
       const { data } = await axios.get("/api/equipos");
       setEquipos(data.data);
+      setLoadingData({ ...loading, equipos: false });
     } catch (error) {
       toast.error("Error al listar los equipos.", {
         duration: 5000,
       });
       setEquipos([]);
+      setLoadingData({ ...loading, equipos: false });
     }
   };
 
@@ -171,124 +180,146 @@ function DashboardEquiposPage() {
               </strong>
             </div>
           )}
-          {userLogged.role === "admin" && (
-            <div className="row mb-3 gy-4">
-              <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
-                <div className="card shadow">
-                  <div className="card-body">
-                    <form onSubmit={handleSubmit}>
-                      <div className="mb-3">
-                        <label htmlFor="name-input" className="form-label">
-                          Nombre
-                        </label>
-                        <input
-                          type="text"
-                          id="name-input"
-                          className="form-control"
-                          required
-                          placeholder="Ej: HPLC"
-                          value={equipo.name}
-                          onChange={(e) =>
-                            setEquipo({ ...equipo, name: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="file-input" className="form-label">
-                          Imagen
-                        </label>
-                        <input
-                          type="file"
-                          ref={inputRef}
-                          id="file-input"
-                          className="form-control"
-                          required={selectedEquipo ? false : true}
-                          onChange={(e) =>
-                            setEquipo({ ...equipo, image: e.target.files[0] })
-                          }
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label
-                          htmlFor="termination-date-input"
-                          className="form-label"
-                        >
-                          Fecha de Obtención
-                        </label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          required
-                          id="termination-date-input"
-                          value={equipo.date_obtained}
-                          onChange={(e) =>
-                            setEquipo({
-                              ...equipo,
-                              date_obtained: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      {estados.length > 0 && (
-                        <div className="mb-3">
-                          <label htmlFor="estados-input" className="form-label">
-                            Estados
-                          </label>
-                          <select
-                            className="form-select"
-                            id="jerarquia-input"
-                            value={equipo.estado}
-                            onChange={(e) =>
-                              setEquipo({ ...equipo, estado: e.target.value })
-                            }
-                          >
-                            {equipo.estado === null && (
-                              <option selected value={null}>
-                                Sin estado
-                              </option>
-                            )}
-                            {estados.map((e) => (
-                              <option key={e.name} value={e.name}>
-                                {e.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {loading ? (
-                        <button className="btn btn-success w-100" type="button">
-                          <span
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                          ></span>
-                          <span className="visually-hidden">Loading...</span>
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-success w-100"
-                          disabled={
-                            selectedEquipo
-                              ? equipo.name === "" || equipo.estado === null
-                              : equipo.name === "" ||
-                                equipo.image === null ||
-                                equipo.image === undefined ||
-                                equipo.estado === null
-                          }
-                        >
-                          {selectedEquipo
-                            ? "EDITAR" + " EQUIPO"
-                            : "CREAR" + " EQUIPO"}
-                        </button>
-                      )}
-                    </form>
-                  </div>
+          <div className="row mb-3 gy-4">
+            {loadingData.estados ? (
+              <div className="row mb-3 gy-4">
+                <div
+                  className="col-xl-4 col-12 d-flex align-items-center justify-content-center"
+                  style={{ maxWidth: 400 }}
+                >
+                  <LoadingComponent />
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              userLogged.role === "admin" && (
+                <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
+                  <div className="card shadow">
+                    <div className="card-body">
+                      <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                          <label htmlFor="name-input" className="form-label">
+                            Nombre
+                          </label>
+                          <input
+                            type="text"
+                            id="name-input"
+                            className="form-control"
+                            required
+                            placeholder="Ej: HPLC"
+                            value={equipo.name}
+                            onChange={(e) =>
+                              setEquipo({ ...equipo, name: e.target.value })
+                            }
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="file-input" className="form-label">
+                            Imagen
+                          </label>
+                          <input
+                            type="file"
+                            ref={inputRef}
+                            id="file-input"
+                            className="form-control"
+                            required={selectedEquipo ? false : true}
+                            onChange={(e) =>
+                              setEquipo({ ...equipo, image: e.target.files[0] })
+                            }
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label
+                            htmlFor="termination-date-input"
+                            className="form-label"
+                          >
+                            Fecha de Obtención
+                          </label>
+                          <input
+                            type="date"
+                            className="form-control"
+                            required
+                            id="termination-date-input"
+                            value={equipo.date_obtained}
+                            onChange={(e) =>
+                              setEquipo({
+                                ...equipo,
+                                date_obtained: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        {estados.length > 0 && (
+                          <div className="mb-3">
+                            <label
+                              htmlFor="estados-input"
+                              className="form-label"
+                            >
+                              Estados
+                            </label>
+                            <select
+                              className="form-select"
+                              id="jerarquia-input"
+                              value={equipo.estado}
+                              onChange={(e) =>
+                                setEquipo({ ...equipo, estado: e.target.value })
+                              }
+                            >
+                              {equipo.estado === null && (
+                                <option selected value={null}>
+                                  Sin estado
+                                </option>
+                              )}
+                              {estados.map((e) => (
+                                <option key={e.name} value={e.name}>
+                                  {e.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {loading ? (
+                          <button
+                            className="btn btn-success w-100"
+                            type="button"
+                          >
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="visually-hidden">Loading...</span>
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-success w-100"
+                            disabled={
+                              selectedEquipo
+                                ? equipo.name === "" || equipo.estado === null
+                                : equipo.name === "" ||
+                                  equipo.image === null ||
+                                  equipo.image === undefined ||
+                                  equipo.estado === null
+                            }
+                          >
+                            {selectedEquipo
+                              ? "EDITAR" + " EQUIPO"
+                              : "CREAR" + " EQUIPO"}
+                          </button>
+                        )}
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
           <div className="row gy-4">
-            {equipos.length > 0 &&
+            {loadingData.equipos ? (
+              <div className="col-xl-12 d-flex align-items-center justify-content-center">
+                <LoadingComponent />
+              </div>
+            ) : (
+              equipos.length > 0 &&
               equipos.map((e) => (
                 <div
                   className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
@@ -339,7 +370,8 @@ function DashboardEquiposPage() {
                     )}
                   </div>
                 </div>
-              ))}
+              ))
+            )}
           </div>
         </div>
         <DeleteModal
