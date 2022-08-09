@@ -25,7 +25,9 @@ function DashboardGruposPage() {
 
   const getGrupos = async () => {
     try {
-      const { data } = await axios.get(`/api/grupos/${userLogged.id}/${handleShowGrupos}`);
+      const { data } = await axios.get(
+        `/api/grupos/${userLogged.id}/${handleShowGrupos}`
+      );
       setGrupos(data.data);
       setUsersGrupos(data.users_grupos);
     } catch (error) {
@@ -147,32 +149,36 @@ function DashboardGruposPage() {
               <strong>Grupos</strong>
             </h1>
           </div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              id="inlineRadio1"
-              value="all"
-              checked={handleShowGrupos === "all" ? true : false}
-              onChange={(e) => setHandleShowGrupos(e.target.value)}
-            />
-            <label className="form-check-label" for="inlineRadio1">
-              Todos los grupos
-            </label>
-          </div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              id="inlineRadio2"
-              value="filter"
-              checked={handleShowGrupos === "filter" ? true : false}
-              onChange={(e) => setHandleShowGrupos(e.target.value)}
-            />
-            <label className="form-check-label" for="inlineRadio2">
-              Mis grupos
-            </label>
-          </div>
+          {userLogged.role === "user" && (
+            <>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="inlineRadio1"
+                  value="all"
+                  checked={handleShowGrupos === "all" ? true : false}
+                  onChange={(e) => setHandleShowGrupos(e.target.value)}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio1">
+                  Todos los grupos
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="inlineRadio2"
+                  value="filter"
+                  checked={handleShowGrupos === "filter" ? true : false}
+                  onChange={(e) => setHandleShowGrupos(e.target.value)}
+                />
+                <label className="form-check-label" htmlFor="inlineRadio2">
+                  Mis grupos
+                </label>
+              </div>
+            </>
+          )}
           {userLogged.role === "admin" && (
             <div className="row mb-3 gy-4">
               <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>

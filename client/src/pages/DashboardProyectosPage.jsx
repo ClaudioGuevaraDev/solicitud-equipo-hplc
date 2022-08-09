@@ -54,13 +54,31 @@ function DashboardProyectosPage() {
     }
   };
 
+  const getProyectosByUser = async () => {
+    try {
+      const { data } = await axios.get(`/api/proyectos/${userLogged.id}`);
+      setProyectos(data.data);
+    } catch (error) {
+      toast.error("Error al listar los proyectos.", {
+        duration: 5000,
+      });
+      setProyectos([]);
+    }
+  };
+
   useEffect(() => {
     if (authorized === true) {
-      getProyectos();
+      if (userLogged.role) {
+        if (userLogged.role === "admin") {
+          getProyectos();
+        } else {
+          getProyectosByUser();
+        }
+      }
     } else {
       getGrupos();
     }
-  }, [authorized]);
+  }, [authorized, userLogged.role]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -261,7 +279,7 @@ function DashboardProyectosPage() {
                           <select
                             className="form-select"
                             id="jerarquia-input"
-                            defaultValue={proyecto.grupo}
+                            value={proyecto.grupo}
                             onChange={(e) =>
                               setProyecto({
                                 ...proyecto,
@@ -325,7 +343,7 @@ function DashboardProyectosPage() {
                       <th>Fecha de Termino</th>
                       {userLogged.role === "admin" && <th>Score</th>}
                       <th>Grupo</th>
-                      <th>Opciones</th>
+                      <th>{userLogged.role === "admin" ? "Opciones" : "Inscribir"}</th>
                     </tr>
                   </thead>
                   <tbody>
