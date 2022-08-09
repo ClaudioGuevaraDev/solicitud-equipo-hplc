@@ -10,5 +10,3 @@ Sistema de administración de solicitudes para el equipo HPLC por parte de usuar
 * Proteger roles, users, jerarquías routes con tokens (mmiddlewares)
 
 #### Frontend
-
-* Modificar useeffects 

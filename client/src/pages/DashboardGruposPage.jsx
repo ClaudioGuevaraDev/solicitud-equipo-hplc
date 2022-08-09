@@ -1,12 +1,11 @@
 import axios from "axios";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
 import AppContext from "../context/AppContext";
-import { useEffect } from "react";
 
 function DashboardGruposPage() {
   const { userLogged } = useContext(AppContext);
@@ -26,7 +25,7 @@ function DashboardGruposPage() {
 
   const getGrupos = async () => {
     try {
-      const { data } = await axios.get(`/api/grupos/${userLogged.id}`);
+      const { data } = await axios.get(`/api/grupos/${userLogged.id}/${handleShowGrupos}`);
       setGrupos(data.data);
       setUsersGrupos(data.users_grupos);
     } catch (error) {
@@ -41,7 +40,7 @@ function DashboardGruposPage() {
     if (userLogged !== 0) {
       getGrupos();
     }
-  }, [userLogged.id]);
+  }, [userLogged.id, handleShowGrupos]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -31,8 +31,8 @@ def get_grupos():
             status_code=500, detail="Error al listar los grupos.")
 
 
-@router.get("/{user_id}", status_code=200)
-def get_grupos_by_user(user_id: int):
+@router.get("/{user_id}/{type_filter}", status_code=200)
+def get_grupos_by_user(user_id: int, type_filter: str):
     try:
         data_users_grupos = []
         cur.execute(
@@ -46,15 +46,26 @@ def get_grupos_by_user(user_id: int):
 
         data = []
         for grupo in grupos:
-            new_data = {
-                "id": grupo[0],
-                "name": grupo[1],
-                "creation_date": grupo[2],
-                "score": grupo[3],
-                "lider": grupo[4]
-            }
+            if ((type_filter == "filter") and (grupo[0] in data_users_grupos)):
+                new_data = {
+                    "id": grupo[0],
+                    "name": grupo[1],
+                    "creation_date": grupo[2],
+                    "score": grupo[3],
+                    "lider": grupo[4]
+                }
 
-            data.append(new_data)
+                data.append(new_data)
+            elif type_filter == "all":
+                new_data = {
+                    "id": grupo[0],
+                    "name": grupo[1],
+                    "creation_date": grupo[2],
+                    "score": grupo[3],
+                    "lider": grupo[4]
+                }
+
+                data.append(new_data)
 
         return {"data": data, "users_grupos": data_users_grupos}
     except Exception as error:
