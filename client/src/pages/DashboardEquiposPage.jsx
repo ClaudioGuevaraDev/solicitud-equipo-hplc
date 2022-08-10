@@ -86,8 +86,6 @@ function DashboardEquiposPage() {
       equipo.image.type !== "image/jpg" &&
       equipo.image.type !== "image/jpeg"
     ) {
-      console.log("Hola");
-
       toast.error("Solo se aceptan imágenes PNG, JPG y JPEG", {
         duration: 7000,
       });
@@ -101,8 +99,6 @@ function DashboardEquiposPage() {
       setLoading(false);
       return;
     }
-
-    console.log("Hola");
 
     try {
       const post = new FormData();

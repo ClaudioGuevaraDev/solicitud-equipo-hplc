@@ -161,6 +161,5 @@ def update_equipo(equipo_id: int, file: Union[UploadFile, None] = None, name: st
 
         return {"detail": "Equipo actualizado.", "data": data}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al actualizar el equipo.")

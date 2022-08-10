@@ -5,11 +5,12 @@ POST {{api}}/register
 Content-Type: application/json
 
 {
-    "first_name": "Claudio",
-    "last_name": "Guevara",
-    "email": "claudio.guevara.dev@gmail.com",
-    "password": "claudio123",
-    "confirm_password": "claudio123"
+    "first_name": "usuario20",
+    "last_name": "apellido20",
+    "email": "usuario20@gmail.com",
+    "password": "123",
+    "confirm_password": "123",
+    "jerarquia": "jerarquía 1"
 }
 ###
 POST {{api}}/login

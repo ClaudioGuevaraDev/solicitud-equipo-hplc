@@ -12,10 +12,11 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=200)
-def get_users():
+@router.get("/page/{id_value}", status_code=200)
+def get_users(id_value: int):
     try:
-        cur.execute("SELECT * FROM users")
+        cur.execute(
+            "SELECT * FROM users WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
         users = cur.fetchall()
 
         data = []
@@ -53,10 +54,39 @@ def get_users():
 
             data.append(new_data)
 
-        return {"data": data}
+        next_page = 0
+        if (len(data) > 0):
+            next_page = data[len(data)-1]["id"] + 1
+
+        first_page = False
+        cur.execute("SELECT * FROM users ORDER BY id ASC LIMIT 1")
+        first_element = cur.fetchone()
+        if data[0]["id"] == first_element[0]:
+            first_page = True
+
+        last_page = False
+        cur.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
+        last_element = cur.fetchone()
+        if data[-1]["id"] == last_element[0]:
+            last_page = True
+
+        return {"data": data, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al listar los usuarios.")
+
+
+@router.get("/previus-page/{previus_page}")
+def get_previus_page(previus_page: int):
+    cur.execute(
+        "SELECT * FROM users WHERE id < %s ORDER BY id DESC LIMIT 10", [previus_page])
+    previus = cur.fetchall()
+
+    previus_value = None
+    if (len(previus) > 0):
+        previus_value = previus[-1][0]
+
+    return {"previus_value": previus_value}
 
 
 @router.get("/{user_id}", status_code=200)

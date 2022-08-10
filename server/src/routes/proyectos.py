@@ -160,7 +160,6 @@ def create_proyecto(proyecto: ProyectoModel):
 
         return {"data": data, "detail": "Proyecto creado con éxito."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al crear el proyecto.")
 
@@ -231,6 +230,5 @@ def update_proyecto(proyecto_id: int, proyecto: ProyectoModel):
 
         return {"data": data, "detail": "Proyeto actualizado con éxito."}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al actualizar el proyecto.")

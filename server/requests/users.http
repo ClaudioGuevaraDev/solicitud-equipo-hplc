@@ -1,6 +1,6 @@
 @api = http://localhost:8000/api/users
 
 ###
-GET {{api}}
+GET {{api}}/page/1
 ###
 GET {{api}}/2
