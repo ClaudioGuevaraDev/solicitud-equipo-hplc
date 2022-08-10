@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useContext } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
+import useGetProyectos from "../hooks/api/useGetProyectos";
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
@@ -33,12 +34,6 @@ function DashboardProyectosPage() {
     grupos: true,
     proyectos: true,
   });
-  const [page, setPage] = useState({
-    nextPage: 1,
-    previusPage: 1,
-    firstPage: true,
-    lastPage: true,
-  });
 
   const getGrupos = async () => {
     try {
@@ -57,17 +52,10 @@ function DashboardProyectosPage() {
     }
   };
 
-  const getProyectos = async (pageValue, previus_page) => {
+  const getProyectos = async () => {
     try {
-      const { data } = await axios.get(`/api/proyectos/page/${pageValue}`);
+      const { data } = await axios.get("/api/proyectos");
       setProyectos(data.data);
-      setPage({
-        ...page,
-        nextPage: data.next_page,
-        previusPage: previus_page,
-        firstPage: data.first_page,
-        lastPage: data.last_page,
-      });
       setLoadingData({ ...loading, proyectos: false });
     } catch (error) {
       toast.error("Error al listar los proyectos.", {
@@ -100,7 +88,7 @@ function DashboardProyectosPage() {
     if (authorized === true) {
       if (userLogged.role) {
         if (userLogged.role === "admin") {
-          getProyectos(page.nextPage, page.nextPage);
+          getProyectos();
         } else {
           getProyectosByUser();
         }
@@ -217,21 +205,6 @@ function DashboardProyectosPage() {
         });
       }
       setDisableCheckboxs(false);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (userLogged.role === "admin") {
-      getProyectos(page.nextPage, proyectos[0].id);
-    }
-  };
-
-  const handlePreviusPage = async () => {
-    const { data } = await axios.get(
-      `/api/proyectos/previus-page/${page.previusPage}`
-    );
-    if (userLogged.role === "admin") {
-      getProyectos(page.previusPage, data.previus_value);
     }
   };
 
@@ -482,33 +455,9 @@ function DashboardProyectosPage() {
             ) : (
               proyectos.length > 0 && (
                 <div
-                  className="col-12 table-responsive"
+                  className="col-12 table-responsive mt-3"
                   style={{ maxWidth: 1300 }}
                 >
-                  <nav aria-label="Page navigation example">
-                    <ul className="pagination justify-content-end">
-                      <li className="page-item">
-                        <button
-                          className={`page-link ${
-                            page.firstPage ? "disabled" : ""
-                          }`}
-                          onClick={handlePreviusPage}
-                        >
-                          Previous
-                        </button>
-                      </li>
-                      <li className="page-item">
-                        <button
-                          className={`page-link ${
-                            page.lastPage ? "disabled" : ""
-                          }`}
-                          onClick={handleNextPage}
-                        >
-                          Next
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
                   <table className="table table-hover table-stripped text-center table-bordered shadow">
                     <thead className="table-dark">
                       <tr>
