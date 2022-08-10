@@ -24,14 +24,27 @@ function DashboardGruposPage() {
   const [usersGrupos, setUsersGrupos] = useState([]);
   const [handleShowGrupos, setHandleShowGrupos] = useState("all");
   const [loadingGrupos, setLoadingGrupos] = useState(true);
+  const [page, setPage] = useState({
+    nextPage: 1,
+    previusPage: 1,
+    firstPage: true,
+    lastPage: true,
+  });
 
-  const getGrupos = async () => {
+  const getGrupos = async (page_value, previus_page) => {
     try {
       const { data } = await axios.get(
-        `/api/grupos/${userLogged.id}/${handleShowGrupos}`
+        `/api/grupos/${userLogged.id}/${handleShowGrupos}/${page_value}`
       );
       setGrupos(data.data);
       setUsersGrupos(data.users_grupos);
+      setPage({
+        ...page,
+        nextPage: data.next_page,
+        previusPage: previus_page,
+        firstPage: data.first_page,
+        lastPage: data.last_page,
+      });
       setLoadingGrupos(false);
     } catch (error) {
       toast.error("Error al listar los grupos.", {
@@ -45,7 +58,7 @@ function DashboardGruposPage() {
 
   useEffect(() => {
     if (userLogged !== 0) {
-      getGrupos();
+      getGrupos(page.nextPage, page.nextPage);
     }
   }, [userLogged.id, handleShowGrupos]);
 
@@ -143,6 +156,15 @@ function DashboardGruposPage() {
       }
       setDisableCheckboxs(false);
     }
+  };
+
+  const handleNextPage = () => {
+    getGrupos(page.nextPage, grupos[0].id);
+  };
+
+  const handlePreviusPage = async () => {
+    const { data } = await axios.get(`/api/grupos/${page.previusPage}`);
+    getGrupos(page.previusPage, data.previus_value);
   };
 
   return (
@@ -305,6 +327,30 @@ function DashboardGruposPage() {
                     className="col-12 table-responsive"
                     style={{ maxWidth: 1300 }}
                   >
+                    <nav aria-label="Page navigation example">
+                      <ul className="pagination justify-content-end">
+                        <li className="page-item">
+                          <button
+                            className={`page-link ${
+                              page.firstPage ? "disabled" : ""
+                            }`}
+                            onClick={handlePreviusPage}
+                          >
+                            Previous
+                          </button>
+                        </li>
+                        <li className="page-item">
+                          <button
+                            className={`page-link ${
+                              page.lastPage ? "disabled" : ""
+                            }`}
+                            onClick={handleNextPage}
+                          >
+                            Next
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
                     <table className="table table-hover table-stripped text-center table-bordered shadow">
                       <thead className="table-dark">
                         <tr>

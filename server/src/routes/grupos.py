@@ -12,7 +12,8 @@ router = APIRouter(
 @router.get("/")
 def get_grupos():
     try:
-        cur.execute("SELECT * FROM grupos")
+        cur.execute(
+            "SELECT * FROM grupos")
         grupos = cur.fetchall()
 
         data = []
@@ -31,8 +32,8 @@ def get_grupos():
             status_code=500, detail="Error al listar los grupos.")
 
 
-@router.get("/{user_id}/{type_filter}", status_code=200)
-def get_grupos_by_user(user_id: int, type_filter: str):
+@router.get("/{user_id}/{type_filter}/{id_value}", status_code=200)
+def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
     try:
         data_users_grupos = []
         cur.execute(
@@ -41,7 +42,8 @@ def get_grupos_by_user(user_id: int, type_filter: str):
         for user_grupo in users_grupos:
             data_users_grupos.append(user_grupo[1])
 
-        cur.execute("SELECT * FROM grupos")
+        cur.execute(
+            "SELECT * FROM grupos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
         grupos = cur.fetchall()
 
         data = []
@@ -67,10 +69,39 @@ def get_grupos_by_user(user_id: int, type_filter: str):
 
                 data.append(new_data)
 
-        return {"data": data, "users_grupos": data_users_grupos}
+        next_page = 0
+        if len(data) > 0:
+            next_page = data[len(data)-1]["id"] + 1
+
+        first_page = False
+        cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
+        first_element = cur.fetchone()
+        if data[0]["id"] == first_element[0]:
+            first_page = True
+
+        last_page = False
+        cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
+        last_element = cur.fetchone()
+        if data[-1]["id"] == last_element[0]:
+            last_page = True
+
+        return {"data": data, "users_grupos": data_users_grupos, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los grupos.")
+
+
+@router.get("/{previus_page}")
+def get_previus_page(previus_page: int):
+    cur.execute(
+        "SELECT * FROM grupos WHERE id < %s ORDER BY id DESC LIMIT 10", [previus_page])
+    previus = cur.fetchall()
+    previus_value = None
+    if len(previus) > 0:
+        previus_value = previus[-1][0]
+
+    return {"previus_value": previus_value}
 
 
 @router.post("/", status_code=201)
