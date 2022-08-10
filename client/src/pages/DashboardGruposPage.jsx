@@ -334,32 +334,52 @@ function DashboardGruposPage() {
                     className="col-12 table-responsive"
                     style={{ maxWidth: 1300 }}
                   >
-                    {handleShowGrupos === "all" && (
-                      <nav aria-label="Page navigation example">
-                        <ul className="pagination justify-content-end">
-                          <li className="page-item">
-                            <button
-                              className={`page-link ${
-                                page.firstPage ? "disabled" : ""
-                              }`}
-                              onClick={handlePreviusPage}
-                            >
-                              Previous
-                            </button>
-                          </li>
-                          <li className="page-item">
-                            <button
-                              className={`page-link ${
-                                page.lastPage ? "disabled" : ""
-                              }`}
-                              onClick={handleNextPage}
-                            >
-                              Next
-                            </button>
-                          </li>
-                        </ul>
-                      </nav>
-                    )}
+                    <div className="row">
+                      <div className="col-4">
+                        {/* <form className="d-flex" role="search">
+                          <input
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                          />
+                          <button
+                            className="btn btn-outline-success"
+                            type="submit"
+                          >
+                            Search
+                          </button>
+                        </form> */}
+                      </div>
+                      <div className="col-8">
+                        {handleShowGrupos === "all" && (
+                          <nav aria-label="Page navigation example">
+                            <ul className="pagination justify-content-end">
+                              <li className="page-item">
+                                <button
+                                  className={`page-link ${
+                                    page.firstPage ? "disabled" : ""
+                                  }`}
+                                  onClick={handlePreviusPage}
+                                >
+                                  Previous
+                                </button>
+                              </li>
+                              <li className="page-item">
+                                <button
+                                  className={`page-link ${
+                                    page.lastPage ? "disabled" : ""
+                                  }`}
+                                  onClick={handleNextPage}
+                                >
+                                  Next
+                                </button>
+                              </li>
+                            </ul>
+                          </nav>
+                        )}
+                      </div>
+                    </div>
                     <table className="table table-hover table-stripped text-center table-bordered shadow">
                       <thead className="table-dark">
                         <tr>
