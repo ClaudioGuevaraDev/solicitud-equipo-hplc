@@ -80,6 +80,30 @@ function DashboardEquiposPage() {
 
     setLoading(true);
 
+    if (
+      equipo.image &&
+      equipo.image.type !== "image/png" &&
+      equipo.image.type !== "image/jpg" &&
+      equipo.image.type !== "image/jpeg"
+    ) {
+      console.log("Hola");
+
+      toast.error("Solo se aceptan imágenes PNG, JPG y JPEG", {
+        duration: 7000,
+      });
+      inputRef.current.value = null;
+      setEquipo({
+        name: "",
+        image: null,
+        date_obtained: new Date().toISOString().slice(0, 10),
+        estado: estados.length > 0 && estados[0].name,
+      });
+      setLoading(false);
+      return;
+    }
+
+    console.log("Hola");
+
     try {
       const post = new FormData();
       if (equipo.image !== null && equipo.image !== undefined) {

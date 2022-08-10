@@ -3,14 +3,13 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 import UnknownProfile from "../assets/unknown_perfil.jpg";
-import { useState } from "react";
-import { useContext } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import AppContext from "../context/AppContext";
 import useGetJerarquias from "../hooks/api/useGetJerarquias";
-import { useEffect } from "react";
 import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardPerfilPage() {
+  const inputRef = useRef(null);
   const { jerarquias, loadingJerarquias } = useGetJerarquias();
   const { userLogged, handleUserLogged } = useContext(AppContext);
   const [userImage, setUserImage] = useState({
@@ -34,6 +33,23 @@ function DashboardPerfilPage() {
 
   const handleUserImage = async (e) => {
     e.preventDefault();
+    if (
+      userImage.image &&
+      userImage.image.type !== "image/png" &&
+      userImage.image.type !== "image/jpg" &&
+      userImage.image.type !== "image/jpeg"
+    ) {
+      toast.error("Solo se aceptan imágenes PNG, JPG y JPEG", {
+        duration: 7000,
+      });
+
+      inputRef.current.value = null;
+
+      setUserImage({
+        image: null,
+      });
+      return;
+    }
 
     try {
       const post = new FormData();
@@ -45,6 +61,7 @@ function DashboardPerfilPage() {
       toast.success(data.detail, {
         duration: 4000,
       });
+      inputRef.current.value = null;
       handleUserLogged({ ...userLogged, url_image: data.url_image });
     } catch (error) {
       if (error.response.data.detail) {
@@ -53,6 +70,7 @@ function DashboardPerfilPage() {
           duration: 6000,
         });
       }
+      inputRef.current.value = null;
       setUserImage({
         image: null,
       });
@@ -127,6 +145,7 @@ function DashboardPerfilPage() {
               <input
                 className="form-control mt-2 mb-3"
                 type="file"
+                ref={inputRef}
                 onChange={(e) =>
                   setUserImage({ ...userImage, image: e.target.files[0] })
                 }
