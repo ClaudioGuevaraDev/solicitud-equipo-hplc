@@ -42,9 +42,15 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
         for user_grupo in users_grupos:
             data_users_grupos.append(user_grupo[1])
 
-        cur.execute(
-            "SELECT * FROM grupos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
-        grupos = cur.fetchall()
+        grupos = []
+        if type_filter == "all":
+            cur.execute(
+                "SELECT * FROM grupos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
+            grupos = cur.fetchall()
+        else:
+            cur.execute(
+                "SELECT * FROM grupos")
+            grupos = cur.fetchall()
 
         data = []
         for grupo in grupos:
@@ -73,20 +79,38 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
         if len(data) > 0:
             next_page = data[len(data)-1]["id"] + 1
 
-        first_page = False
-        cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
-        first_element = cur.fetchone()
-        if data[0]["id"] == first_element[0]:
-            first_page = True
-
+        if type_filter == "all":
+            first_page = False
+            cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
+            first_element = cur.fetchone()
+            if ((first_element) and (len(data) > 0)):
+                if data[0]["id"] == first_element[0]:
+                    first_page = True
+        else:
+            first_page = False
+            cur.execute("SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
+            first_element = cur.fetchone()
+            if ((first_element) and (len(data) > 0)):
+                if data[0]["id"] == first_element[1]:
+                    first_page = True
+        
         last_page = False
-        cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
-        last_element = cur.fetchone()
-        if data[-1]["id"] == last_element[0]:
-            last_page = True
+        if type_filter == "all":
+            cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
+            last_element = cur.fetchone()
+            if ((last_element) and (len(data) > 0)):
+                if data[-1]["id"] == last_element[0]:
+                    last_page = True
+        else:
+            cur.execute("SELECT * FROM users_grupos ORDER BY grupos_id DESC LIMIT 1")
+            last_element = cur.fetchone()
+            if ((last_element) and (len(data) > 0)):
+                if data[-1]["id"] == last_element[1]:
+                    last_page = True
 
         return {"data": data, "users_grupos": data_users_grupos, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los grupos.")
 

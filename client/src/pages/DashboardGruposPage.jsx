@@ -58,7 +58,14 @@ function DashboardGruposPage() {
 
   useEffect(() => {
     if (userLogged !== 0) {
-      getGrupos(page.nextPage, page.nextPage);
+      setPage({
+        ...page,
+        nextPage: 1,
+        previusPage: 1,
+        firstPage: true,
+        lastPage: true,
+      });
+      getGrupos(1, 1);
     }
   }, [userLogged.id, handleShowGrupos]);
 
@@ -327,30 +334,32 @@ function DashboardGruposPage() {
                     className="col-12 table-responsive"
                     style={{ maxWidth: 1300 }}
                   >
-                    <nav aria-label="Page navigation example">
-                      <ul className="pagination justify-content-end">
-                        <li className="page-item">
-                          <button
-                            className={`page-link ${
-                              page.firstPage ? "disabled" : ""
-                            }`}
-                            onClick={handlePreviusPage}
-                          >
-                            Previous
-                          </button>
-                        </li>
-                        <li className="page-item">
-                          <button
-                            className={`page-link ${
-                              page.lastPage ? "disabled" : ""
-                            }`}
-                            onClick={handleNextPage}
-                          >
-                            Next
-                          </button>
-                        </li>
-                      </ul>
-                    </nav>
+                    {handleShowGrupos === "all" && (
+                      <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-end">
+                          <li className="page-item">
+                            <button
+                              className={`page-link ${
+                                page.firstPage ? "disabled" : ""
+                              }`}
+                              onClick={handlePreviusPage}
+                            >
+                              Previous
+                            </button>
+                          </li>
+                          <li className="page-item">
+                            <button
+                              className={`page-link ${
+                                page.lastPage ? "disabled" : ""
+                              }`}
+                              onClick={handleNextPage}
+                            >
+                              Next
+                            </button>
+                          </li>
+                        </ul>
+                      </nav>
+                    )}
                     <table className="table table-hover table-stripped text-center table-bordered shadow">
                       <thead className="table-dark">
                         <tr>

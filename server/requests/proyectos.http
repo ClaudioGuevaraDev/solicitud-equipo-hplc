@@ -3,4 +3,6 @@
 ###
 GET {{api}}
 ###
+GET {{api}}/page/1
+###
 GET {{api}}/2
