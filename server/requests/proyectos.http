@@ -3,6 +3,8 @@
 ###
 GET {{api}}
 ###
+GET {{api}}/page/25
+###
 GET {{api}}/page/1
 ###
-GET {{api}}/2
+GET {{api}}/2/all/16

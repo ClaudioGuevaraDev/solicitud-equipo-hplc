@@ -75,7 +75,6 @@ def get_users(id_value: int):
         raise HTTPException(
             status_code=500, detail="Error al listar los usuarios.")
 
-
 @router.get("/previus-page/{previus_page}")
 def get_previus_page(previus_page: int):
     cur.execute(

@@ -76,7 +76,7 @@ function DashboardUsuariosPage() {
               >
                 <div className="row">
                   <div className="col-4">
-                    {/* <form className="d-flex" role="search">
+                    <form className="d-flex" role="search">
                       <input
                         className="form-control me-2"
                         type="search"
@@ -86,7 +86,7 @@ function DashboardUsuariosPage() {
                       <button className="btn btn-outline-success" type="submit">
                         Search
                       </button>
-                    </form> */}
+                    </form>
                   </div>
                   <div className="col-8">
                     <nav aria-label="Page navigation example">

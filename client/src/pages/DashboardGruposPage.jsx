@@ -336,7 +336,7 @@ function DashboardGruposPage() {
                   >
                     <div className="row">
                       <div className="col-4">
-                        {/* <form className="d-flex" role="search">
+                        <form className="d-flex" role="search">
                           <input
                             className="form-control me-2"
                             type="search"
@@ -349,7 +349,7 @@ function DashboardGruposPage() {
                           >
                             Search
                           </button>
-                        </form> */}
+                        </form>
                       </div>
                       <div className="col-8">
                         {handleShowGrupos === "all" && (
@@ -380,7 +380,7 @@ function DashboardGruposPage() {
                         )}
                       </div>
                     </div>
-                    <table className="table table-hover table-stripped text-center table-bordered shadow">
+                    <table className="table table-hover table-stripped text-center table-bordered shadow mt-3">
                       <thead className="table-dark">
                         <tr>
                           <th>Nombre</th>

@@ -40,8 +40,71 @@ def get_proyectos():
             status_code=500, detail="Error al listar los proyectos")
 
 
-@router.get("/{user_id}/{type_filter}", status_code=200)
-def get_proyectos_by_user(user_id, type_filter: str):
+@router.get("/page/{id_value}")
+def get_proyectos_page(id_value: int):
+    try:
+        cur.execute(
+            "SELECT * FROM proyectos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
+        proyectos = cur.fetchall()
+
+        data = []
+        for proyecto in proyectos:
+            new_data = {
+                "id": proyecto[0],
+                "folio": proyecto[1],
+                "name": proyecto[2],
+                "start_date": proyecto[3],
+                "termination_date": proyecto[4],
+                "score": proyecto[5]
+            }
+            cur.execute("SELECT * FROM grupos WHERE id = %s", [proyecto[6]])
+            grupo_found = cur.fetchone()
+            if grupo_found == None:
+                new_data["grupo"] = None
+            else:
+                new_data["grupo"] = grupo_found[1]
+
+            data.append(new_data)
+
+        next_page = 0
+        if (len(data) > 0):
+            next_page = data[len(data)-1]["id"] + 1
+
+        first_page = False
+        cur.execute("SELECT * FROM proyectos ORDER BY id ASC LIMIT 1")
+        first_element = cur.fetchone()
+        if ((first_element) and (len(data) > 0)):
+            if data[0]["id"] == first_element[0]:
+                first_page = True
+
+        last_page = False
+        cur.execute("SELECT * FROM proyectos ORDER BY id DESC LIMIT 1")
+        last_element = cur.fetchone()
+        if ((last_element) and (len(data) > 0)):
+            if data[-1]["id"] == last_element[0]:
+                last_page = True
+
+        return {"data": data, "next_page": next_page, "first_page": first_page, "last_page": last_page}
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Error al listar los proyectos")
+
+
+@router.get("/previus-page/{previus_page}")
+def get_previus_page(previus_page: int):
+    cur.execute(
+        "SELECT * FROM proyectos WHERE id < %s ORDER BY id DESC LIMIT 10", [previus_page])
+    previus = cur.fetchall()
+
+    previus_value = None
+    if (len(previus) > 0):
+        previus_value = previus[-1][0]
+
+    return {"previus_value": previus_value}
+
+
+@router.get("/{user_id}/{type_filter}/{id_value}", status_code=200)
+def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int):
     try:
         data_users_proyectos = []
         cur.execute(
@@ -58,8 +121,12 @@ def get_proyectos_by_user(user_id, type_filter: str):
         if len(users_grupos):
             for user_grupo in users_grupos:
                 if user_grupo[1]:
-                    cur.execute(
-                        "SELECT * FROM proyectos WHERE grupo_id = %s", [user_grupo[1]])
+                    if type_filter == "all":
+                        cur.execute(
+                            "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], id_value])
+                    else:
+                        cur.execute(
+                            "SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC", [user_grupo[1]])
                     proyecto_found = cur.fetchall()
                     for p in proyecto_found:
                         if ((type_filter == "filter") and (p[0] in data_users_proyectos)):
@@ -82,26 +149,70 @@ def get_proyectos_by_user(user_id, type_filter: str):
 
                             data.append(new_data)
                         elif type_filter == "all":
-                            new_data = {
-                                "id": p[0],
-                                "folio": p[1],
-                                "name": p[2],
-                                "start_date": p[3],
-                                "termination_date": p[4],
-                                "score": p[5]
-                            }
+                            if (len(data) < 10):
+                                new_data = {
+                                    "id": p[0],
+                                    "folio": p[1],
+                                    "name": p[2],
+                                    "start_date": p[3],
+                                    "termination_date": p[4],
+                                    "score": p[5]
+                                }
 
-                            cur.execute(
-                                "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
-                            grupo_found = cur.fetchone()
-                            if grupo_found == None:
-                                new_data["grupo"] = None
-                            else:
-                                new_data["grupo"] = grupo_found[1]
+                                cur.execute(
+                                    "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
+                                grupo_found = cur.fetchone()
+                                if grupo_found == None:
+                                    new_data["grupo"] = None
+                                else:
+                                    new_data["grupo"] = grupo_found[1]
 
-                            data.append(new_data)
+                                data.append(new_data)
 
-        return {"data": data, "users_proyectos": data_users_proyectos}
+        next_page = 0
+        if type_filter == "all":
+            if len(data) > 0:
+                next_page = data[len(data)-1]["id"] + 1
+
+        first_page = False
+        if type_filter == "all":
+            cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC LIMIT 1",
+                        [users_grupos[0][1]])
+            first_element = cur.fetchone()
+            if ((first_element) and (len(data) > 0)):
+                if data[0]["id"] == first_element[0]:
+                    first_page = True
+
+        last_page = False
+        data2 = []
+        if type_filter == "all":
+            cur.execute(
+                "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
+            users_grupos = cur.fetchall()
+
+            if len(users_grupos):
+                for user_grupo in users_grupos:
+                    if user_grupo[1]:
+                        cur.execute(
+                            "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], next_page])
+                        proyecto_found = cur.fetchall()
+                        for p in proyecto_found:
+                            if type_filter == "all":
+                                if (len(data2) < 10):
+                                    new_data = {
+                                        "id": p[0],
+                                        "folio": p[1],
+                                        "name": p[2],
+                                        "start_date": p[3],
+                                        "termination_date": p[4],
+                                        "score": p[5]
+                                    }
+
+                                    data2.append(new_data)
+        if len(data2) == 0:
+            last_page = True
+
+        return {"data": data, "users_proyectos": data_users_proyectos, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al listar los proyectos.")

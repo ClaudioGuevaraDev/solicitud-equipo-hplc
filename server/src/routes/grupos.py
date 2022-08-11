@@ -78,16 +78,15 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
         next_page = 0
         if len(data) > 0:
             next_page = data[len(data)-1]["id"] + 1
-
+        
+        first_page = False
         if type_filter == "all":
-            first_page = False
             cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
             first_element = cur.fetchone()
             if ((first_element) and (len(data) > 0)):
                 if data[0]["id"] == first_element[0]:
                     first_page = True
         else:
-            first_page = False
             cur.execute("SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
             first_element = cur.fetchone()
             if ((first_element) and (len(data) > 0)):
