@@ -42,8 +42,8 @@ function DashboardGruposPage() {
         ...page,
         nextPage: data.next_page,
         previusPage: previus_page,
-        firstPage: data.first_page,
-        lastPage: data.last_page,
+        firstPage: data.data.length === 0 ? true : data.first_page,
+        lastPage: data.data.length === 0 ? true : data.last_page,
       });
       setLoadingGrupos(false);
     } catch (error) {
@@ -52,6 +52,13 @@ function DashboardGruposPage() {
       });
       setGrupos([]);
       setUsersGrupos([]);
+      setPage({
+        ...page,
+        nextPage: 1,
+        previusPage: 1,
+        firstPage: true,
+        lastPage: true,
+      });
       setLoadingGrupos(false);
     }
   };
@@ -317,6 +324,15 @@ function DashboardGruposPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+          {handleShowGrupos === "all" && grupos.length === 0 && (
+            <div
+              className="alert alert-warning mt-3"
+              role="alert"
+              style={{ maxWidth: 300 }}
+            >
+              <strong>No hay grupos para mostrar.</strong>
             </div>
           )}
           <div className="row mt-4">

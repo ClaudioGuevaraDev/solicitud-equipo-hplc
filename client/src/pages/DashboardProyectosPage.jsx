@@ -44,8 +44,9 @@ function DashboardProyectosPage() {
     try {
       const { data } = await axios.get("/api/grupos");
       setGrupos(data.data);
-      if (data.data.length > 0)
+      if (data.data.length > 0) {
         setProyecto({ ...proyecto, grupo: data.data[0].name });
+      }
       setAuthorized(true);
       setLoadingData({ ...loadingData, grupos: false });
     } catch (error) {
@@ -65,8 +66,8 @@ function DashboardProyectosPage() {
         ...page,
         nextPage: data.next_page,
         previusPage: previus_page,
-        firstPage: data.first_page,
-        lastPage: data.last_page,
+        firstPage: data.data.length === 0 ? true : data.first_page,
+        lastPage: data.data.length === 0 ? true : data.last_page,
       });
       setLoadingData({ ...loading, proyectos: false });
     } catch (error) {
@@ -74,6 +75,13 @@ function DashboardProyectosPage() {
         duration: 5000,
       });
       setProyectos([]);
+      setPage({
+        ...page,
+        nextPage: 1,
+        previusPage: 1,
+        firstPage: true,
+        lastPage: true,
+      });
       setLoadingData({ ...loading, proyectos: false });
     }
   };
@@ -89,13 +97,20 @@ function DashboardProyectosPage() {
         ...page,
         nextPage: data.next_page,
         previusPage: previus_page,
-        firstPage: data.first_page,
-        lastPage: data.last_page,
+        firstPage: data.data.length === 0 ? true : data.first_page,
+        lastPage: data.data.length === 0 ? true : data.last_page,
       });
       setLoadingData({ ...loading, proyectos: false });
     } catch (error) {
       toast.error("Error al listar los proyectos.", {
         duration: 5000,
+      });
+      setPage({
+        ...page,
+        nextPage: 1,
+        previusPage: 1,
+        firstPage: true,
+        lastPage: true,
       });
       setProyectos([]);
       setUsersProyectos([]);
@@ -293,7 +308,7 @@ function DashboardProyectosPage() {
                 role="alert"
                 style={{ maxWidth: 300 }}
               >
-                <strong>No estas inscrito en ningún grupo.</strong>
+                <strong>No hay proyectos para mostrar.</strong>
               </div>
             )}
           {userLogged.role === "user" &&

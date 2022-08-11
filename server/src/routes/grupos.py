@@ -109,7 +109,6 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
 
         return {"data": data, "users_grupos": data_users_grupos, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
-        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los grupos.")
 
@@ -123,7 +122,6 @@ def get_previus_page(previus_page: int):
     if len(previus) > 0:
         previus_value = previus[-1][0]
 
-    print(previus_value)
     return {"previus_value": previus_value}
 
 

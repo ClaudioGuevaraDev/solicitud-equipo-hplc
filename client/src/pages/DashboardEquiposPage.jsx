@@ -333,6 +333,15 @@ function DashboardEquiposPage() {
               )
             )}
           </div>
+          {equipos.length === 0 && (
+            <div
+              className="alert alert-warning mt-3"
+              role="alert"
+              style={{ maxWidth: 300 }}
+            >
+              <strong>No hay equipos para mostrar.</strong>
+            </div>
+          )}
           <div className="row gy-4">
             {loadingData.equipos ? (
               <div className="col-xl-12 d-flex align-items-center justify-content-center">

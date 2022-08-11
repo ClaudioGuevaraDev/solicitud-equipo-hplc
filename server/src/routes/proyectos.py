@@ -176,12 +176,13 @@ def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int):
 
         first_page = False
         if type_filter == "all":
-            cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC LIMIT 1",
-                        [users_grupos[0][1]])
-            first_element = cur.fetchone()
-            if ((first_element) and (len(data) > 0)):
-                if data[0]["id"] == first_element[0]:
-                    first_page = True
+            if (len(users_grupos) > 0):
+                cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC LIMIT 1",
+                            [users_grupos[0][1]])
+                first_element = cur.fetchone()
+                if ((first_element) and (len(data) > 0)):
+                    if data[0]["id"] == first_element[0]:
+                        first_page = True
 
         last_page = False
         data2 = []
@@ -321,8 +322,8 @@ def update_proyecto(proyecto_id: int, proyecto: ProyectoModel):
 
     try:
         if grupo_found == None:
-            cur.execute("UPDATE proyectos SET folio = %s, name = %s, start_date = %s, termination_date = %s, score = %s, grupo_id = %s WHERE id = %s RETURNING *",
-                        [value_folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, None, proyecto_id])
+            cur.execute("UPDATE proyectos SET folio = %s, name = %s, start_date = %s, termination_date = %s, score = %s WHERE id = %s RETURNING *",
+                        [value_folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, proyecto_id])
         else:
             cur.execute("UPDATE proyectos SET folio = %s, name = %s, start_date = %s, termination_date = %s, score = %s, grupo_id = %s WHERE id = %s RETURNING *",
                         [value_folio, proyecto.name, proyecto.start_date, proyecto.termination_date, proyecto.score, grupo_found[0], proyecto_id])
@@ -336,7 +337,7 @@ def update_proyecto(proyecto_id: int, proyecto: ProyectoModel):
             "start_date": updated_proyecto[3],
             "termination_date": updated_proyecto[4],
             "score": updated_proyecto[5],
-            "grupo": grupo_found[1]
+            "grupo": grupo_found[1] if grupo_found else None
         }
 
         return {"data": data, "detail": "Proyeto actualizado con éxito."}

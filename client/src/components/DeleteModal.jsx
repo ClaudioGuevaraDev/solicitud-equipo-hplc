@@ -11,7 +11,7 @@ function DeleteModal({ title, handleDelete }) {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
-              ¿Estśs seguro de eliminar {title}?
+              ¿Estás seguro de eliminar {title}?
             </h5>
             <button
               type="button"

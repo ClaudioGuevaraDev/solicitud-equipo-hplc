@@ -61,19 +61,20 @@ def get_users(id_value: int):
         first_page = False
         cur.execute("SELECT * FROM users ORDER BY id ASC LIMIT 1")
         first_element = cur.fetchone()
-        if data[0]["id"] == first_element[0]:
+        if ((first_element) and (data[0]["id"] == first_element[0])):
             first_page = True
 
         last_page = False
         cur.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
         last_element = cur.fetchone()
-        if data[-1]["id"] == last_element[0]:
+        if ((last_element) and (data[-1]["id"] == last_element[0])):
             last_page = True
 
         return {"data": data, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al listar los usuarios.")
+
 
 @router.get("/previus-page/{previus_page}")
 def get_previus_page(previus_page: int):
