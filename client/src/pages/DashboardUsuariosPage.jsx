@@ -68,94 +68,112 @@ function DashboardUsuariosPage() {
             >
               <LoadingComponent />
             </div>
-          ) : (
-            usuarios.length > 0 && (
-              <div
-                className="col-12 table-responsive"
-                style={{ maxWidth: 1300 }}
-              >
-                <div className="row">
-                  <div className="col-4">
-                    <form className="d-flex" role="search">
-                      <input
-                        className="form-control me-2"
-                        type="search"
-                        placeholder="Search"
-                        aria-label="Search"
-                      />
-                      <button className="btn btn-outline-success" type="submit">
-                        Search
-                      </button>
-                    </form>
-                  </div>
-                  <div className="col-8">
-                    <nav aria-label="Page navigation example">
-                      <ul className="pagination justify-content-end">
-                        <li className="page-item">
-                          <button
-                            className={`page-link ${
-                              page.firstPage ? "disabled" : ""
-                            }`}
-                            onClick={handlePreviusPage}
-                          >
-                            Previous
-                          </button>
-                        </li>
-                        <li className="page-item">
-                          <button
-                            className={`page-link ${
-                              page.lastPage ? "disabled" : ""
-                            }`}
-                            onClick={handleNextPage}
-                          >
-                            Next
-                          </button>
-                        </li>
-                      </ul>
-                    </nav>
-                  </div>
+          ) : usuarios.length > 0 ? (
+            <div className="col-12 table-responsive" style={{ maxWidth: 1800 }}>
+              <div className="row">
+                <div className="col-xl-3">
+                  <form className="d-flex" role="search">
+                    <input
+                      className="form-control me-2"
+                      type="search"
+                      placeholder="Search"
+                      aria-label="Search"
+                    />
+                    <button className="btn btn-outline-success" type="submit">
+                      Search
+                    </button>
+                  </form>
                 </div>
-                <table className="table table-hover table-stripped text-center table-bordered shadow">
-                  <thead className="table-dark">
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Apellidos</th>
-                      <th>Email</th>
-                      <th>Jerarquía</th>
-                      <th>Rol</th>
-                      <th>Verificado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {usuarios.map((u) => (
-                      <tr key={u.id}>
-                        <td>{u.first_name}</td>
-                        <td>{u.last_name}</td>
-                        <td>{u.email}</td>
-                        <td>
-                          {u.jerarquia ? u.jerarquia.name : "Sin jerarquía"}
-                        </td>
-                        <td>
-                          {u.role.name === "admin"
-                            ? "Administrador"
-                            : "Usuario"}
-                        </td>
-                        <td>
-                          {u.verified ? (
-                            <RiThumbUpFill className="text-success" size={20} />
-                          ) : (
-                            <RiThumbDownFill
-                              className="text-danger"
-                              size={20}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="col-xl-9">
+                  <nav aria-label="Page navigation example">
+                    <ul className="pagination justify-content-end">
+                      <li className="page-item">
+                        <button
+                          className={`page-link ${
+                            page.firstPage ? "disabled" : ""
+                          }`}
+                          onClick={handlePreviusPage}
+                        >
+                          Previous
+                        </button>
+                      </li>
+                      <li className="page-item">
+                        <button
+                          className={`page-link ${
+                            page.lastPage ? "disabled" : ""
+                          }`}
+                          onClick={handleNextPage}
+                        >
+                          Next
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
               </div>
-            )
+              <table className="table table-hover table-stripped text-center table-bordered shadow">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Jerarquía</th>
+                    <th>Grupos</th>
+                    <th>Proyectos</th>
+                    <th>Verificado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuarios.map((u) => (
+                    <tr key={u.id}>
+                      <td>{u.first_name}</td>
+                      <td>{u.last_name}</td>
+                      <td>{u.email}</td>
+                      <td>
+                        {u.jerarquia ? u.jerarquia.name : "Sin jerarquía"}
+                      </td>
+                      <td>
+                        {u.grupos.length === 0 ? (
+                          <p>Sin grupos</p>
+                        ) : (
+                          <ul>
+                            {u.grupos.map((g) => (
+                              <li>{g}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </td>
+                      <td>
+                        {u.proyectos.length === 0 ? (
+                          <p>Sin proyectos</p>
+                        ) : (
+                          <ul>
+                            {u.proyectos.map((p) => (
+                              <li>{p}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </td>
+                      <td>
+                        {u.verified ? (
+                          <RiThumbUpFill className="text-success" size={20} />
+                        ) : (
+                          <RiThumbDownFill className="text-danger" size={20} />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div
+              className="alert alert-warning mt-3"
+              role="alert"
+              style={{ maxWidth: 300 }}
+            >
+              <strong>No hay usuarios registrados.</strong>
+            </div>
           )}
         </div>
       </div>

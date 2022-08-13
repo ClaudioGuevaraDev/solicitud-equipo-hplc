@@ -14,64 +14,88 @@ router = APIRouter(
 
 @router.get("/page/{id_value}", status_code=200)
 def get_users(id_value: int):
+    cur.execute("SELECT * FROM roles WHERE name = %s", ["user"])
+    rol_found = cur.fetchone()
+    if rol_found == None:
+        raise HTTPException(
+            status_code=500, detail="Error al listar los usuarios.")
+
     try:
         cur.execute(
-            "SELECT * FROM users WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
+            "SELECT * FROM users WHERE id >= %s AND role_id = %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0]])
         users = cur.fetchall()
 
         data = []
-        for user in users:
-            new_data = {
-                "id": user[0],
-                "first_name": user[1],
-                "last_name": user[2],
-                "email": user[3],
-                "url_image": user[5],
-                "verified": user[6],
-            }
+        if (len(users) > 0):
+            for user in users:
+                new_data = {
+                    "id": user[0],
+                    "first_name": user[1],
+                    "last_name": user[2],
+                    "email": user[3],
+                    "url_image": user[5],
+                    "verified": user[6],
+                }
 
-            if (user[8]):
+                if (user[8]):
+                    cur.execute(
+                        "SELECT * FROM jerarquias WHERE id = %s", [user[8]])
+                    jerarquia_found = cur.fetchone()
+                    new_data["jerarquia"] = {
+                        "id": jerarquia_found[0],
+                        "name": jerarquia_found[1],
+                        "score": jerarquia_found[2]
+                    }
+                else:
+                    new_data["jerarquia"] = None
+
+                grupos = []
                 cur.execute(
-                    "SELECT * FROM jerarquias WHERE id = %s", [user[8]])
-                jerarquia_found = cur.fetchone()
-                new_data["jerarquia"] = {
-                    "id": jerarquia_found[0],
-                    "name": jerarquia_found[1],
-                    "score": jerarquia_found[2]
-                }
-            else:
-                new_data["jerarquia"] = None
+                    "SELECT * FROM users_grupos WHERE users_id = %s", [user[0]])
+                users_grupos = cur.fetchall()
+                for user_grupo in users_grupos:
+                    cur.execute(
+                        "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
+                    grupo_found = cur.fetchone()
+                    if grupo_found:
+                        grupos.append(grupo_found[1])
+                new_data["grupos"] = grupos
 
-            if (user[9]):
-                cur.execute("SELECT * FROM roles WHERE id = %s", [user[9]])
-                role_found = cur.fetchone()
-                new_data["role"] = {
-                    "id": role_found[0],
-                    "name": role_found[1]
-                }
-            else:
-                new_data["role"] = None
+                proyectos = []
+                cur.execute(
+                    "SELECT * FROM users_proyectos WHERE users_id = %s", [user[0]])
+                users_proyectos = cur.fetchall()
+                for user_proyecto in users_proyectos:
+                    cur.execute(
+                        "SELECT * FROM proyectos WHERE id = %s", [user_proyecto[0]])
+                    proyecto_found = cur.fetchone()
+                    if proyecto_found:
+                        proyectos.append(proyecto_found[2])
+                new_data["proyectos"] = proyectos
 
-            data.append(new_data)
+                data.append(new_data)
 
         next_page = 0
         if (len(data) > 0):
             next_page = data[len(data)-1]["id"] + 1
 
         first_page = False
-        cur.execute("SELECT * FROM users ORDER BY id ASC LIMIT 1")
+        cur.execute("SELECT * FROM users WHERE role_id = %s ORDER BY id ASC LIMIT 1",
+                    [rol_found[0]])
         first_element = cur.fetchone()
-        if ((first_element) and (data[0]["id"] == first_element[0])):
+        if ((first_element) and (len(data) > 0) and (data[0]["id"] == first_element[0])):
             first_page = True
 
         last_page = False
-        cur.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
+        cur.execute(
+            "SELECT * FROM users WHERE role_id = %s ORDER BY id DESC LIMIT 1", [rol_found[0]])
         last_element = cur.fetchone()
-        if ((last_element) and (data[-1]["id"] == last_element[0])):
+        if ((last_element) and (len(data) > 0) and (data[-1]["id"] == last_element[0])):
             last_page = True
 
         return {"data": data, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los usuarios.")
 

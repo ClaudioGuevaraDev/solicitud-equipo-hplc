@@ -78,7 +78,7 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
         next_page = 0
         if len(data) > 0:
             next_page = data[len(data)-1]["id"] + 1
-        
+
         first_page = False
         if type_filter == "all":
             cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
@@ -87,12 +87,13 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
                 if data[0]["id"] == first_element[0]:
                     first_page = True
         else:
-            cur.execute("SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
+            cur.execute(
+                "SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
             first_element = cur.fetchone()
             if ((first_element) and (len(data) > 0)):
                 if data[0]["id"] == first_element[1]:
                     first_page = True
-        
+
         last_page = False
         if type_filter == "all":
             cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
@@ -101,7 +102,8 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
                 if data[-1]["id"] == last_element[0]:
                     last_page = True
         else:
-            cur.execute("SELECT * FROM users_grupos ORDER BY grupos_id DESC LIMIT 1")
+            cur.execute(
+                "SELECT * FROM users_grupos ORDER BY grupos_id DESC LIMIT 1")
             last_element = cur.fetchone()
             if ((last_element) and (len(data) > 0)):
                 if data[-1]["id"] == last_element[1]:
@@ -109,6 +111,7 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
 
         return {"data": data, "users_grupos": data_users_grupos, "next_page": next_page, "first_page": first_page, "last_page": last_page}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los grupos.")
 

@@ -68,5 +68,6 @@ def handle_users_grupos(post: UserGrupoModel):
 
         return {"users_grupos": data_users_grupos}
     except Exception as error:
+        print(error)
         raise HTTPException(
             status_code=500, detail="Error al asignar el usuario al grupo.")

@@ -19,19 +19,37 @@ def initial_roles():
             conn.commit()
 
 
-def initial_estados():
-    cur.execute("SELECT * FROM estados")
+def initial_estado_equipos():
+    cur.execute("SELECT * FROM estado_equipos")
 
     if (len(cur.fetchall()) == 0):
-        estados = [
+        estado_equipos = [
             ("Operativo"),
             ("En mantención"),
             ("Defectuoso")
         ]
 
-        for estado in estados:
-            cur.execute("INSERT INTO estados (name) VALUES (%s)", [estado])
+        for estado in estado_equipos:
+            cur.execute(
+                "INSERT INTO estado_equipos (name) VALUES (%s)", [estado])
             conn.commit()
+
+
+def initial_estado_solicitudes():
+    cur.execute("SELECT * FROM estado_solicitudes")
+
+    if (len(cur.fetchall()) == 0):
+        estado_solicitudes = [
+            ("Aprobada"),
+            ("Procesando"),
+            ("Cancelada")
+        ]
+
+        for estado in estado_solicitudes:
+            cur.execute(
+                "INSERT INTO estado_solicitudes (name) VALUES (%s)", [estado])
+            conn.commit()
+
 
 def initial_jerarquias():
     cur.execute("SELECT * FROM jerarquias")
@@ -51,30 +69,26 @@ def initial_jerarquias():
 
 def inital_user_admin():
     cur.execute("SELECT * FROM users WHERE email = %s",
-                ["chichadioss23@gmail.com"])
+                [admin_email])
     if cur.fetchone() == None:
         cur.execute("SELECT * FROM roles WHERE name = %s", ["admin"])
         role_found = cur.fetchone()
         if role_found:
-            cur.execute("SELECT * FROM jerarquias WHERE name = %s",
-                        ["jerarquía 1"])
-            jerarquia_found = cur.fetchone()
-            if jerarquia_found:
-                try:
-                    hashed_password = encrypt_password(password=admin_password)
+            try:
+                hashed_password = encrypt_password(password=admin_password)
 
-                    cur.execute("INSERT INTO users (first_name, last_name, email, password, jerarquia_id, role_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *", [
-                                "Claudio", "Guevara", admin_email, hashed_password, jerarquia_found[0], role_found[0]])
-                    conn.commit()
+                cur.execute("INSERT INTO users (first_name, last_name, email, password, role_id) VALUES (%s, %s, %s, %s, %s) RETURNING *", [
+                            "Claudio", "Guevara", admin_email, hashed_password, role_found[0]])
+                conn.commit()
 
-                    created_user = cur.fetchone()
+                created_user = cur.fetchone()
 
-                    token = jwt.encode(
-                        {"id": created_user[0]}, secret_key_jwt, algorithm="HS256")
-                    mail_content = f'''
-                        <a href="{backend_url}/api/auth/account-verification/{token}">Presiona aquí para validar tu cuenta!</a>
-                    '''
-                    send_email(
-                        receiver_address=admin_email, mail_content=mail_content, subject="Validación de cuenta.")
-                except Exception as error:
-                    pass
+                token = jwt.encode(
+                    {"id": created_user[0]}, secret_key_jwt, algorithm="HS256")
+                mail_content = f'''
+                    <a href="{backend_url}/api/auth/account-verification/{token}">Presiona aquí para validar tu cuenta!</a>
+                '''
+                send_email(
+                    receiver_address=admin_email, mail_content=mail_content, subject="Validación de cuenta.")
+            except Exception as error:
+                pass
