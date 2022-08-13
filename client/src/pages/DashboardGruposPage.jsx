@@ -30,11 +30,13 @@ function DashboardGruposPage() {
     firstPage: true,
     lastPage: true,
   });
+  const [valueSearch, setValueSearch] = useState("");
+  const [loadingSearch, setLoadingSearch] = useState(false);
 
-  const getGrupos = async (page_value, previus_page) => {
+  const getGrupos = async (page_value, previus_page, search) => {
     try {
       const { data } = await axios.get(
-        `/api/grupos/${userLogged.id}/${handleShowGrupos}/${page_value}`
+        `/api/grupos/${userLogged.id}/${handleShowGrupos}/${page_value}/${search}`
       );
       setGrupos(data.data);
       setUsersGrupos(data.users_grupos);
@@ -72,7 +74,7 @@ function DashboardGruposPage() {
         firstPage: true,
         lastPage: true,
       });
-      getGrupos(1, 1);
+      getGrupos(1, 1, "null");
     }
   }, [userLogged.id, handleShowGrupos]);
 
@@ -173,12 +175,42 @@ function DashboardGruposPage() {
   };
 
   const handleNextPage = () => {
-    getGrupos(page.nextPage, grupos[0].id);
+    if (valueSearch === "") {
+      getGrupos(page.nextPage, grupos[0].id, "null");
+    } else {
+      getGrupos(page.nextPage, grupos[0].id, valueSearch);
+    }
   };
 
   const handlePreviusPage = async () => {
     const { data } = await axios.get(`/api/grupos/${page.previusPage}`);
-    getGrupos(page.previusPage, data.previus_value);
+    if (valueSearch === "") {
+      getGrupos(page.previusPage, data.previus_value, "null");
+    } else {
+      getGrupos(page.previusPage, data.previus_value, valueSearch);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setLoadingSearch(true);
+
+    setPage({
+      ...page,
+      nextPage: 1,
+      previusPage: 1,
+      firstPage: true,
+      lastPage: true,
+    });
+
+    if (valueSearch === "") {
+      getGrupos(1, 1, "null");
+    } else {
+      getGrupos(1, 1, valueSearch);
+    }
+
+    setLoadingSearch(false);
   };
 
   return (
@@ -233,76 +265,88 @@ function DashboardGruposPage() {
             )}
           {userLogged.role === "admin" && (
             <div className="row gy-4">
-              <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
+              <div className="col-xl-6 col-12" style={{ maxWidth: 800 }}>
                 <div className="card shadow">
                   <div className="card-body">
                     <form onSubmit={handleSubmit}>
-                      <div className="mb-3">
-                        <label htmlFor="name-input" className="form-label">
-                          Nombre
-                        </label>
-                        <input
-                          type="text"
-                          id="name-input"
-                          className="form-control"
-                          required
-                          placeholder="Ej: Grupo 1"
-                          value={grupo.name}
-                          onChange={(e) =>
-                            setGrupo({ ...grupo, name: e.target.value })
-                          }
-                        />
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="mb-3">
+                            <label htmlFor="name-input" className="form-label">
+                              Nombre
+                            </label>
+                            <input
+                              type="text"
+                              id="name-input"
+                              className="form-control"
+                              required
+                              placeholder="Ej: Grupo 1"
+                              value={grupo.name}
+                              onChange={(e) =>
+                                setGrupo({ ...grupo, name: e.target.value })
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="col-6">
+                          <div className="mb-3">
+                            <label htmlFor="lider-label" className="form-label">
+                              Líder
+                            </label>
+                            <input
+                              type="text"
+                              id="lider-label"
+                              required
+                              className="form-control"
+                              value={grupo.lider}
+                              onChange={(e) =>
+                                setGrupo({ ...grupo, lider: e.target.value })
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div className="mb-3">
-                        <label htmlFor="lider-label" className="form-label">
-                          Líder
-                        </label>
-                        <input
-                          type="text"
-                          id="lider-label"
-                          required
-                          className="form-control"
-                          value={grupo.lider}
-                          onChange={(e) =>
-                            setGrupo({ ...grupo, lider: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="date-input" className="form-label">
-                          Fecha de Creación
-                        </label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          required
-                          id="date-input"
-                          value={grupo.date}
-                          onChange={(e) =>
-                            setGrupo({ ...grupo, date: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="score-input" className="form-label">
-                          Score
-                        </label>
-                        <input
-                          type="number"
-                          id="score-input"
-                          className="form-control"
-                          placeholder="1-100"
-                          min={1}
-                          max={100}
-                          required
-                          value={grupo.score}
-                          onChange={(e) =>
-                            setGrupo({ ...grupo, score: e.target.value })
-                          }
-                        />
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="mb-3">
+                            <label htmlFor="date-input" className="form-label">
+                              Fecha de Creación
+                            </label>
+                            <input
+                              type="date"
+                              className="form-control"
+                              required
+                              id="date-input"
+                              value={grupo.date}
+                              onChange={(e) =>
+                                setGrupo({ ...grupo, date: e.target.value })
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="col-6">
+                          <div className="mb-3">
+                            <label htmlFor="score-input" className="form-label">
+                              Score
+                            </label>
+                            <input
+                              type="number"
+                              id="score-input"
+                              className="form-control"
+                              placeholder="1-100"
+                              min={1}
+                              max={100}
+                              required
+                              value={grupo.score}
+                              onChange={(e) =>
+                                setGrupo({ ...grupo, score: e.target.value })
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
                       {loading ? (
-                        <button className="btn btn-success w-100" type="button">
+                        <button className="btn btn-success" type="button">
                           <span
                             className="spinner-border spinner-border-sm"
                             role="status"
@@ -312,7 +356,7 @@ function DashboardGruposPage() {
                         </button>
                       ) : (
                         <button
-                          className="btn btn-success w-100"
+                          className="btn btn-success"
                           disabled={grupo.name === "" || grupo.lider === ""}
                         >
                           {selectedGrupo
@@ -351,7 +395,42 @@ function DashboardGruposPage() {
                     style={{ maxWidth: 1300 }}
                   >
                     <div className="row">
-                      <div className="col-12">
+                      <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
+                        <form
+                          className="d-flex"
+                          role="search"
+                          onSubmit={handleSearch}
+                        >
+                          <input
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                            value={valueSearch}
+                            onChange={(e) => setValueSearch(e.target.value)}
+                          />
+                          {loadingSearch ? (
+                            <button className="btn btn-success" type="button">
+                              <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-outline-success"
+                              type="submit"
+                            >
+                              Search
+                            </button>
+                          )}
+                        </form>
+                      </div>
+                      <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                         {handleShowGrupos === "all" && (
                           <nav aria-label="Page navigation example">
                             <ul className="pagination justify-content-end">

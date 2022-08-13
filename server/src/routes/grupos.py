@@ -32,8 +32,8 @@ def get_grupos():
             status_code=500, detail="Error al listar los grupos.")
 
 
-@router.get("/{user_id}/{type_filter}/{id_value}", status_code=200)
-def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
+@router.get("/{user_id}/{type_filter}/{id_value}/{value_search}", status_code=200)
+def get_grupos_by_user(user_id: int, type_filter: str, id_value: int, value_search: str):
     try:
         data_users_grupos = []
         cur.execute(
@@ -44,13 +44,23 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
 
         grupos = []
         if type_filter == "all":
-            cur.execute(
-                "SELECT * FROM grupos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
-            grupos = cur.fetchall()
+            if value_search == "null":
+                cur.execute(
+                    "SELECT * FROM grupos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
+                grupos = cur.fetchall()
+            else:
+                cur.execute(
+                    "SELECT * FROM grupos WHERE id >= %s AND name LIKE %s ORDER BY id ASC LIMIT 10", [id_value, f"%{value_search}%"])
+                grupos = cur.fetchall()
         else:
-            cur.execute(
-                "SELECT * FROM grupos")
-            grupos = cur.fetchall()
+            if value_search == "null":
+                cur.execute(
+                    "SELECT * FROM grupos")
+                grupos = cur.fetchall()
+            else:
+                cur.execute(
+                    "SELECT * FROM grupos WHERE name LIKE %s", [f"%{value_search}%"])
+                grupos = cur.fetchall()
 
         data = []
         for grupo in grupos:
@@ -80,31 +90,53 @@ def get_grupos_by_user(user_id: int, type_filter: str, id_value: int):
             next_page = data[len(data)-1]["id"] + 1
 
         first_page = False
+        first_element = None
         if type_filter == "all":
-            cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
-            first_element = cur.fetchone()
+            if value_search == "null":
+                cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
+                first_element = cur.fetchone()
+            else:
+                cur.execute(
+                    "SELECT * FROM grupos WHERE name LIKE %s ORDER BY id ASC LIMIT 1", [f"%{value_search}%"])
+                first_element = cur.fetchone()
             if ((first_element) and (len(data) > 0)):
                 if data[0]["id"] == first_element[0]:
                     first_page = True
         else:
-            cur.execute(
-                "SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
-            first_element = cur.fetchone()
+            if value_search == "null":
+                cur.execute(
+                    "SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
+                first_element = cur.fetchone()
+            else:
+                cur.execute(
+                    "SELECT * FROM users_grupos WHERE name LIKE %s ORDER BY grupos_id ASC LIMIT 1", [f"%{value_search}%"])
+                first_element = cur.fetchone()
             if ((first_element) and (len(data) > 0)):
                 if data[0]["id"] == first_element[1]:
                     first_page = True
 
         last_page = False
+        last_element = None
         if type_filter == "all":
-            cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
-            last_element = cur.fetchone()
+            if value_search == "null":
+                cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
+                last_element = cur.fetchone()
+            else:
+                cur.execute(
+                    "SELECT * FROM grupos WHERE name LIKE %s ORDER BY id DESC LIMIT 1", [f"%{value_search}%"])
+                last_element = cur.fetchone()
             if ((last_element) and (len(data) > 0)):
                 if data[-1]["id"] == last_element[0]:
                     last_page = True
         else:
-            cur.execute(
-                "SELECT * FROM users_grupos ORDER BY grupos_id DESC LIMIT 1")
-            last_element = cur.fetchone()
+            if value_search == "null":
+                cur.execute(
+                    "SELECT * FROM users_grupos ORDER BY grupos_id DESC LIMIT 1")
+                last_element = cur.fetchone()
+            else:
+                cur.execute(
+                    "SELECT * FROM users_grupos WHERE name LIKE %s ORDER BY grupos_id DESC LIMIT 1", [f"%{value_search}%"])
+                last_element = cur.fetchone()
             if ((last_element) and (len(data) > 0)):
                 if data[-1]["id"] == last_element[1]:
                     last_page = True

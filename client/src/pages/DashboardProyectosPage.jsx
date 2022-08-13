@@ -499,7 +499,10 @@ function DashboardProyectosPage() {
                           </div>
                         </div>
                         {loading ? (
-                          <button className="btn btn-success" type="button">
+                          <button
+                            className="btn btn-success"
+                            type="button"
+                          >
                             <span
                               className="spinner-border spinner-border-sm"
                               role="status"
@@ -539,8 +542,24 @@ function DashboardProyectosPage() {
                   style={{ maxWidth: 1300 }}
                 >
                   <div className="row">
+                    <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
+                      <form className="d-flex" role="search">
+                        <input
+                          className="form-control me-2"
+                          type="search"
+                          placeholder="Search"
+                          aria-label="Search"
+                        />
+                        <button
+                          className="btn btn-outline-success"
+                          type="submit"
+                        >
+                          Search
+                        </button>
+                      </form>
+                    </div>
                     {typeFilter === "all" && (
-                      <div className="col-12">
+                      <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                         <nav aria-label="Page navigation example">
                           <ul className="pagination justify-content-end">
                             {userLogged.role === "admin" ? (
