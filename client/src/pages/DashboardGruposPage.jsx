@@ -233,88 +233,76 @@ function DashboardGruposPage() {
             )}
           {userLogged.role === "admin" && (
             <div className="row gy-4">
-              <div className="col-xl-6 col-12" style={{ maxWidth: 700 }}>
+              <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
                 <div className="card shadow">
                   <div className="card-body">
                     <form onSubmit={handleSubmit}>
-                      <div className="row">
-                        <div className="col-6">
-                          <div className="mb-3">
-                            <label htmlFor="name-input" className="form-label">
-                              Nombre
-                            </label>
-                            <input
-                              type="text"
-                              id="name-input"
-                              className="form-control"
-                              required
-                              placeholder="Ej: Grupo 1"
-                              value={grupo.name}
-                              onChange={(e) =>
-                                setGrupo({ ...grupo, name: e.target.value })
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-6">
-                          <div className="mb-3">
-                            <label htmlFor="lider-label" className="form-label">
-                              Líder
-                            </label>
-                            <input
-                              type="text"
-                              id="lider-label"
-                              required
-                              className="form-control"
-                              value={grupo.lider}
-                              onChange={(e) =>
-                                setGrupo({ ...grupo, lider: e.target.value })
-                              }
-                            />
-                          </div>
-                        </div>
+                      <div className="mb-3">
+                        <label htmlFor="name-input" className="form-label">
+                          Nombre
+                        </label>
+                        <input
+                          type="text"
+                          id="name-input"
+                          className="form-control"
+                          required
+                          placeholder="Ej: Grupo 1"
+                          value={grupo.name}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, name: e.target.value })
+                          }
+                        />
                       </div>
-                      <div className="row">
-                        <div className="col-6">
-                          <div className="mb-3">
-                            <label htmlFor="date-input" className="form-label">
-                              Fecha de Creación
-                            </label>
-                            <input
-                              type="date"
-                              className="form-control"
-                              required
-                              id="date-input"
-                              value={grupo.date}
-                              onChange={(e) =>
-                                setGrupo({ ...grupo, date: e.target.value })
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-6">
-                          <div className="mb-3">
-                            <label htmlFor="score-input" className="form-label">
-                              Score
-                            </label>
-                            <input
-                              type="number"
-                              id="score-input"
-                              className="form-control"
-                              placeholder="1-100"
-                              min={1}
-                              max={100}
-                              required
-                              value={grupo.score}
-                              onChange={(e) =>
-                                setGrupo({ ...grupo, score: e.target.value })
-                              }
-                            />
-                          </div>
-                        </div>
+                      <div className="mb-3">
+                        <label htmlFor="lider-label" className="form-label">
+                          Líder
+                        </label>
+                        <input
+                          type="text"
+                          id="lider-label"
+                          required
+                          className="form-control"
+                          value={grupo.lider}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, lider: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="date-input" className="form-label">
+                          Fecha de Creación
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          required
+                          id="date-input"
+                          value={grupo.date}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, date: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="score-input" className="form-label">
+                          Score
+                        </label>
+                        <input
+                          type="number"
+                          id="score-input"
+                          className="form-control"
+                          placeholder="1-100"
+                          min={1}
+                          max={100}
+                          required
+                          value={grupo.score}
+                          onChange={(e) =>
+                            setGrupo({ ...grupo, score: e.target.value })
+                          }
+                        />
                       </div>
                       {loading ? (
-                        <button className="btn btn-success" type="button">
+                        <button className="btn btn-success w-100" type="button">
                           <span
                             className="spinner-border spinner-border-sm"
                             role="status"
@@ -324,7 +312,7 @@ function DashboardGruposPage() {
                         </button>
                       ) : (
                         <button
-                          className="btn btn-success"
+                          className="btn btn-success w-100"
                           disabled={grupo.name === "" || grupo.lider === ""}
                         >
                           {selectedGrupo
@@ -363,23 +351,7 @@ function DashboardGruposPage() {
                     style={{ maxWidth: 1300 }}
                   >
                     <div className="row">
-                      <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
-                        <form className="d-flex" role="search">
-                          <input
-                            className="form-control me-2"
-                            type="search"
-                            placeholder="Search"
-                            aria-label="Search"
-                          />
-                          <button
-                            className="btn btn-outline-success"
-                            type="submit"
-                          >
-                            Search
-                          </button>
-                        </form>
-                      </div>
-                      <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
+                      <div className="col-12">
                         {handleShowGrupos === "all" && (
                           <nav aria-label="Page navigation example">
                             <ul className="pagination justify-content-end">
