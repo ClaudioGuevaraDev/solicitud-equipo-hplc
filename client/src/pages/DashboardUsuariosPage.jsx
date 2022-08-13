@@ -71,7 +71,7 @@ function DashboardUsuariosPage() {
           ) : usuarios.length > 0 ? (
             <div className="col-12 table-responsive" style={{ maxWidth: 1800 }}>
               <div className="row">
-                <div className="col-xl-3">
+                <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
                   <form className="d-flex" role="search">
                     <input
                       className="form-control me-2"
@@ -84,7 +84,7 @@ function DashboardUsuariosPage() {
                     </button>
                   </form>
                 </div>
-                <div className="col-xl-9">
+                <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                   <nav aria-label="Page navigation example">
                     <ul className="pagination justify-content-end">
                       <li className="page-item">

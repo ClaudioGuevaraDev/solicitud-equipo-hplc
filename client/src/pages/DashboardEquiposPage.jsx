@@ -212,94 +212,118 @@ function DashboardEquiposPage() {
               </div>
             ) : (
               userLogged.role === "admin" && (
-                <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
+                <div className="col-xl-8 col-12" style={{ maxWidth: 700 }}>
                   <div className="card shadow">
                     <div className="card-body">
                       <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                          <label htmlFor="name-input" className="form-label">
-                            Nombre
-                          </label>
-                          <input
-                            type="text"
-                            id="name-input"
-                            className="form-control"
-                            required
-                            placeholder="Ej: HPLC"
-                            value={equipo.name}
-                            onChange={(e) =>
-                              setEquipo({ ...equipo, name: e.target.value })
-                            }
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="file-input" className="form-label">
-                            Imagen
-                          </label>
-                          <input
-                            type="file"
-                            ref={inputRef}
-                            id="file-input"
-                            className="form-control"
-                            required={selectedEquipo ? false : true}
-                            onChange={(e) =>
-                              setEquipo({ ...equipo, image: e.target.files[0] })
-                            }
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="termination-date-input"
-                            className="form-label"
-                          >
-                            Fecha de Obtención
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            required
-                            id="termination-date-input"
-                            value={equipo.date_obtained}
-                            onChange={(e) =>
-                              setEquipo({
-                                ...equipo,
-                                date_obtained: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        {estados.length > 0 && (
-                          <div className="mb-3">
-                            <label
-                              htmlFor="estados-input"
-                              className="form-label"
-                            >
-                              Estados
-                            </label>
-                            <select
-                              className="form-select"
-                              id="jerarquia-input"
-                              value={equipo.estado}
-                              onChange={(e) =>
-                                setEquipo({ ...equipo, estado: e.target.value })
-                              }
-                            >
-                              {equipo.estado === null && (
-                                <option selected value={null}>
-                                  Sin estado
-                                </option>
-                              )}
-                              {estados.map((e) => (
-                                <option key={e.name} value={e.name}>
-                                  {e.name}
-                                </option>
-                              ))}
-                            </select>
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="name-input"
+                                className="form-label"
+                              >
+                                Nombre
+                              </label>
+                              <input
+                                type="text"
+                                id="name-input"
+                                className="form-control"
+                                required
+                                placeholder="Ej: HPLC"
+                                value={equipo.name}
+                                onChange={(e) =>
+                                  setEquipo({ ...equipo, name: e.target.value })
+                                }
+                              />
+                            </div>
                           </div>
-                        )}
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="file-input"
+                                className="form-label"
+                              >
+                                Imagen
+                              </label>
+                              <input
+                                type="file"
+                                ref={inputRef}
+                                id="file-input"
+                                className="form-control"
+                                required={selectedEquipo ? false : true}
+                                onChange={(e) =>
+                                  setEquipo({
+                                    ...equipo,
+                                    image: e.target.files[0],
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="termination-date-input"
+                                className="form-label"
+                              >
+                                Fecha de Obtención
+                              </label>
+                              <input
+                                type="date"
+                                className="form-control"
+                                required
+                                id="termination-date-input"
+                                value={equipo.date_obtained}
+                                onChange={(e) =>
+                                  setEquipo({
+                                    ...equipo,
+                                    date_obtained: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            {estados.length > 0 && (
+                              <div className="mb-3">
+                                <label
+                                  htmlFor="estados-input"
+                                  className="form-label"
+                                >
+                                  Estados
+                                </label>
+                                <select
+                                  className="form-select"
+                                  id="jerarquia-input"
+                                  value={equipo.estado}
+                                  onChange={(e) =>
+                                    setEquipo({
+                                      ...equipo,
+                                      estado: e.target.value,
+                                    })
+                                  }
+                                >
+                                  {equipo.estado === null && (
+                                    <option selected value={null}>
+                                      Sin estado
+                                    </option>
+                                  )}
+                                  {estados.map((e) => (
+                                    <option key={e.name} value={e.name}>
+                                      {e.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                         {loading ? (
                           <button
-                            className="btn btn-success w-100"
+                            className="btn btn-success"
                             type="button"
                           >
                             <span
@@ -311,7 +335,7 @@ function DashboardEquiposPage() {
                           </button>
                         ) : (
                           <button
-                            className="btn btn-success w-100"
+                            className="btn btn-success"
                             disabled={
                               selectedEquipo
                                 ? equipo.name === "" || equipo.estado === null
@@ -351,9 +375,9 @@ function DashboardEquiposPage() {
               equipos.length > 0 &&
               equipos.map((e) => (
                 <div
-                  className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
+                  className="col-xl-5 col-lg-6 col-md-6 col-sm-12 col-12"
                   key={e.id}
-                  style={{ maxWidth: 600 }}
+                  style={{ maxWidth: 700 }}
                 >
                   <div className="card shadow" style={{ height: "100%" }}>
                     <img

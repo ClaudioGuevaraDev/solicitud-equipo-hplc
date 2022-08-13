@@ -332,145 +332,175 @@ function DashboardProyectosPage() {
               </div>
             ) : (
               userLogged.role === "admin" && (
-                <div className="col-xl-4 col-12" style={{ maxWidth: 400 }}>
+                <div className="col-xl-6 col-12" style={{ maxWidth: 800 }}>
                   <div className="card shadow">
                     <div className="card-body">
                       <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                          <label htmlFor="name-input" className="form-label">
-                            Nombre
-                          </label>
-                          <input
-                            type="text"
-                            id="name-input"
-                            className="form-control"
-                            required
-                            placeholder="Ej: Grupo 1"
-                            value={proyecto.name}
-                            onChange={(e) =>
-                              setProyecto({ ...proyecto, name: e.target.value })
-                            }
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="folio-input" className="form-label">
-                            Folio
-                          </label>
-                          <input
-                            type="text"
-                            id="name-input"
-                            className="form-control"
-                            placeholder="Ej: Grupo 1"
-                            value={proyecto.folio}
-                            onChange={(e) =>
-                              setProyecto({
-                                ...proyecto,
-                                folio: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="start-date-input"
-                            className="form-label"
-                          >
-                            Fecha de Inicio
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            required
-                            id="start-date-input"
-                            value={proyecto.start_date}
-                            onChange={(e) =>
-                              setProyecto({
-                                ...proyecto,
-                                start_date: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="termination-date-input"
-                            className="form-label"
-                          >
-                            Fecha de Término
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            required
-                            id="termination-date-input"
-                            value={proyecto.termination_date}
-                            onChange={(e) =>
-                              setProyecto({
-                                ...proyecto,
-                                termination_date: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="score-input" className="form-label">
-                            Score
-                          </label>
-                          <input
-                            type="number"
-                            id="score-input"
-                            className="form-control"
-                            placeholder="1-100"
-                            min={1}
-                            max={100}
-                            required
-                            value={proyecto.score}
-                            onChange={(e) =>
-                              setProyecto({
-                                ...proyecto,
-                                score: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        {grupos.length > 0 && (
-                          <div className="mb-3">
-                            <label
-                              htmlFor="grupos-input"
-                              className="form-label"
-                            >
-                              Grupos
-                            </label>
-                            <select
-                              className="form-select"
-                              id="jerarquia-input"
-                              value={proyecto.grupo}
-                              onChange={(e) =>
-                                setProyecto({
-                                  ...proyecto,
-                                  grupo: e.target.value,
-                                })
-                              }
-                            >
-                              {proyecto.grupo === null && (
-                                <option
-                                  selected={proyecto.grupo ? false : true}
-                                  value={null}
-                                >
-                                  Grupo sin asignar
-                                </option>
-                              )}
-                              {grupos.map((g) => (
-                                <option key={g.id} value={g.name}>
-                                  {g.name}
-                                </option>
-                              ))}
-                            </select>
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="name-input"
+                                className="form-label"
+                              >
+                                Nombre
+                              </label>
+                              <input
+                                type="text"
+                                id="name-input"
+                                className="form-control"
+                                required
+                                placeholder="Ej: Grupo 1"
+                                value={proyecto.name}
+                                onChange={(e) =>
+                                  setProyecto({
+                                    ...proyecto,
+                                    name: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
                           </div>
-                        )}
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="folio-input"
+                                className="form-label"
+                              >
+                                Folio
+                              </label>
+                              <input
+                                type="text"
+                                id="name-input"
+                                className="form-control"
+                                placeholder="Ej: Grupo 1"
+                                value={proyecto.folio}
+                                onChange={(e) =>
+                                  setProyecto({
+                                    ...proyecto,
+                                    folio: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="start-date-input"
+                                className="form-label"
+                              >
+                                Fecha de Inicio
+                              </label>
+                              <input
+                                type="date"
+                                className="form-control"
+                                required
+                                id="start-date-input"
+                                value={proyecto.start_date}
+                                onChange={(e) =>
+                                  setProyecto({
+                                    ...proyecto,
+                                    start_date: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="termination-date-input"
+                                className="form-label"
+                              >
+                                Fecha de Término
+                              </label>
+                              <input
+                                type="date"
+                                className="form-control"
+                                required
+                                id="termination-date-input"
+                                value={proyecto.termination_date}
+                                onChange={(e) =>
+                                  setProyecto({
+                                    ...proyecto,
+                                    termination_date: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="mb-3">
+                              <label
+                                htmlFor="score-input"
+                                className="form-label"
+                              >
+                                Score
+                              </label>
+                              <input
+                                type="number"
+                                id="score-input"
+                                className="form-control"
+                                placeholder="1-100"
+                                min={1}
+                                max={100}
+                                required
+                                value={proyecto.score}
+                                onChange={(e) =>
+                                  setProyecto({
+                                    ...proyecto,
+                                    score: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div className="col-6">
+                              {grupos.length > 0 && (
+                                <div className="mb-3">
+                                  <label
+                                    htmlFor="grupos-input"
+                                    className="form-label"
+                                  >
+                                    Grupos
+                                  </label>
+                                  <select
+                                    className="form-select"
+                                    id="jerarquia-input"
+                                    value={proyecto.grupo}
+                                    onChange={(e) =>
+                                      setProyecto({
+                                        ...proyecto,
+                                        grupo: e.target.value,
+                                      })
+                                    }
+                                  >
+                                    {proyecto.grupo === null && (
+                                      <option
+                                        selected={proyecto.grupo ? false : true}
+                                        value={null}
+                                      >
+                                        Grupo sin asignar
+                                      </option>
+                                    )}
+                                    {grupos.map((g) => (
+                                      <option key={g.id} value={g.name}>
+                                        {g.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                         {loading ? (
                           <button
-                            className="btn btn-success w-100"
+                            className="btn btn-success"
                             type="button"
                           >
                             <span
@@ -482,7 +512,7 @@ function DashboardProyectosPage() {
                           </button>
                         ) : (
                           <button
-                            className="btn btn-success w-100"
+                            className="btn btn-success"
                             disabled={proyecto.name === "" ? true : false}
                           >
                             {selectedProyecto
@@ -512,7 +542,7 @@ function DashboardProyectosPage() {
                   style={{ maxWidth: 1300 }}
                 >
                   <div className="row">
-                    <div className="col-4">
+                    <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
                       <form className="d-flex" role="search">
                         <input
                           className="form-control me-2"
@@ -529,7 +559,7 @@ function DashboardProyectosPage() {
                       </form>
                     </div>
                     {typeFilter === "all" && (
-                      <div className="col-8">
+                      <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                         <nav aria-label="Page navigation example">
                           <ul className="pagination justify-content-end">
                             {userLogged.role === "admin" ? (
