@@ -28,7 +28,7 @@ def get_equipos():
                 "date_obtained": equipo[3],
             }
 
-            cur.execute("SELECT * FROM estados WHERE id = %s", [equipo[4]])
+            cur.execute("SELECT * FROM estado_equipos WHERE id = %s", [equipo[4]])
             estado_found = cur.fetchone()
             if estado_found == None:
                 new_data["estado"] = None
@@ -58,7 +58,7 @@ def create_equipo(file: UploadFile = File(...), name: str = Form(...), date_obta
         raise HTTPException(
             status_code=500, detail="Error al crear el equipo.")
 
-    cur.execute("SELECT * FROM estados WHERE name = %s", [estado])
+    cur.execute("SELECT * FROM estado_equipos WHERE name = %s", [estado])
     estado_found = cur.fetchone()
     if estado_found == None:
         raise HTTPException(status_code=404, detail="El estado no existe.")
@@ -67,7 +67,7 @@ def create_equipo(file: UploadFile = File(...), name: str = Form(...), date_obta
         with open(path_image, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        cur.execute("INSERT INTO equipos (name, url_image, date_obtained, estado_id) VALUES (%s, %s, %s, %s) RETURNING *",
+        cur.execute("INSERT INTO equipos (name, url_image, date_obtained, estado_equipo_id) VALUES (%s, %s, %s, %s) RETURNING *",
                     [name, url_image, date_obtained, estado_found[0]])
         conn.commit()
 
@@ -124,7 +124,7 @@ def update_equipo(equipo_id: int, file: Union[UploadFile, None] = None, name: st
     if ((equipo_found_name) and (equipo_found_name[0] != equipo_id)):
         raise HTTPException(status_code=400, detail="El equipo ya existe.")
 
-    cur.execute("SELECT * FROM estados WHERE name = %s", [estado])
+    cur.execute("SELECT * FROM estado_equipos WHERE name = %s", [estado])
     estado_found = cur.fetchone()
     if estado_found == None:
         raise HTTPException(status_code=404, detail="El estado no existe.")
@@ -140,14 +140,14 @@ def update_equipo(equipo_id: int, file: Union[UploadFile, None] = None, name: st
             with open(path_image, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
 
-            cur.execute("UPDATE equipos SET name = %s, url_image = %s, date_obtained = %s, estado_id = %s WHERE id = %s RETURNING *",
+            cur.execute("UPDATE equipos SET name = %s, url_image = %s, date_obtained = %s, estado_equipo_id = %s WHERE id = %s RETURNING *",
                         [name, url_image, date_obtained, estado_found[0], equipo_id])
 
             if ((equipo_found[2] != None) and (len(equipo_found[2].split("/")) == 4)):
                 os.remove(os.path.join(os.getcwd(), "static",
                                        "images", equipo_found[2].split("/")[3]))
         else:
-            cur.execute("UPDATE equipos SET name = %s, date_obtained = %s, estado_id = %s WHERE id = %s RETURNING *",
+            cur.execute("UPDATE equipos SET name = %s, date_obtained = %s, estado_equipo_id = %s WHERE id = %s RETURNING *",
                         [name, date_obtained, estado_found[0], equipo_id])
 
         updated_equipo = cur.fetchone()

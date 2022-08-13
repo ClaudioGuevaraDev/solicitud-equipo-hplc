@@ -32,7 +32,7 @@ function DashboardEquiposPage() {
 
   const getEstados = async () => {
     try {
-      const { data } = await axios.get("/api/estados");
+      const { data } = await axios.get("/api/estados-equipos");
       if (data.data.length > 0) {
         setEstados(data.data);
         setEquipo({

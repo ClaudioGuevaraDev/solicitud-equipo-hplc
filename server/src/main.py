@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routes import auth, roles, users, jerarquias, lideres, grupos, proyectos, estados, equipos, users_grupos, users_proyectos
+from routes import auth, roles, users, jerarquias, lideres, grupos, proyectos, equipos, users_grupos, users_proyectos, estado_equipos
 from db.initial_db import initial_roles, initial_jerarquias, inital_user_admin, initial_estado_equipos, initial_estado_solicitudes
 from config.config import frontend_url
 from utils.initial_folders import initial_folders
@@ -42,7 +42,7 @@ app.include_router(jerarquias.router)
 app.include_router(lideres.router)
 app.include_router(grupos.router)
 app.include_router(proyectos.router)
-app.include_router(estados.router)
+app.include_router(estado_equipos.router)
 app.include_router(equipos.router)
 app.include_router(users_grupos.router)
 app.include_router(users_proyectos.router)

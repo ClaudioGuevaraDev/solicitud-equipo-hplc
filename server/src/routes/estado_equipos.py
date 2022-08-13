@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from db.connection import cur
 
 router = APIRouter(
-    prefix="/api/estados",
+    prefix="/api/estados-equipos",
     tags=["Estados"]
 )
 
@@ -11,7 +11,7 @@ router = APIRouter(
 @router.get("/", status_code=200)
 def get_estados():
     try:
-        cur.execute("SELECT * FROM estados")
+        cur.execute("SELECT * FROM estado_equipos")
         estados = cur.fetchall()
 
         data = []
