@@ -39,6 +39,8 @@ function DashboardProyectosPage() {
     firstPage: true,
     lastPage: true,
   });
+  const [valueSearch, setValueSearch] = useState("");
+  const [loadingSearch, setLoadingSearch] = useState(false);
 
   const getGrupos = async () => {
     try {
@@ -58,9 +60,11 @@ function DashboardProyectosPage() {
     }
   };
 
-  const getProyectos = async (page_value, previus_page) => {
+  const getProyectos = async (page_value, previus_page, search) => {
     try {
-      const { data } = await axios.get(`/api/proyectos/page/${page_value}`);
+      const { data } = await axios.get(
+        `/api/proyectos/page/${page_value}/${search}`
+      );
       setProyectos(data.data);
       setPage({
         ...page,
@@ -86,10 +90,10 @@ function DashboardProyectosPage() {
     }
   };
 
-  const getProyectosByUser = async (page_value, previus_page) => {
+  const getProyectosByUser = async (page_value, previus_page, search) => {
     try {
       const { data } = await axios.get(
-        `/api/proyectos/${userLogged.id}/${typeFilter}/${page_value}`
+        `/api/proyectos/${userLogged.id}/${typeFilter}/${page_value}/${search}`
       );
       setProyectos(data.data);
       setUsersProyectos(data.users_proyectos);
@@ -122,9 +126,9 @@ function DashboardProyectosPage() {
     if (authorized === true) {
       if (userLogged.role) {
         if (userLogged.role === "admin") {
-          getProyectos(page.nextPage, page.nextPage);
+          getProyectos(page.nextPage, page.nextPage, "null");
         } else {
-          getProyectosByUser(page.nextPage, page.nextPage);
+          getProyectosByUser(page.nextPage, page.nextPage, "null");
         }
       }
     } else {
@@ -244,21 +248,63 @@ function DashboardProyectosPage() {
 
   const handleNextPage = () => {
     if (userLogged.role === "user") {
-      getProyectosByUser(page.nextPage, proyectos[0].id);
+      if (valueSearch === "") {
+        getProyectosByUser(page.nextPage, proyectos[0].id, "null");
+      } else {
+        getProyectosByUser(page.nextPage, proyectos[0].id, valueSearch);
+      }
     } else if (userLogged.role === "admin") {
-      getProyectos(page.nextPage, proyectos[0].id);
+      if (valueSearch === "") {
+        getProyectos(page.nextPage, proyectos[0].id, "null");
+      } else {
+        getProyectos(page.nextPage, proyectos[0].id, valueSearch);
+      }
     }
   };
 
   const handleResetPage = () => {
-    getProyectosByUser(1, 1);
+    getProyectosByUser(1, 1, "null");
   };
 
   const handlePreviusPage = async () => {
     const { data } = await axios.get(
       `/api/proyectos/previus-page/${page.previusPage}`
     );
-    getProyectos(page.previusPage, data.previus_value);
+    if (valueSearch === "") {
+      getProyectos(page.previusPage, data.previus_value, "null");
+    } else {
+      getProyectos(page.previusPage, data.previus_value, valueSearch);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setLoadingSearch(true);
+
+    setPage({
+      ...page,
+      nextPage: 1,
+      previusPage: 1,
+      firstPage: true,
+      lastPage: true,
+    });
+
+    if (userLogged.role === "admin") {
+      if (valueSearch === "") {
+        getProyectos(1, 1, "null");
+      } else {
+        getProyectos(1, 1, valueSearch);
+      }
+    } else if (userLogged.role === "user") {
+      if (valueSearch === "") {
+        getProyectosByUser(1, 1, "null");
+      } else {
+        getProyectosByUser(1, 1, valueSearch);
+      }
+    }
+
+    setLoadingSearch(false);
   };
 
   return (
@@ -538,24 +584,30 @@ function DashboardProyectosPage() {
                   className="col-12 table-responsive mt-3"
                   style={{ maxWidth: 1300 }}
                 >
-                  <div className="row">
-                    <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
-                      <form className="d-flex" role="search">
-                        <input
-                          className="form-control me-2"
-                          type="search"
-                          placeholder="Search"
-                          aria-label="Search"
-                        />
-                        <button
-                          className="btn btn-outline-success"
-                          type="submit"
+                  {typeFilter === "all" && (
+                    <div className="row">
+                      <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
+                        <form
+                          className="d-flex"
+                          role="search"
+                          onSubmit={handleSearch}
                         >
-                          Search
-                        </button>
-                      </form>
-                    </div>
-                    {typeFilter === "all" && (
+                          <input
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                            value={valueSearch}
+                            onChange={(e) => setValueSearch(e.target.value)}
+                          />
+                          <button
+                            className="btn btn-outline-success"
+                            type="submit"
+                          >
+                            Search
+                          </button>
+                        </form>
+                      </div>
                       <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                         <nav aria-label="Page navigation example">
                           <ul className="pagination justify-content-end">
@@ -595,8 +647,8 @@ function DashboardProyectosPage() {
                           </ul>
                         </nav>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <table className="table table-hover table-stripped text-center table-bordered shadow mt-3">
                     <thead className="table-dark">
                       <tr>

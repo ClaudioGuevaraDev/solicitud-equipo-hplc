@@ -40,12 +40,18 @@ def get_proyectos():
             status_code=500, detail="Error al listar los proyectos")
 
 
-@router.get("/page/{id_value}")
-def get_proyectos_page(id_value: int):
+@router.get("/page/{id_value}/{value_search}")
+def get_proyectos_page(id_value: int, value_search: str):
     try:
-        cur.execute(
-            "SELECT * FROM proyectos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
-        proyectos = cur.fetchall()
+        proyectos = []
+        if value_search == "null":
+            cur.execute(
+                "SELECT * FROM proyectos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
+            proyectos = cur.fetchall()
+        else:
+            cur.execute(
+                "SELECT * FROM proyectos WHERE id >= %s AND name LIKE %s ORDER BY id ASC LIMIT 10", [id_value, f"%{value_search}%"])
+            proyectos = cur.fetchall()
 
         data = []
         for proyecto in proyectos:
@@ -71,15 +77,27 @@ def get_proyectos_page(id_value: int):
             next_page = data[len(data)-1]["id"] + 1
 
         first_page = False
-        cur.execute("SELECT * FROM proyectos ORDER BY id ASC LIMIT 1")
-        first_element = cur.fetchone()
+        first_element = None
+        if value_search == "null":
+            cur.execute("SELECT * FROM proyectos ORDER BY id ASC LIMIT 1")
+            first_element = cur.fetchone()
+        else:
+            cur.execute(
+                "SELECT * FROM proyectos WHERE name LIKE %s ORDER BY id ASC LIMIT 1", [f"%{value_search}%"])
+            first_element = cur.fetchone()
         if ((first_element) and (len(data) > 0)):
             if data[0]["id"] == first_element[0]:
                 first_page = True
 
         last_page = False
-        cur.execute("SELECT * FROM proyectos ORDER BY id DESC LIMIT 1")
-        last_element = cur.fetchone()
+        last_element = None
+        if value_search == "null":
+            cur.execute("SELECT * FROM proyectos ORDER BY id DESC LIMIT 1")
+            last_element = cur.fetchone()
+        else:
+            cur.execute(
+                "SELECT * FROM proyectos WHERE name LIKE %s ORDER BY id DESC LIMIT 1", [f"%{value_search}%"])
+            last_element = cur.fetchone()
         if ((last_element) and (len(data) > 0)):
             if data[-1]["id"] == last_element[0]:
                 last_page = True
@@ -103,8 +121,8 @@ def get_previus_page(previus_page: int):
     return {"previus_value": previus_value}
 
 
-@router.get("/{user_id}/{type_filter}/{id_value}", status_code=200)
-def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int):
+@router.get("/{user_id}/{type_filter}/{id_value}/{value_search}", status_code=200)
+def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int, value_search: str):
     try:
         data_users_proyectos = []
         cur.execute(
@@ -122,8 +140,12 @@ def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int):
             for user_grupo in users_grupos:
                 if user_grupo[1]:
                     if type_filter == "all":
-                        cur.execute(
-                            "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], id_value])
+                        if value_search == "null":
+                            cur.execute(
+                                "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], id_value])
+                        else:
+                            cur.execute(
+                                "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s AND name LIKE %s ORDER BY id ASC", [user_grupo[1], id_value, f"%{value_search}%"])
                     else:
                         cur.execute(
                             "SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC", [user_grupo[1]])
@@ -175,11 +197,17 @@ def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int):
                 next_page = data[len(data)-1]["id"] + 1
 
         first_page = False
+        first_element = None
         if type_filter == "all":
             if (len(users_grupos) > 0):
-                cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC LIMIT 1",
-                            [users_grupos[0][1]])
-                first_element = cur.fetchone()
+                if value_search == "":
+                    cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC LIMIT 1",
+                                [users_grupos[0][1]])
+                    first_element = cur.fetchone()
+                else:
+                    cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s AND name LIKE %s ORDER BY id ASC LIMIT 1",
+                                [users_grupos[0][1], f"%{value_search}%"])
+                    first_element = cur.fetchone()
                 if ((first_element) and (len(data) > 0)):
                     if data[0]["id"] == first_element[0]:
                         first_page = True
@@ -194,9 +222,14 @@ def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int):
             if len(users_grupos):
                 for user_grupo in users_grupos:
                     if user_grupo[1]:
-                        cur.execute(
-                            "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], next_page])
-                        proyecto_found = cur.fetchall()
+                        if value_search == "null":
+                            cur.execute(
+                                "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], next_page])
+                            proyecto_found = cur.fetchall()
+                        else:
+                            cur.execute(
+                                "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s AND name LIKE %s ORDER BY id ASC", [user_grupo[1], next_page, f"%{value_search}%"])
+                            proyecto_found = cur.fetchall()
                         for p in proyecto_found:
                             if type_filter == "all":
                                 if (len(data2) < 10):

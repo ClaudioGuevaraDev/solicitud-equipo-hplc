@@ -394,44 +394,44 @@ function DashboardGruposPage() {
                     className="col-12 table-responsive"
                     style={{ maxWidth: 1300 }}
                   >
-                    <div className="row">
-                      <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-2">
-                        <form
-                          className="d-flex"
-                          role="search"
-                          onSubmit={handleSearch}
-                        >
-                          <input
-                            className="form-control me-2"
-                            type="search"
-                            placeholder="Search"
-                            aria-label="Search"
-                            value={valueSearch}
-                            onChange={(e) => setValueSearch(e.target.value)}
-                          />
-                          {loadingSearch ? (
-                            <button className="btn btn-success" type="button">
-                              <span
-                                className="spinner-border spinner-border-sm"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-outline-success"
-                              type="submit"
-                            >
-                              Search
-                            </button>
-                          )}
-                        </form>
-                      </div>
-                      <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-2">
-                        {handleShowGrupos === "all" && (
+                    {handleShowGrupos === "all" && (
+                      <div className="row">
+                        <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-2">
+                          <form
+                            className="d-flex"
+                            role="search"
+                            onSubmit={handleSearch}
+                          >
+                            <input
+                              className="form-control me-2"
+                              type="search"
+                              placeholder="Search"
+                              aria-label="Search"
+                              value={valueSearch}
+                              onChange={(e) => setValueSearch(e.target.value)}
+                            />
+                            {loadingSearch ? (
+                              <button className="btn btn-success" type="button">
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                ></span>
+                                <span className="visually-hidden">
+                                  Loading...
+                                </span>
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-outline-success"
+                                type="submit"
+                              >
+                                Search
+                              </button>
+                            )}
+                          </form>
+                        </div>
+                        <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-2">
                           <nav aria-label="Page navigation example">
                             <ul className="pagination justify-content-end">
                               <li className="page-item">
@@ -456,9 +456,9 @@ function DashboardGruposPage() {
                               </li>
                             </ul>
                           </nav>
-                        )}
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <table className="table table-hover table-stripped text-center table-bordered shadow mt-3">
                       <thead className="table-dark">
                         <tr>
