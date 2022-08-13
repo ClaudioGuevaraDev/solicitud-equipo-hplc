@@ -395,7 +395,7 @@ function DashboardGruposPage() {
                     style={{ maxWidth: 1300 }}
                   >
                     <div className="row">
-                      <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
+                      <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-2">
                         <form
                           className="d-flex"
                           role="search"
@@ -430,7 +430,7 @@ function DashboardGruposPage() {
                           )}
                         </form>
                       </div>
-                      <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
+                      <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-2">
                         {handleShowGrupos === "all" && (
                           <nav aria-label="Page navigation example">
                             <ul className="pagination justify-content-end">

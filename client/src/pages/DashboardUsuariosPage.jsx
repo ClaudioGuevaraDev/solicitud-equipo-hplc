@@ -15,10 +15,14 @@ function DashboardUsuariosPage() {
     firstPage: true,
     lastPage: true,
   });
+  const [valueSearch, setValueSearch] = useState("");
+  const [loadingSearch, setLoadingSearch] = useState(false);
 
-  const getUsuarios = async (page_value, previus_page) => {
+  const getUsuarios = async (page_value, previus_page, search) => {
     try {
-      const { data } = await axios.get(`/api/users/page/${page_value}`);
+      const { data } = await axios.get(
+        `/api/users/page/${page_value}/${search}`
+      );
       setUsuarios(data.data);
       setPage({
         ...page,
@@ -32,24 +36,61 @@ function DashboardUsuariosPage() {
       toast.error("Error al listar los usuarios.", {
         duration: 5000,
       });
+      setPage({
+        ...page,
+        nextPage: 1,
+        previusPage: 1,
+        firstPage: true,
+        lastPage: true,
+      });
       setUsuarios([]);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUsuarios(page.nextPage, page.nextPage);
+    getUsuarios(page.nextPage, page.nextPage, "null");
   }, []);
 
   const handleNextPage = () => {
-    getUsuarios(page.nextPage, usuarios[0].id);
+    if (valueSearch === "") {
+      getUsuarios(page.nextPage, usuarios[0].id, "null");
+    } else {
+      getUsuarios(page.nextPage, usuarios[0].id, valueSearch);
+    }
   };
 
   const handlePreviusPage = async () => {
     const { data } = await axios.get(
       `/api/users/previus-page/${page.previusPage}`
     );
-    getUsuarios(page.previusPage, data.previus_value);
+    if (valueSearch === "") {
+      getUsuarios(page.previusPage, data.previus_value, "null");
+    } else {
+      getUsuarios(page.previusPage, data.previus_value, valueSearch);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setLoadingSearch(true);
+
+    setPage({
+      ...page,
+      nextPage: 1,
+      previusPage: 1,
+      firstPage: true,
+      lastPage: true,
+    });
+
+    if (valueSearch === "") {
+      getUsuarios(1, 1, "null");
+    } else {
+      getUsuarios(1, 1, valueSearch);
+    }
+
+    setLoadingSearch(false);
   };
 
   return (
@@ -71,7 +112,37 @@ function DashboardUsuariosPage() {
           ) : usuarios.length > 0 ? (
             <div className="col-12 table-responsive" style={{ maxWidth: 1800 }}>
               <div className="row">
-                <div className="col-xl-12">
+                <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
+                  <form
+                    className="d-flex"
+                    role="search"
+                    onSubmit={handleSearch}
+                  >
+                    <input
+                      className="form-control me-2"
+                      type="search"
+                      placeholder="Search"
+                      aria-label="Search"
+                      value={valueSearch}
+                      onChange={(e) => setValueSearch(e.target.value)}
+                    />
+                    {loadingSearch ? (
+                      <button className="btn btn-success" type="button">
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        <span className="visually-hidden">Loading...</span>
+                      </button>
+                    ) : (
+                      <button className="btn btn-outline-success" type="submit">
+                        Search
+                      </button>
+                    )}
+                  </form>
+                </div>
+                <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                   <nav aria-label="Page navigation example">
                     <ul className="pagination justify-content-end">
                       <li className="page-item">

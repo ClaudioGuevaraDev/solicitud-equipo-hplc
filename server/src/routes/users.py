@@ -12,8 +12,8 @@ router = APIRouter(
 )
 
 
-@router.get("/page/{id_value}", status_code=200)
-def get_users(id_value: int):
+@router.get("/page/{id_value}/{value_search}", status_code=200)
+def get_users(id_value: int, value_search: str):
     cur.execute("SELECT * FROM roles WHERE name = %s", ["user"])
     rol_found = cur.fetchone()
     if rol_found == None:
@@ -21,9 +21,15 @@ def get_users(id_value: int):
             status_code=500, detail="Error al listar los usuarios.")
 
     try:
-        cur.execute(
-            "SELECT * FROM users WHERE id >= %s AND role_id = %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0]])
-        users = cur.fetchall()
+        users = []
+        if value_search == "null":
+            cur.execute(
+                "SELECT * FROM users WHERE id >= %s AND role_id = %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0]])
+            users = cur.fetchall()
+        else:
+            cur.execute(
+                "SELECT * FROM users WHERE id >= %s AND role_id = %s AND email LIKE %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0], f"%{value_search}%"])
+            users = cur.fetchall()
 
         data = []
         if (len(users) > 0):
@@ -80,16 +86,28 @@ def get_users(id_value: int):
             next_page = data[len(data)-1]["id"] + 1
 
         first_page = False
-        cur.execute("SELECT * FROM users WHERE role_id = %s ORDER BY id ASC LIMIT 1",
-                    [rol_found[0]])
-        first_element = cur.fetchone()
+        first_element = None
+        if value_search == "null":
+            cur.execute("SELECT * FROM users WHERE role_id = %s ORDER BY id ASC LIMIT 1",
+                        [rol_found[0]])
+            first_element = cur.fetchone()
+        else:
+            cur.execute(
+                "SELECT * FROM users WHERE id >= %s AND role_id = %s AND email LIKE %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0], f"%{value_search}%"])
+            users = cur.fetchall()
         if ((first_element) and (len(data) > 0) and (data[0]["id"] == first_element[0])):
             first_page = True
 
         last_page = False
-        cur.execute(
-            "SELECT * FROM users WHERE role_id = %s ORDER BY id DESC LIMIT 1", [rol_found[0]])
-        last_element = cur.fetchone()
+        last_element = None
+        if value_search == "null":
+            cur.execute(
+                "SELECT * FROM users WHERE role_id = %s ORDER BY id DESC LIMIT 1", [rol_found[0]])
+            last_element = cur.fetchone()
+        else:
+            cur.execute(
+                "SELECT * FROM users WHERE role_id = %s AND email LIKE %s ORDER BY id DESC LIMIT 1", [rol_found[0], f"%{value_search}%"])
+            last_element = cur.fetchone()
         if ((last_element) and (len(data) > 0) and (data[-1]["id"] == last_element[0])):
             last_page = True
 

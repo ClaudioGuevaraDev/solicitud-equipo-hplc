@@ -459,50 +459,47 @@ function DashboardProyectosPage() {
                                 }
                               />
                             </div>
-                            <div className="col-6">
-                              {grupos.length > 0 && (
-                                <div className="mb-3">
-                                  <label
-                                    htmlFor="grupos-input"
-                                    className="form-label"
-                                  >
-                                    Grupos
-                                  </label>
-                                  <select
-                                    className="form-select"
-                                    id="jerarquia-input"
-                                    value={proyecto.grupo}
-                                    onChange={(e) =>
-                                      setProyecto({
-                                        ...proyecto,
-                                        grupo: e.target.value,
-                                      })
-                                    }
-                                  >
-                                    {proyecto.grupo === null && (
-                                      <option
-                                        selected={proyecto.grupo ? false : true}
-                                        value={null}
-                                      >
-                                        Grupo sin asignar
-                                      </option>
-                                    )}
-                                    {grupos.map((g) => (
-                                      <option key={g.id} value={g.name}>
-                                        {g.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-                            </div>
+                          </div>
+                          <div className="col-6">
+                            {grupos.length > 0 && (
+                              <div className="mb-3">
+                                <label
+                                  htmlFor="grupos-input"
+                                  className="form-label"
+                                >
+                                  Grupos
+                                </label>
+                                <select
+                                  className="form-select"
+                                  id="jerarquia-input"
+                                  value={proyecto.grupo}
+                                  onChange={(e) =>
+                                    setProyecto({
+                                      ...proyecto,
+                                      grupo: e.target.value,
+                                    })
+                                  }
+                                >
+                                  {proyecto.grupo === null && (
+                                    <option
+                                      selected={proyecto.grupo ? false : true}
+                                      value={null}
+                                    >
+                                      Grupo sin asignar
+                                    </option>
+                                  )}
+                                  {grupos.map((g) => (
+                                    <option key={g.id} value={g.name}>
+                                      {g.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
                           </div>
                         </div>
                         {loading ? (
-                          <button
-                            className="btn btn-success"
-                            type="button"
-                          >
+                          <button className="btn btn-success" type="button">
                             <span
                               className="spinner-border spinner-border-sm"
                               role="status"
