@@ -11,5 +11,4 @@ Sistema de administración de solicitudes para el equipo HPLC por parte de usuar
 
 #### Frontend
 
-* Añadir buscador
-* Añadir paginación
+* Arreglar cuando el search no devuelve nada

@@ -346,28 +346,6 @@ function DashboardProyectosPage() {
               </div>
             </>
           )}
-          {userLogged.role === "user" &&
-            proyectos.length === 0 &&
-            typeFilter === "all" && (
-              <div
-                className="alert alert-warning mt-3"
-                role="alert"
-                style={{ maxWidth: 300 }}
-              >
-                <strong>No hay proyectos para mostrar.</strong>
-              </div>
-            )}
-          {userLogged.role === "user" &&
-            (usersProyectos.length === 0 || proyectos.length === 0) &&
-            typeFilter === "filter" && (
-              <div
-                className="alert alert-warning mt-3"
-                role="alert"
-                style={{ maxWidth: 300 }}
-              >
-                <strong>No estas inscrito en ningún proyecto.</strong>
-              </div>
-            )}
           <div className="row gy-4">
             {loadingData.grupos ? (
               <div
@@ -579,35 +557,46 @@ function DashboardProyectosPage() {
                 <LoadingComponent />
               </div>
             ) : (
-              proyectos.length > 0 && (
-                <div
-                  className="col-12 table-responsive mt-3"
-                  style={{ maxWidth: 1300 }}
-                >
-                  {typeFilter === "all" && (
-                    <div className="row">
-                      <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-2">
-                        <form
-                          className="d-flex"
-                          role="search"
-                          onSubmit={handleSearch}
-                        >
-                          <input
-                            className="form-control me-2"
-                            type="search"
-                            placeholder="Search"
-                            aria-label="Search"
-                            value={valueSearch}
-                            onChange={(e) => setValueSearch(e.target.value)}
-                          />
+              <div
+                className="col-12 table-responsive mt-3"
+                style={{ maxWidth: 1300 }}
+              >
+                {typeFilter === "all" && (
+                  <div className="row">
+                    <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-1">
+                      <form
+                        className="d-flex"
+                        role="search"
+                        onSubmit={handleSearch}
+                      >
+                        <input
+                          className="form-control me-2"
+                          type="search"
+                          placeholder="Search"
+                          aria-label="Search"
+                          value={valueSearch}
+                          onChange={(e) => setValueSearch(e.target.value)}
+                        />
+                        {loadingSearch ? (
+                          <button className="btn btn-success" type="button">
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="visually-hidden">Loading...</span>
+                          </button>
+                        ) : (
                           <button
                             className="btn btn-outline-success"
                             type="submit"
                           >
                             Search
                           </button>
-                        </form>
-                      </div>
+                        )}
+                      </form>
+                    </div>
+                    {proyectos.length > 0 && (
                       <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
                         <nav aria-label="Page navigation example">
                           <ul className="pagination justify-content-end">
@@ -647,9 +636,11 @@ function DashboardProyectosPage() {
                           </ul>
                         </nav>
                       </div>
-                    </div>
-                  )}
-                  <table className="table table-hover table-stripped text-center table-bordered shadow mt-3">
+                    )}
+                  </div>
+                )}
+                {proyectos.length > 0 ? (
+                  <table className="table table-hover table-stripped text-center table-bordered shadow">
                     <thead className="table-dark">
                       <tr>
                         <th>Nombre</th>
@@ -721,8 +712,16 @@ function DashboardProyectosPage() {
                       ))}
                     </tbody>
                   </table>
-                </div>
-              )
+                ) : (
+                  <div
+                    className="alert alert-warning mt-3"
+                    role="alert"
+                    style={{ maxWidth: 300 }}
+                  >
+                    <strong>No hay proyectos para mostrar.</strong>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
