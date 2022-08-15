@@ -43,6 +43,30 @@ def get_users_proyectos():
             status_code=500, detail="Error al listar los usuarios con sus proyectos.")
 
 
+@router.get("/{user_id}")
+def get_users_proyectos_by_user(user_id: int):
+    try:
+        cur.execute(
+            "SELECT * FROM users_proyectos WHERE users_id = %s", [user_id])
+        user_proyectos = cur.fetchall()
+
+        data = []
+        for user_proyecto in user_proyectos:
+            cur.execute("SELECT * FROM proyectos WHERE id = %s",
+                        [user_proyecto[1]])
+            proyecto_found = cur.fetchone()
+            if proyecto_found:
+                data.append({
+                    "id": proyecto_found[0],
+                    "name": proyecto_found[2]
+                })
+
+        return {"data": data}
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Error al listar los proyectos del usuario.")
+
+
 @router.post("/", status_code=200)
 def handle_users_proyectos(post: UsersProyectosModel):
     try:

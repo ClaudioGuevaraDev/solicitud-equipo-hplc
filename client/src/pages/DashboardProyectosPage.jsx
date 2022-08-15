@@ -597,7 +597,7 @@ function DashboardProyectosPage() {
                       </form>
                     </div>
                     {proyectos.length > 0 && (
-                      <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
+                      <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-1">
                         <nav aria-label="Page navigation example">
                           <ul className="pagination justify-content-end">
                             {userLogged.role === "admin" ? (
