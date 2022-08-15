@@ -1,0 +1,16 @@
+@api = http://localhost:8000/api/solicitudes
+
+###
+GET {{api}}
+###
+POST {{api}}
+Content-Type: application/json
+
+{
+    "user": 2,
+    "equipo": 2,
+    "grupo": 1,
+    "proyecto": 1
+}
+###
+DELETE {{api}}/4
