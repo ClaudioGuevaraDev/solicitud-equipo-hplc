@@ -8,7 +8,6 @@ Sistema de administración de solicitudes para el equipo HPLC por parte de usuar
 #### Backend
 
 * Proteger roles, users, jerarquías routes con tokens (mmiddlewares)
+* Mejorar diseño de los correos
 
 #### Frontend
-
-* Arreglar cuando el search no devuelve nada

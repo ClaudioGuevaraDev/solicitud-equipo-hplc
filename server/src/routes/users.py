@@ -73,7 +73,7 @@ def get_users(id_value: int, value_search: str):
                 users_proyectos = cur.fetchall()
                 for user_proyecto in users_proyectos:
                     cur.execute(
-                        "SELECT * FROM proyectos WHERE id = %s", [user_proyecto[0]])
+                        "SELECT * FROM proyectos WHERE id = %s", [user_proyecto[1]])
                     proyecto_found = cur.fetchone()
                     if proyecto_found:
                         proyectos.append(proyecto_found[2])

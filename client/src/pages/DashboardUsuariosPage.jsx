@@ -199,7 +199,7 @@ function DashboardUsuariosPage() {
                           ) : (
                             <ul>
                               {u.grupos.map((g) => (
-                                <li>{g}</li>
+                                <li key={g}>{g}</li>
                               ))}
                             </ul>
                           )}
@@ -210,7 +210,7 @@ function DashboardUsuariosPage() {
                           ) : (
                             <ul>
                               {u.proyectos.map((p) => (
-                                <li>{p}</li>
+                                <li key={p}>{p}</li>
                               ))}
                             </ul>
                           )}

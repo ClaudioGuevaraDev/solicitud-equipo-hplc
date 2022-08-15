@@ -459,7 +459,11 @@ function DashboardGruposPage() {
                           <th>Líder</th>
                           <th>Fecha de Creación</th>
                           {userLogged.role === "admin" && <th>Score</th>}
-                          <th>Opciones</th>
+                          <th>
+                            {userLogged.role === "admin"
+                              ? "Opciones"
+                              : "Inscribir"}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
