@@ -107,7 +107,40 @@ def user_register(user: UserRegisterModel):
         token = jwt.encode(
             {"id": created_user[0]}, secret_key_jwt, algorithm="HS256")
         mail_content = f'''
-            <a href="{backend_url}/api/auth/account-verification/{token}">Presiona aquí para validar tu cuenta!</a>
+            <html>
+                <head></head>
+                <body>
+                    <div
+                        style="
+                            width: 28rem;
+                            height: 14rem;
+                            padding: 10px;
+                            border-radius: 8px;
+                            background-color: #f5f6f8;
+                            margin: auto;
+                        "
+                        >
+                        <h1 style="text-align: center">Validación de Cuenta HPLC</h1>
+                        <p style="font-style: italic; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
+                            Presiona el botón para validar tu cuenta de HPLC!
+                        </p>
+                        <a
+                            href="{backend_url}/api/auth/account-verification/{token}"
+                            style="
+                            background-color: #0099ff;
+                            padding: 12px 20px;
+                            border-radius: 5px;
+                            text-decoration: none;
+                            color: white;
+                            font-size: 1.3rem;
+                            font-weight: bold;
+                            margin: 0 7rem;
+                            "
+                            >Presiona aquí!</a
+                        >
+                    </div>
+                </body>
+            </html>
         '''
         send_email(
             receiver_address=user["email"], mail_content=mail_content, subject="Validación de cuenta.")
@@ -153,7 +186,40 @@ def password_recovery(user: UserPasswordRecoveryModel):
         token = jwt.encode(
             {"id": user_found[0]}, secret_key_jwt, algorithm="HS256")
         mail_content = f'''
-            <a href="{backend_url}/api/auth/authorized-password-change/{token}">Presiona aquí para recuperar tu contraseña!</a>
+        <html>
+            <head></head>
+            <body>
+                <div
+                    style="
+                        width: 28rem;
+                        height: 14rem;
+                        padding: 10px;
+                        border-radius: 8px;
+                        background-color: #f5f6f8;
+                        margin: auto;
+                    "
+                    >
+                    <h1 style="text-align: center">Cambiar Contraseña</h1>
+                    <p style="font-style: italic; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
+                        Presiona el botón para cambiar tu contraseña de HPLC!
+                    </p>
+                    <a
+                        href="{backend_url}/api/auth/authorized-password-change/{token}"
+                        style="
+                        background-color: #0099ff;
+                        padding: 12px 20px;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        color: white;
+                        font-size: 1.3rem;
+                        font-weight: bold;
+                        margin: 0 7rem;
+                        "
+                        >Presiona aquí!</a
+                    >
+                </div>
+            </body>
+        </html>
         '''
         send_email(receiver_address=user.email,
                    mail_content=mail_content, subject="Restaurar contraseña.")

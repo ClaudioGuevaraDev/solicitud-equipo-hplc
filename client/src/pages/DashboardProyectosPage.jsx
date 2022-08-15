@@ -563,7 +563,7 @@ function DashboardProyectosPage() {
               >
                 {typeFilter === "all" && (
                   <div className="row">
-                    <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-1">
+                    <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-1">
                       <form
                         className="d-flex"
                         role="search"

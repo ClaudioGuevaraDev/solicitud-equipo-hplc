@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template Email</title>
+  </head>
+  <body>
+    <div
+      style="
+        width: 25rem;
+        height: 14rem;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #f5f6f8;
+        margin: auto;
+      "
+    >
+      <h1 style="text-align: center">Cambiar Contraseña</h1>
+      <p style="font-style: italic; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
+        Presiona el botón para cambiar tu contraseña de HPLC!
+      </p>
+      <a
+        href="{backend_url}/api/auth/authorized-password-change/{token}"
+        style="
+          background-color: #0099ff;
+          padding: 12px 20px;
+          border-radius: 5px;
+          text-decoration: none;
+          color: white;
+          font-size: 1.3rem;
+          font-weight: bold;
+          margin: 0 6.5rem;
+        "
+        >Presiona aquí!</a
+      >
+    </div>
+  </body>
+</html>
