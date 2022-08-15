@@ -13,11 +13,17 @@ function DashboardSolicitudesPage() {
     grupos: false,
     proyectos: false,
   });
+  const [authorizedGet, setAuthorizedGet] = useState({
+    equipos: true,
+    grupos: false,
+    proyectos: false,
+  });
 
   const getEquipos = async () => {
     try {
       const { data } = await axios.get("/api/equipos");
       setEquipos(data.data);
+      setAuthorizedGet({ ...authorizedGet, equipos: false, grupos: true });
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -26,6 +32,7 @@ function DashboardSolicitudesPage() {
         });
       }
       setEquipos([]);
+      setAuthorizedGet({ ...authorizedGet, equipos: false, grupos: true });
     }
   };
 
@@ -33,6 +40,7 @@ function DashboardSolicitudesPage() {
     try {
       const { data } = await axios.get(`/api/users-grupos/${userLogged.id}`);
       setGrupos(data.data);
+      setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: true });
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -42,6 +50,7 @@ function DashboardSolicitudesPage() {
       }
       setGrupos([]);
       setGetErrors({ ...getErrors, grupos: true });
+      setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: true });
     }
   };
 
@@ -49,6 +58,7 @@ function DashboardSolicitudesPage() {
     try {
       const { data } = await axios.get(`/api/users-proyectos/${userLogged.id}`);
       setProyectos(data.data);
+      setAuthorizedGet({ ...authorizedGet, proyectos: false });
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -58,14 +68,15 @@ function DashboardSolicitudesPage() {
       }
       setProyectos([]);
       setGetErrors({ ...getErrors, proyectos: true });
+      setAuthorizedGet({ ...authorizedGet, proyectos: false });
     }
   };
 
   useEffect(() => {
-    if (userLogged.id !== 0) getEquipos();
-    if (userLogged.id !== 0) getGrupos();
-    if (userLogged.id !== 0) getProyectos();
-  }, [userLogged.id]);
+    if (authorizedGet.equipos === true && userLogged.id !== 0) getEquipos();
+    if (authorizedGet.grupos === true && userLogged.id !== 0) getGrupos();
+    if (authorizedGet.proyectos === true && userLogged.id !== 0) getProyectos();
+  }, [userLogged.id, authorizedGet]);
 
   return (
     <LayoutDashboardComponent>
@@ -122,9 +133,53 @@ function DashboardSolicitudesPage() {
           ))}
         {grupos.length > 0 && equipos.length > 0 && proyectos.length > 0 && (
           <div className="row">
-            <div className="col-12">
+            <div className="col-12" style={{ maxWidth: 1000 }}>
               <div className="card">
-                <div className="card-body"></div>
+                <div className="card-body">
+                  <div className="row gy-3">
+                    <div className="col-xl-4 col-lg-4 col-md-4">
+                      <label htmlFor="equipos-input" className="form-label">
+                        Equipos
+                      </label>
+                      <select className="form-select" id="equipos-input">
+                        {equipos.map((e) => (
+                          <option key={e.id} value={e.id}>
+                            {e.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-xl-4 col-lg-4 col-md-4">
+                      <label htmlFor="grupos-input" className="form-label">
+                        Grupos
+                      </label>
+                      <select className="form-select" id="grupos-input">
+                        {grupos.map((g) => (
+                          <option key={g.id} value={g.id}>
+                            {g.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-xl-4 col-lg-4 col-md-4">
+                      <label htmlFor="proyectos-input" className="form-label">
+                        Proyectos
+                      </label>
+                      <select className="form-select" id="proyectos-input">
+                        {proyectos.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <button className="btn btn-success">Solicitar</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

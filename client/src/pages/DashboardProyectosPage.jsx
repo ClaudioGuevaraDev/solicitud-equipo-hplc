@@ -495,7 +495,7 @@ function DashboardProyectosPage() {
                                 </label>
                                 <select
                                   className="form-select"
-                                  id="jerarquia-input"
+                                  id="grupos-input"
                                   value={proyecto.grupo}
                                   onChange={(e) =>
                                     setProyecto({
