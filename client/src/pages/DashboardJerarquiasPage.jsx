@@ -205,7 +205,7 @@ function DashboardJerarquiasPage() {
                                 onClick={() => setSelectedDeleteJerarquia(j.id)}
                                 type="button"
                                 data-bs-toggle="modal"
-                                data-bs-target="#deleteModal"
+                                data-bs-target="#canceledModal"
                               >
                                 <AiFillDelete />{" "}
                               </button>

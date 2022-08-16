@@ -1,17 +1,17 @@
-function DeleteModal({ title, handleDelete }) {
+function CanceledModal({ handleCanceled }) {
   return (
     <div
       className="modal fade"
-      id="deleteModal"
+      id="canceledModal"
       tabIndex={-1}
-      aria-labelledby="deleteModalLabel"
+      aria-labelledby="canceledModalLabel"
       aria-hidden="true"
     >
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
-              ¿Estás seguro de eliminar {title}?
+              ¿Estás seguro de cancelar la solicitud?
             </h5>
             <button
               type="button"
@@ -26,15 +26,15 @@ function DeleteModal({ title, handleDelete }) {
               className="btn btn-secondary"
               data-bs-dismiss="modal"
             >
-              CANCELAR
+              Cerrar
             </button>
             <button
               type="button"
               className="btn btn-danger"
               data-bs-dismiss="modal"
-              onClick={handleDelete}
+              onClick={handleCanceled}
             >
-              ELIMINAR
+              CANCELAR SOLICITUD
             </button>
           </div>
         </div>
@@ -43,4 +43,4 @@ function DeleteModal({ title, handleDelete }) {
   );
 }
 
-export default DeleteModal;
+export default CanceledModal;

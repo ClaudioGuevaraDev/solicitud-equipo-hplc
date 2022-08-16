@@ -24,57 +24,31 @@ function DashboardGruposPage() {
   const [usersGrupos, setUsersGrupos] = useState([]);
   const [handleShowGrupos, setHandleShowGrupos] = useState("all");
   const [loadingGrupos, setLoadingGrupos] = useState(true);
-  const [page, setPage] = useState({
-    nextPage: 1,
-    previusPage: 1,
-    firstPage: true,
-    lastPage: true,
-  });
   const [valueSearch, setValueSearch] = useState("");
   const [loadingSearch, setLoadingSearch] = useState(false);
 
-  const getGrupos = async (page_value, previus_page, search) => {
+  const getGrupos = async (search) => {
     try {
       const { data } = await axios.get(
-        `/api/grupos/${userLogged.id}/${handleShowGrupos}/${page_value}/${search}`
+        `/api/grupos/${userLogged.id}/${handleShowGrupos}/${search}`
       );
       setGrupos(data.data);
       setUsersGrupos(data.users_grupos);
-      setPage({
-        ...page,
-        nextPage: data.next_page,
-        previusPage: previus_page,
-        firstPage: data.data.length === 0 ? true : data.first_page,
-        lastPage: data.data.length === 0 ? true : data.last_page,
-      });
       setLoadingGrupos(false);
     } catch (error) {
+      console.log(error);
       toast.error("Error al listar los grupos.", {
         duration: 5000,
       });
       setGrupos([]);
       setUsersGrupos([]);
-      setPage({
-        ...page,
-        nextPage: 1,
-        previusPage: 1,
-        firstPage: true,
-        lastPage: true,
-      });
       setLoadingGrupos(false);
     }
   };
 
   useEffect(() => {
     if (userLogged !== 0) {
-      setPage({
-        ...page,
-        nextPage: 1,
-        previusPage: 1,
-        firstPage: true,
-        lastPage: true,
-      });
-      getGrupos(1, 1, "null");
+      getGrupos("null");
     }
   }, [userLogged.id, handleShowGrupos]);
 
@@ -174,40 +148,15 @@ function DashboardGruposPage() {
     }
   };
 
-  const handleNextPage = () => {
-    if (valueSearch === "") {
-      getGrupos(page.nextPage, grupos[0].id, "null");
-    } else {
-      getGrupos(page.nextPage, grupos[0].id, valueSearch);
-    }
-  };
-
-  const handlePreviusPage = async () => {
-    const { data } = await axios.get(`/api/grupos/${page.previusPage}`);
-    if (valueSearch === "") {
-      getGrupos(page.previusPage, data.previus_value, "null");
-    } else {
-      getGrupos(page.previusPage, data.previus_value, valueSearch);
-    }
-  };
-
   const handleSearch = (e) => {
     e.preventDefault();
 
     setLoadingSearch(true);
 
-    setPage({
-      ...page,
-      nextPage: 1,
-      previusPage: 1,
-      firstPage: true,
-      lastPage: true,
-    });
-
     if (valueSearch === "") {
-      getGrupos(1, 1, "null");
+      getGrupos("null");
     } else {
-      getGrupos(1, 1, valueSearch);
+      getGrupos(valueSearch);
     }
 
     setLoadingSearch(false);
@@ -384,73 +333,53 @@ function DashboardGruposPage() {
                   className="col-12 table-responsive"
                   style={{ maxWidth: 1300 }}
                 >
-                  {handleShowGrupos === "all" && (
-                    <div className="row">
-                      <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-1">
-                        <form
-                          className="d-flex"
-                          role="search"
-                          onSubmit={handleSearch}
-                        >
-                          <input
-                            className="form-control me-2"
-                            type="search"
-                            placeholder="Search"
-                            aria-label="Search"
-                            value={valueSearch}
-                            onChange={(e) => setValueSearch(e.target.value)}
-                          />
-                          {loadingSearch ? (
-                            <button className="btn btn-success" type="button">
-                              <span
-                                className="spinner-border spinner-border-sm"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-outline-success"
-                              type="submit"
-                            >
-                              Search
-                            </button>
-                          )}
-                        </form>
-                      </div>
-                      {grupos.length > 0 && (
-                        <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-1">
-                          <nav aria-label="Page navigation example">
-                            <ul className="pagination justify-content-end">
-                              <li className="page-item">
-                                <button
-                                  className={`page-link ${
-                                    page.firstPage ? "disabled" : ""
-                                  }`}
-                                  onClick={handlePreviusPage}
-                                >
-                                  Previous
-                                </button>
-                              </li>
-                              <li className="page-item">
-                                <button
-                                  className={`page-link ${
-                                    page.lastPage ? "disabled" : ""
-                                  }`}
-                                  onClick={handleNextPage}
-                                >
-                                  Next
-                                </button>
-                              </li>
-                            </ul>
-                          </nav>
-                        </div>
-                      )}
+                  <div className="row">
+                    <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-1">
+                      <form
+                        className="d-flex"
+                        role="search"
+                        onSubmit={handleSearch}
+                      >
+                        <input
+                          className="form-control me-2"
+                          type="search"
+                          placeholder="Search"
+                          aria-label="Search"
+                          value={valueSearch}
+                          onChange={(e) => setValueSearch(e.target.value)}
+                        />
+                        {loadingSearch ? (
+                          <button className="btn btn-success" type="button">
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="visually-hidden">Loading...</span>
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-outline-success"
+                            type="submit"
+                          >
+                            Search
+                          </button>
+                        )}
+                      </form>
                     </div>
-                  )}
+                    <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-1">
+                      <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-end">
+                          <li className="page-item">
+                            <button className="page-link">Previous</button>
+                          </li>
+                          <li className="page-item">
+                            <button className="page-link">Next</button>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
                   {grupos.length > 0 ? (
                     <table className="table table-hover table-stripped text-center table-bordered shadow">
                       <thead className="table-dark">

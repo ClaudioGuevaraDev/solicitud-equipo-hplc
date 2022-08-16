@@ -5,6 +5,7 @@ import AppContext from "../context/AppContext";
 import toast from "react-hot-toast";
 import { FcCancel } from "@react-icons/all-files/fc/FcCancel";
 import { AiOutlineLine } from "@react-icons/all-files/ai/AiOutlineLine";
+import CanceledModal from "../components/CanceledModal";
 
 function DashboardSolicitudesPage() {
   const { userLogged } = useContext(AppContext);
@@ -175,6 +176,10 @@ function DashboardSolicitudesPage() {
       setShowMessage(false);
     }
   };
+
+  const handleCanceled = (solicitudId) => {
+    console.log(solicitudId)
+  }
 
   return (
     <LayoutDashboardComponent>
@@ -399,7 +404,9 @@ function DashboardSolicitudesPage() {
                         </i>
                       </td>
                       <td>
-                        <button className="btn btn-danger">CANCELAR</button>
+                        <button className="btn btn-danger" disabled={s.canceled === true} type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#canceledModal">CANCELAR</button>
                       </td>
                     </tr>
                   ))}
@@ -409,6 +416,7 @@ function DashboardSolicitudesPage() {
           </div>
         )}
       </div>
+      <CanceledModal handleCanceled={handleCanceled}/>
     </LayoutDashboardComponent>
   );
 }

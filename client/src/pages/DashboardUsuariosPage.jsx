@@ -110,7 +110,7 @@ function DashboardUsuariosPage() {
               <LoadingComponent />
             </div>
           ) : (
-            <div className="col-12 table-responsive" style={{ maxWidth: 1800 }}>
+            <div className="col-12 table-responsive" style={{ maxWidth: 2400 }}>
               <div className="row">
                 <div className="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12 mb-1">
                   <form
@@ -172,63 +172,70 @@ function DashboardUsuariosPage() {
                 )}
               </div>
               {usuarios.length > 0 ? (
-                <table className="table table-hover table-stripped text-center table-bordered shadow">
-                  <thead className="table-dark">
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Apellidos</th>
-                      <th>Email</th>
-                      <th>Jerarquía</th>
-                      <th>Grupos</th>
-                      <th>Proyectos</th>
-                      <th>Verificado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {usuarios.map((u) => (
-                      <tr key={u.id}>
-                        <td>{u.first_name}</td>
-                        <td>{u.last_name}</td>
-                        <td>{u.email}</td>
-                        <td>
-                          {u.jerarquia ? u.jerarquia.name : "Sin jerarquía"}
-                        </td>
-                        <td>
-                          {u.grupos.length === 0 ? (
-                            <p>Sin grupos</p>
-                          ) : (
-                            <ul>
-                              {u.grupos.map((g) => (
-                                <li key={g}>{g}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </td>
-                        <td>
-                          {u.proyectos.length === 0 ? (
-                            <p>Sin proyectos</p>
-                          ) : (
-                            <ul>
-                              {u.proyectos.map((p) => (
-                                <li key={p}>{p}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </td>
-                        <td>
-                          {u.verified ? (
-                            <RiThumbUpFill className="text-success" size={20} />
-                          ) : (
-                            <RiThumbDownFill
-                              className="text-danger"
-                              size={20}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="row">
+                  <div className="col-12">
+                    <table className="table table-hover table-stripped text-center table-bordered shadow">
+                      <thead className="table-dark">
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Apellidos</th>
+                          <th>Email</th>
+                          <th>Jerarquía</th>
+                          <th>Grupos</th>
+                          <th>Proyectos</th>
+                          <th>Verificado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {usuarios.map((u) => (
+                          <tr key={u.id}>
+                            <td>{u.first_name}</td>
+                            <td>{u.last_name}</td>
+                            <td>{u.email}</td>
+                            <td>
+                              {u.jerarquia ? u.jerarquia.name : "Sin jerarquía"}
+                            </td>
+                            <td>
+                              {u.grupos.length === 0 ? (
+                                <p>Sin grupos</p>
+                              ) : (
+                                <ul>
+                                  {u.grupos.map((g) => (
+                                    <li key={g}>{g}</li>
+                                  ))}
+                                </ul>
+                              )}
+                            </td>
+                            <td>
+                              {u.proyectos.length === 0 ? (
+                                <p>Sin proyectos</p>
+                              ) : (
+                                <ul>
+                                  {u.proyectos.map((p) => (
+                                    <li key={p}>{p}</li>
+                                  ))}
+                                </ul>
+                              )}
+                            </td>
+                            <td>
+                              {u.verified ? (
+                                <RiThumbUpFill
+                                  className="text-success"
+                                  size={20}
+                                />
+                              ) : (
+                                <RiThumbDownFill
+                                  className="text-danger"
+                                  size={20}
+                                />
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               ) : (
                 <div
                   className="alert alert-warning mt-3"

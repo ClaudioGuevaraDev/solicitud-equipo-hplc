@@ -32,116 +32,45 @@ def get_grupos():
             status_code=500, detail="Error al listar los grupos.")
 
 
-@router.get("/{user_id}/{type_filter}/{id_value}/{value_search}", status_code=200)
-def get_grupos_by_user(user_id: int, type_filter: str, id_value: int, value_search: str):
+@router.get("/{user_id}/{type_filter}/{value_search}", status_code=200)
+def get_grupos_by_user(user_id: int, type_filter: str, value_search: str):
     try:
-        data_users_grupos = []
+        users_grupos = []
         cur.execute(
             "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
-        users_grupos = cur.fetchall()
-        for user_grupo in users_grupos:
-            data_users_grupos.append(user_grupo[1])
-
-        grupos = []
-        if type_filter == "all":
-            if value_search == "null":
-                cur.execute(
-                    "SELECT * FROM grupos WHERE id >= %s ORDER BY id ASC LIMIT 10", [id_value])
-                grupos = cur.fetchall()
-            else:
-                cur.execute(
-                    "SELECT * FROM grupos WHERE id >= %s AND name LIKE %s ORDER BY id ASC LIMIT 10", [id_value, f"%{value_search}%"])
-                grupos = cur.fetchall()
-        else:
-            if value_search == "null":
-                cur.execute(
-                    "SELECT * FROM grupos")
-                grupos = cur.fetchall()
-            else:
-                cur.execute(
-                    "SELECT * FROM grupos WHERE name LIKE %s", [f"%{value_search}%"])
-                grupos = cur.fetchall()
+        users_grupos_found = cur.fetchall()
+        for user_grupo_found in users_grupos_found:
+            users_grupos.append(user_grupo_found[1])
 
         data = []
+
+        if value_search == "null":
+            cur.execute("SELECT * FROM grupos")
+            grupos = cur.fetchall()
+        else:
+            cur.execute("SELECT * FROM grupos WHERE name LIKE %s",
+                        [f"%{value_search}%"])
+            grupos = cur.fetchall()
         for grupo in grupos:
-            if ((type_filter == "filter") and (grupo[0] in data_users_grupos)):
-                new_data = {
+            if type_filter == "all":
+                data.append({
                     "id": grupo[0],
                     "name": grupo[1],
                     "creation_date": grupo[2],
                     "score": grupo[3],
                     "lider": grupo[4]
-                }
-
-                data.append(new_data)
-            elif type_filter == "all":
-                new_data = {
-                    "id": grupo[0],
-                    "name": grupo[1],
-                    "creation_date": grupo[2],
-                    "score": grupo[3],
-                    "lider": grupo[4]
-                }
-
-                data.append(new_data)
-
-        next_page = 0
-        if len(data) > 0:
-            next_page = data[len(data)-1]["id"] + 1
-
-        first_page = False
-        first_element = None
-        if type_filter == "all":
-            if value_search == "null":
-                cur.execute("SELECT * FROM grupos ORDER BY id ASC LIMIT 1")
-                first_element = cur.fetchone()
+                })
             else:
-                cur.execute(
-                    "SELECT * FROM grupos WHERE name LIKE %s ORDER BY id ASC LIMIT 1", [f"%{value_search}%"])
-                first_element = cur.fetchone()
-            if ((first_element) and (len(data) > 0)):
-                if data[0]["id"] == first_element[0]:
-                    first_page = True
-        else:
-            if value_search == "null":
-                cur.execute(
-                    "SELECT * FROM users_grupos ORDER BY grupos_id ASC LIMIT 1")
-                first_element = cur.fetchone()
-            else:
-                cur.execute(
-                    "SELECT * FROM users_grupos WHERE name LIKE %s ORDER BY grupos_id ASC LIMIT 1", [f"%{value_search}%"])
-                first_element = cur.fetchone()
-            if ((first_element) and (len(data) > 0)):
-                if data[0]["id"] == first_element[1]:
-                    first_page = True
+                if grupo[0] in users_grupos:
+                    data.append({
+                        "id": grupo[0],
+                        "name": grupo[1],
+                        "creation_date": grupo[2],
+                        "score": grupo[3],
+                        "lider": grupo[4]
+                    })
 
-        last_page = False
-        last_element = None
-        if type_filter == "all":
-            if value_search == "null":
-                cur.execute("SELECT * FROM grupos ORDER BY id DESC LIMIT 1")
-                last_element = cur.fetchone()
-            else:
-                cur.execute(
-                    "SELECT * FROM grupos WHERE name LIKE %s ORDER BY id DESC LIMIT 1", [f"%{value_search}%"])
-                last_element = cur.fetchone()
-            if ((last_element) and (len(data) > 0)):
-                if data[-1]["id"] == last_element[0]:
-                    last_page = True
-        else:
-            if value_search == "null":
-                cur.execute(
-                    "SELECT * FROM users_grupos ORDER BY grupos_id DESC LIMIT 1")
-                last_element = cur.fetchone()
-            else:
-                cur.execute(
-                    "SELECT * FROM users_grupos WHERE name LIKE %s ORDER BY grupos_id DESC LIMIT 1", [f"%{value_search}%"])
-                last_element = cur.fetchone()
-            if ((last_element) and (len(data) > 0)):
-                if data[-1]["id"] == last_element[1]:
-                    last_page = True
-
-        return {"data": data, "users_grupos": data_users_grupos, "next_page": next_page, "first_page": first_page, "last_page": last_page}
+        return {"data": data, "users_grupos": users_grupos}
     except Exception as error:
         print(error)
         raise HTTPException(
