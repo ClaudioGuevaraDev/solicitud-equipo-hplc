@@ -28,6 +28,7 @@ function DashboardSolicitudesPage() {
     grupo: "",
     proyecto: "",
   });
+  const [showMessage, setShowMessage] = useState(false);
 
   const getSolicitudes = async () => {
     try {
@@ -50,8 +51,11 @@ function DashboardSolicitudesPage() {
     try {
       const { data } = await axios.get("/api/equipos");
       setEquipos(data.data);
-      if (data.data.length > 0)
+      if (data.data.length > 0) {
         setSolicitud({ ...solicitud, equipo: data.data[0].id });
+      } else {
+        setSolicitud({ ...solicitud, equipo: "" });
+      }
       setAuthorizedGet({ ...authorizedGet, equipos: false, grupos: true });
     } catch (error) {
       if (error.response.data.detail) {
@@ -69,8 +73,11 @@ function DashboardSolicitudesPage() {
     try {
       const { data } = await axios.get(`/api/users-grupos/${userLogged.id}`);
       setGrupos(data.data);
-      if (data.data.length > 0)
+      if (data.data.length > 0) {
         setSolicitud({ ...solicitud, grupo: data.data[0].id });
+      } else {
+        setSolicitud({ ...solicitud, grupo: "" });
+      }
       setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: true });
     } catch (error) {
       if (error.response.data.detail) {
@@ -93,8 +100,20 @@ function DashboardSolicitudesPage() {
         }`
       );
       setProyectos(data.data);
-      if (data.data.length > 0)
-        setSolicitud({ ...solicitud, proyecto: data.data[0].id });
+      if (data.data.length > 0) {
+        if (grupo) {
+          setSolicitud({
+            ...solicitud,
+            proyecto: data.data[0].id,
+            grupo: grupo,
+          });
+        } else {
+          setSolicitud({ ...solicitud, proyecto: data.data[0].id });
+        }
+      } else {
+        setSolicitud({ ...solicitud, proyecto: grupos[0].id });
+        getProyectos(grupos[0].id);
+      }
       setAuthorizedGet({ ...authorizedGet, proyectos: false });
     } catch (error) {
       if (error.response.data.detail) {
@@ -127,7 +146,8 @@ function DashboardSolicitudesPage() {
     if (
       authorizedGet.proyectos === true &&
       userLogged.id !== 0 &&
-      userLogged.role === "user"
+      userLogged.role === "user" &&
+      solicitud.grupo !== ""
     )
       getProyectos();
   }, [userLogged.id, authorizedGet]);
@@ -146,6 +166,7 @@ function DashboardSolicitudesPage() {
         equipo: equipos[0].id,
         proyecto: proyectos[0].id,
       });
+      setShowMessage(true);
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -158,12 +179,12 @@ function DashboardSolicitudesPage() {
         equipo: equipos[0].id,
         proyecto: proyectos[0].id,
       });
+      setShowMessage(false);
     }
   };
 
   const handleChangeGrupo = (e) => {
     getProyectos(e.target.value);
-    setSolicitud({ ...solicitud, grupo: e.target.value });
   };
 
   return (
@@ -221,16 +242,14 @@ function DashboardSolicitudesPage() {
               <strong>No estás inscrito en ningún proyecto.</strong>
             </div>
           ))}
-        {grupos.length > 0 &&
-          equipos.length > 0 &&
-          proyectos.length > 0 &&
-          userLogged.role === "user" && (
-            <div className="row">
-              <div className="col-12" style={{ maxWidth: 1000 }}>
-                <div className="card">
-                  <div className="card-body">
-                    <form onSubmit={handleSubmit}>
-                      <div className="row gy-3">
+        {userLogged.role === "user" && (
+          <div className="row">
+            <div className="col-12" style={{ maxWidth: 1000 }}>
+              <div className="card">
+                <div className="card-body">
+                  <form onSubmit={handleSubmit}>
+                    <div className="row gy-3">
+                      {equipos.length > 0 && (
                         <div className="col-xl-4 col-lg-4 col-md-4">
                           <label htmlFor="equipos-input" className="form-label">
                             Equipos
@@ -253,6 +272,8 @@ function DashboardSolicitudesPage() {
                             ))}
                           </select>
                         </div>
+                      )}
+                      {grupos.length > 0 && (
                         <div className="col-xl-4 col-lg-4 col-md-4">
                           <label htmlFor="grupos-input" className="form-label">
                             Grupos
@@ -270,6 +291,8 @@ function DashboardSolicitudesPage() {
                             ))}
                           </select>
                         </div>
+                      )}
+                      {proyectos.length > 0 && (
                         <div className="col-xl-4 col-lg-4 col-md-4">
                           <label
                             htmlFor="proyectos-input"
@@ -295,27 +318,46 @@ function DashboardSolicitudesPage() {
                             ))}
                           </select>
                         </div>
+                      )}
+                    </div>
+                    <div className="row mt-3">
+                      <div className="col-12">
+                        <button
+                          className="btn btn-success"
+                          disabled={
+                            solicitud.equipo === "" ||
+                            solicitud.grupo === "" ||
+                            solicitud.proyecto === ""
+                          }
+                        >
+                          SOLICITAR
+                        </button>
                       </div>
-                      <div className="row mt-3">
-                        <div className="col-12">
-                          <button
-                            className="btn btn-success"
-                            disabled={
-                              solicitud.equipo === "" ||
-                              solicitud.grupo === "" ||
-                              solicitud.proyecto === ""
-                            }
-                          >
-                            SOLICITAR
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
+        {showMessage === true && (
+          <div
+            className="alert alert-success alert-dismissible fade show mt-3"
+            role="alert"
+            style={{ maxWidth: 900 }}
+          >
+            <strong>
+              Tu solicitud ha sido añadida con éxito. Te enviaremos un correo
+              cuando esta sea aprobada y asignada a una fecha.
+            </strong>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+        )}
         {solicitudes.length === 0 ? (
           <div
             className="alert alert-warning mt-3"
