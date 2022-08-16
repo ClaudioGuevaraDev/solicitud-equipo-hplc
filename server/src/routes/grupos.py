@@ -76,19 +76,6 @@ def get_grupos_by_user(user_id: int, type_filter: str, value_search: str):
         raise HTTPException(
             status_code=500, detail="Error al listar los grupos.")
 
-
-@router.get("/{previus_page}")
-def get_previus_page(previus_page: int):
-    cur.execute(
-        "SELECT * FROM grupos WHERE id < %s ORDER BY id DESC LIMIT 10", [previus_page])
-    previus = cur.fetchall()
-    previus_value = None
-    if len(previus) > 0:
-        previus_value = previus[-1][0]
-
-    return {"previus_value": previus_value}
-
-
 @router.post("/", status_code=201)
 def create_grupo(grupo: GrupoModel):
     cur.execute("SELECT * FROM grupos WHERE name = %s", [grupo.name])

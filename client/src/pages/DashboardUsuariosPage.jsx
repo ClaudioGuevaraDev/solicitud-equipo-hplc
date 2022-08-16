@@ -9,39 +9,17 @@ import LoadingComponent from "../components/LoadingComponent";
 function DashboardUsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState({
-    nextPage: 1,
-    previusPage: 1,
-    firstPage: true,
-    lastPage: true,
-  });
   const [valueSearch, setValueSearch] = useState("");
   const [loadingSearch, setLoadingSearch] = useState(false);
 
-  const getUsuarios = async (page_value, previus_page, search) => {
+  const getUsuarios = async (search) => {
     try {
-      const { data } = await axios.get(
-        `/api/users/page/${page_value}/${search}`
-      );
+      const { data } = await axios.get(`/api/users/${search}`);
       setUsuarios(data.data);
-      setPage({
-        ...page,
-        nextPage: data.next_page,
-        previusPage: previus_page,
-        firstPage: data.first_page,
-        lastPage: data.last_page,
-      });
       setLoading(false);
     } catch (error) {
       toast.error("Error al listar los usuarios.", {
         duration: 5000,
-      });
-      setPage({
-        ...page,
-        nextPage: 1,
-        previusPage: 1,
-        firstPage: true,
-        lastPage: true,
       });
       setUsuarios([]);
       setLoading(false);
@@ -49,45 +27,18 @@ function DashboardUsuariosPage() {
   };
 
   useEffect(() => {
-    getUsuarios(page.nextPage, page.nextPage, "null");
+    getUsuarios("null");
   }, []);
-
-  const handleNextPage = () => {
-    if (valueSearch === "") {
-      getUsuarios(page.nextPage, usuarios[0].id, "null");
-    } else {
-      getUsuarios(page.nextPage, usuarios[0].id, valueSearch);
-    }
-  };
-
-  const handlePreviusPage = async () => {
-    const { data } = await axios.get(
-      `/api/users/previus-page/${page.previusPage}`
-    );
-    if (valueSearch === "") {
-      getUsuarios(page.previusPage, data.previus_value, "null");
-    } else {
-      getUsuarios(page.previusPage, data.previus_value, valueSearch);
-    }
-  };
 
   const handleSearch = (e) => {
     e.preventDefault();
 
     setLoadingSearch(true);
 
-    setPage({
-      ...page,
-      nextPage: 1,
-      previusPage: 1,
-      firstPage: true,
-      lastPage: true,
-    });
-
     if (valueSearch === "") {
-      getUsuarios(1, 1, "null");
+      getUsuarios("null");
     } else {
-      getUsuarios(1, 1, valueSearch);
+      getUsuarios(valueSearch);
     }
 
     setLoadingSearch(false);
@@ -142,34 +93,18 @@ function DashboardUsuariosPage() {
                     )}
                   </form>
                 </div>
-                {usuarios.length > 0 && (
-                  <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
-                    <nav aria-label="Page navigation example">
-                      <ul className="pagination justify-content-end">
-                        <li className="page-item">
-                          <button
-                            className={`page-link ${
-                              page.firstPage ? "disabled" : ""
-                            }`}
-                            onClick={handlePreviusPage}
-                          >
-                            Previous
-                          </button>
-                        </li>
-                        <li className="page-item">
-                          <button
-                            className={`page-link ${
-                              page.lastPage ? "disabled" : ""
-                            }`}
-                            onClick={handleNextPage}
-                          >
-                            Next
-                          </button>
-                        </li>
-                      </ul>
-                    </nav>
-                  </div>
-                )}
+                <div className="col-xl-9 col-lg-7 col-md-6 col-sm-12 col-12 mb-2">
+                  <nav aria-label="Page navigation example">
+                    <ul className="pagination justify-content-end">
+                      <li className="page-item">
+                        <button className="page-link">Previous</button>
+                      </li>
+                      <li className="page-item">
+                        <button className="page-link">Next</button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
               </div>
               {usuarios.length > 0 ? (
                 <div className="row">
@@ -193,7 +128,7 @@ function DashboardUsuariosPage() {
                             <td>{u.last_name}</td>
                             <td>{u.email}</td>
                             <td>
-                              {u.jerarquia ? u.jerarquia.name : "Sin jerarquía"}
+                              {u.jerarquia ? u.jerarquia : "Sin jerarquía"}
                             </td>
                             <td>
                               {u.grupos.length === 0 ? (

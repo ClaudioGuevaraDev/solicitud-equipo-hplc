@@ -12,123 +12,66 @@ router = APIRouter(
 )
 
 
-@router.get("/page/{id_value}/{value_search}", status_code=200)
-def get_users(id_value: int, value_search: str):
+@router.get("/{value_search}", status_code=200)
+def get_users(value_search: str):
     cur.execute("SELECT * FROM roles WHERE name = %s", ["user"])
-    rol_found = cur.fetchone()
-    if rol_found == None:
+    role_found = cur.fetchone()
+    if role_found == None:
         raise HTTPException(
-            status_code=500, detail="Error al listar los usuarios.")
+            status_code=404, detail="Error al listar los usuarios.")
+
+    data = []
+    users = []
 
     try:
-        users = []
         if value_search == "null":
-            cur.execute(
-                "SELECT * FROM users WHERE id >= %s AND role_id = %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0]])
+            cur.execute("SELECT * FROM users WHERE role_id = %s",
+                        [role_found[0]])
             users = cur.fetchall()
         else:
-            cur.execute(
-                "SELECT * FROM users WHERE id >= %s AND role_id = %s AND email LIKE %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0], f"%{value_search}%"])
+            cur.execute("SELECT * FROM users WHERE role_id = %s AND email LIKE %s",
+                        [role_found[0], f"%{value_search}%"])
             users = cur.fetchall()
+        for user in users:
+            cur.execute("SELECT * FROM jerarquias WHERE id = %s", [user[8]])
+            jerarquia_found = cur.fetchone()
 
-        data = []
-        if (len(users) > 0):
-            for user in users:
-                new_data = {
-                    "id": user[0],
-                    "first_name": user[1],
-                    "last_name": user[2],
-                    "email": user[3],
-                    "url_image": user[5],
-                    "verified": user[6],
-                }
-
-                if (user[8]):
-                    cur.execute(
-                        "SELECT * FROM jerarquias WHERE id = %s", [user[8]])
-                    jerarquia_found = cur.fetchone()
-                    new_data["jerarquia"] = {
-                        "id": jerarquia_found[0],
-                        "name": jerarquia_found[1],
-                        "score": jerarquia_found[2]
-                    }
-                else:
-                    new_data["jerarquia"] = None
-
-                grupos = []
-                cur.execute(
-                    "SELECT * FROM users_grupos WHERE users_id = %s", [user[0]])
-                users_grupos = cur.fetchall()
-                for user_grupo in users_grupos:
-                    cur.execute(
-                        "SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
-                    grupo_found = cur.fetchone()
-                    if grupo_found:
-                        grupos.append(grupo_found[1])
-                new_data["grupos"] = grupos
-
-                proyectos = []
-                cur.execute(
-                    "SELECT * FROM users_proyectos WHERE users_id = %s", [user[0]])
-                users_proyectos = cur.fetchall()
-                for user_proyecto in users_proyectos:
-                    cur.execute(
-                        "SELECT * FROM proyectos WHERE id = %s", [user_proyecto[1]])
-                    proyecto_found = cur.fetchone()
-                    if proyecto_found:
-                        proyectos.append(proyecto_found[2])
-                new_data["proyectos"] = proyectos
-
-                data.append(new_data)
-
-        next_page = 0
-        if (len(data) > 0):
-            next_page = data[len(data)-1]["id"] + 1
-
-        first_page = False
-        first_element = None
-        if value_search == "null":
-            cur.execute("SELECT * FROM users WHERE role_id = %s ORDER BY id ASC LIMIT 1",
-                        [rol_found[0]])
-            first_element = cur.fetchone()
-        else:
+            grupos = []
             cur.execute(
-                "SELECT * FROM users WHERE id >= %s AND role_id = %s AND email LIKE %s ORDER BY id ASC LIMIT 10", [id_value, rol_found[0], f"%{value_search}%"])
-            users = cur.fetchall()
-        if ((first_element) and (len(data) > 0) and (data[0]["id"] == first_element[0])):
-            first_page = True
+                "SELECT * FROM users_grupos WHERE users_id = %s", [user[0]])
+            users_grupos = cur.fetchall()
+            for user_grupo in users_grupos:
+                cur.execute("SELECT * FROM grupos WHERE id = %s",
+                            [user_grupo[1]])
+                grupo_found = cur.fetchone()
+                grupos.append(grupo_found[1] if grupo_found else None)
 
-        last_page = False
-        last_element = None
-        if value_search == "null":
+            proyectos = []
             cur.execute(
-                "SELECT * FROM users WHERE role_id = %s ORDER BY id DESC LIMIT 1", [rol_found[0]])
-            last_element = cur.fetchone()
-        else:
-            cur.execute(
-                "SELECT * FROM users WHERE role_id = %s AND email LIKE %s ORDER BY id DESC LIMIT 1", [rol_found[0], f"%{value_search}%"])
-            last_element = cur.fetchone()
-        if ((last_element) and (len(data) > 0) and (data[-1]["id"] == last_element[0])):
-            last_page = True
+                "SELECT * FROM users_proyectos WHERE users_id = %s", [user[0]])
+            users_proyectos = cur.fetchall()
+            for user_proyecto in users_proyectos:
+                cur.execute("SELECT * FROM proyectos WHERE id = %s",
+                            [user_proyecto[1]])
+                proyecto_found = cur.fetchone()
+                proyectos.append(proyecto_found[2])
 
-        return {"data": data, "next_page": next_page, "first_page": first_page, "last_page": last_page}
+            data.append({
+                "id": user[0],
+                "first_name": user[1],
+                "last_name": user[2],
+                "email": user[3],
+                "verified": user[6],
+                "jerarquia": jerarquia_found[1] if jerarquia_found else None,
+                "proyectos": proyectos,
+                "grupos": grupos
+            })
+
+        return {"data": data}
     except Exception as error:
         print(error)
         raise HTTPException(
             status_code=500, detail="Error al listar los usuarios.")
-
-
-@router.get("/previus-page/{previus_page}")
-def get_previus_page(previus_page: int):
-    cur.execute(
-        "SELECT * FROM users WHERE id < %s ORDER BY id DESC LIMIT 10", [previus_page])
-    previus = cur.fetchall()
-
-    previus_value = None
-    if (len(previus) > 0):
-        previus_value = previus[-1][0]
-
-    return {"previus_value": previus_value}
 
 
 @router.get("/{user_id}", status_code=200)
