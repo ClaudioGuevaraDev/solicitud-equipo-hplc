@@ -1,17 +1,17 @@
 import axios from "axios";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit";
 import { AiFillDelete } from "@react-icons/all-files/ai/AiFillDelete";
 import DeleteModal from "../components/DeleteModal";
 import AppContext from "../context/AppContext";
-import { useEffect } from "react";
 import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardProyectosPage() {
   const { userLogged } = useContext(AppContext);
   const [proyectos, setProyectos] = useState([]);
+  const [originalProyectos, setOriginalProyectos] = useState([]);
   const [grupos, setGrupos] = useState([]);
   const [authorized, setAuthorized] = useState(false);
 
@@ -35,6 +35,10 @@ function DashboardProyectosPage() {
   });
   const [valueSearch, setValueSearch] = useState("");
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [elementsPagination, setElementsPagination] = useState({
+    firstElement: 0,
+    lastElement: 9,
+  });
 
   const getGrupos = async () => {
     try {
@@ -59,7 +63,12 @@ function DashboardProyectosPage() {
       const { data } = await axios.get(
         `/api/proyectos/${userLogged.id}/${userLogged.role}/${typeFilter}/${search}`
       );
-      setProyectos(data.data);
+      setOriginalProyectos(data.data);
+      pagination(
+        data.data,
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
       setUsersProyectos(data.users_proyectos);
       setLoadingData({ ...loading, proyectos: false });
     } catch (error) {
@@ -69,6 +78,43 @@ function DashboardProyectosPage() {
       setProyectos([]);
       setLoadingData({ ...loading, proyectos: false });
     }
+  };
+
+  const pagination = (dataProyectos, firstElement, lastElement) => {
+    const filterProyectos = [];
+    for (let [index, value] of dataProyectos.entries()) {
+      if (filterProyectos.length === 10) {
+        break;
+      }
+      if (index >= firstElement && index <= lastElement) {
+        filterProyectos.push(value);
+      }
+    }
+    setProyectos(filterProyectos);
+  };
+
+  const handleNextPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement + 10,
+      lastElement: elementsPagination.lastElement + 10,
+    });
+    pagination(
+      originalProyectos,
+      elementsPagination.firstElement + 10,
+      elementsPagination.lastElement + 10
+    );
+  };
+
+  const handlePreviusPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement - 10,
+      lastElement: elementsPagination.lastElement - 10,
+    });
+    pagination(
+      originalProyectos,
+      elementsPagination.firstElement - 10,
+      elementsPagination.lastElement - 10
+    );
   };
 
   useEffect(() => {
@@ -495,10 +541,29 @@ function DashboardProyectosPage() {
                     <nav aria-label="Page navigation example">
                       <ul className="pagination justify-content-end">
                         <li className="page-item">
-                          <button className="page-link">Previous</button>
+                          <button
+                            className={`page-link ${
+                              elementsPagination.firstElement === 0
+                                ? "disabled"
+                                : ""
+                            }`}
+                            onClick={handlePreviusPage}
+                          >
+                            Previous
+                          </button>
                         </li>
                         <li className="page-item">
-                          <button className="page-link">Next</button>
+                          <button
+                            className={`page-link ${
+                              elementsPagination.lastElement >=
+                              originalProyectos.length
+                                ? "disabled"
+                                : ""
+                            }`}
+                            onClick={handleNextPage}
+                          >
+                            Next
+                          </button>
                         </li>
                       </ul>
                     </nav>
