@@ -33,12 +33,6 @@ function DashboardProyectosPage() {
     grupos: true,
     proyectos: true,
   });
-  const [page, setPage] = useState({
-    nextPage: 1,
-    previusPage: 1,
-    firstPage: true,
-    lastPage: true,
-  });
   const [valueSearch, setValueSearch] = useState("");
   const [loadingSearch, setLoadingSearch] = useState(false);
 
@@ -60,77 +54,26 @@ function DashboardProyectosPage() {
     }
   };
 
-  const getProyectos = async (page_value, previus_page, search) => {
+  const getProyectos = async (search) => {
     try {
       const { data } = await axios.get(
-        `/api/proyectos/page/${page_value}/${search}`
-      );
-      setProyectos(data.data);
-      setPage({
-        ...page,
-        nextPage: data.next_page,
-        previusPage: previus_page,
-        firstPage: data.data.length === 0 ? true : data.first_page,
-        lastPage: data.data.length === 0 ? true : data.last_page,
-      });
-      setLoadingData({ ...loading, proyectos: false });
-    } catch (error) {
-      toast.error("Error al listar los proyectos.", {
-        duration: 5000,
-      });
-      setProyectos([]);
-      setPage({
-        ...page,
-        nextPage: 1,
-        previusPage: 1,
-        firstPage: true,
-        lastPage: true,
-      });
-      setLoadingData({ ...loading, proyectos: false });
-    }
-  };
-
-  const getProyectosByUser = async (page_value, previus_page, search) => {
-    try {
-      const { data } = await axios.get(
-        `/api/proyectos/${userLogged.id}/${typeFilter}/${page_value}/${search}`
+        `/api/proyectos/${userLogged.id}/${userLogged.role}/${typeFilter}/${search}`
       );
       setProyectos(data.data);
       setUsersProyectos(data.users_proyectos);
-      setPage({
-        ...page,
-        nextPage: data.next_page,
-        previusPage: previus_page,
-        firstPage: data.data.length === 0 ? true : data.first_page,
-        lastPage: data.data.length === 0 ? true : data.last_page,
-      });
       setLoadingData({ ...loading, proyectos: false });
     } catch (error) {
       toast.error("Error al listar los proyectos.", {
         duration: 5000,
       });
-      setPage({
-        ...page,
-        nextPage: 1,
-        previusPage: 1,
-        firstPage: true,
-        lastPage: true,
-      });
       setProyectos([]);
-      setUsersProyectos([]);
       setLoadingData({ ...loading, proyectos: false });
     }
   };
 
   useEffect(() => {
     if (authorized === true) {
-      if (userLogged.role) {
-        if (userLogged.role === "admin") {
-          getProyectos(page.nextPage, page.nextPage, "null");
-        } else {
-          getProyectosByUser(page.nextPage, page.nextPage, "null");
-        }
-      }
+      getProyectos("null");
     } else {
       getGrupos();
     }
@@ -246,62 +189,15 @@ function DashboardProyectosPage() {
     }
   };
 
-  const handleNextPage = () => {
-    if (userLogged.role === "user") {
-      if (valueSearch === "") {
-        getProyectosByUser(page.nextPage, proyectos[0].id, "null");
-      } else {
-        getProyectosByUser(page.nextPage, proyectos[0].id, valueSearch);
-      }
-    } else if (userLogged.role === "admin") {
-      if (valueSearch === "") {
-        getProyectos(page.nextPage, proyectos[0].id, "null");
-      } else {
-        getProyectos(page.nextPage, proyectos[0].id, valueSearch);
-      }
-    }
-  };
-
-  const handleResetPage = () => {
-    getProyectosByUser(1, 1, "null");
-  };
-
-  const handlePreviusPage = async () => {
-    const { data } = await axios.get(
-      `/api/proyectos/previus-page/${page.previusPage}`
-    );
-    if (valueSearch === "") {
-      getProyectos(page.previusPage, data.previus_value, "null");
-    } else {
-      getProyectos(page.previusPage, data.previus_value, valueSearch);
-    }
-  };
-
   const handleSearch = (e) => {
     e.preventDefault();
 
     setLoadingSearch(true);
 
-    setPage({
-      ...page,
-      nextPage: 1,
-      previusPage: 1,
-      firstPage: true,
-      lastPage: true,
-    });
-
-    if (userLogged.role === "admin") {
-      if (valueSearch === "") {
-        getProyectos(1, 1, "null");
-      } else {
-        getProyectos(1, 1, valueSearch);
-      }
-    } else if (userLogged.role === "user") {
-      if (valueSearch === "") {
-        getProyectosByUser(1, 1, "null");
-      } else {
-        getProyectosByUser(1, 1, valueSearch);
-      }
+    if (valueSearch === "") {
+      getProyectos("null");
+    } else {
+      getProyectos(valueSearch);
     }
 
     setLoadingSearch(false);
@@ -561,84 +457,53 @@ function DashboardProyectosPage() {
                 className="col-12 table-responsive mt-3"
                 style={{ maxWidth: 1300 }}
               >
-                {typeFilter === "all" && (
-                  <div className="row">
-                    <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-1">
-                      <form
-                        className="d-flex"
-                        role="search"
-                        onSubmit={handleSearch}
-                      >
-                        <input
-                          className="form-control me-2"
-                          type="search"
-                          placeholder="Search"
-                          aria-label="Search"
-                          value={valueSearch}
-                          onChange={(e) => setValueSearch(e.target.value)}
-                        />
-                        {loadingSearch ? (
-                          <button className="btn btn-success" type="button">
-                            <span
-                              className="spinner-border spinner-border-sm"
-                              role="status"
-                              aria-hidden="true"
-                            ></span>
-                            <span className="visually-hidden">Loading...</span>
-                          </button>
-                        ) : (
-                          <button
-                            className="btn btn-outline-success"
-                            type="submit"
-                          >
-                            Search
-                          </button>
-                        )}
-                      </form>
-                    </div>
-                    {proyectos.length > 0 && (
-                      <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-1">
-                        <nav aria-label="Page navigation example">
-                          <ul className="pagination justify-content-end">
-                            {userLogged.role === "admin" ? (
-                              <li className="page-item">
-                                <button
-                                  className={`page-link ${
-                                    page.firstPage ? "disabled" : ""
-                                  }`}
-                                  onClick={handlePreviusPage}
-                                >
-                                  Previous
-                                </button>
-                              </li>
-                            ) : (
-                              <li className="page-item">
-                                <button
-                                  className={`page-link ${
-                                    page.firstPage ? "disabled" : ""
-                                  }`}
-                                  onClick={handleResetPage}
-                                >
-                                  Reset
-                                </button>
-                              </li>
-                            )}
-                            <li className="page-item">
-                              <button
-                                className={`page-link ${
-                                  page.lastPage ? "disabled" : ""
-                                }`}
-                                onClick={handleNextPage}
-                              >
-                                Next
-                              </button>
-                            </li>
-                          </ul>
-                        </nav>
-                      </div>
-                    )}
+                <div className="row">
+                  <div className="col-xl-4 col-lg-6 col-md-8 col-sm-12 col-12 mb-1">
+                    <form
+                      className="d-flex"
+                      role="search"
+                      onSubmit={handleSearch}
+                    >
+                      <input
+                        className="form-control me-2"
+                        type="search"
+                        placeholder="Search"
+                        aria-label="Search"
+                        value={valueSearch}
+                        onChange={(e) => setValueSearch(e.target.value)}
+                      />
+                      {loadingSearch ? (
+                        <button className="btn btn-success" type="button">
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="visually-hidden">Loading...</span>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-outline-success"
+                          type="submit"
+                        >
+                          Search
+                        </button>
+                      )}
+                    </form>
                   </div>
-                )}
+                  <div className="col-xl-8 col-lg-6 col-md-4 col-sm-12 col-12 mb-1">
+                    <nav aria-label="Page navigation example">
+                      <ul className="pagination justify-content-end">
+                        <li className="page-item">
+                          <button className="page-link">Previous</button>
+                        </li>
+                        <li className="page-item">
+                          <button className="page-link">Next</button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
                 {proyectos.length > 0 ? (
                   <table className="table table-hover table-stripped text-center table-bordered shadow">
                     <thead className="table-dark">
