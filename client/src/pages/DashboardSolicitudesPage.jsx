@@ -95,24 +95,13 @@ function DashboardSolicitudesPage() {
   const getProyectos = async (grupo) => {
     try {
       const { data } = await axios.get(
-        `/api/users-proyectos/${userLogged.id}/${
-          grupo ? grupo : solicitud.grupo
-        }`
+        `/api/users-proyectos/${userLogged.id}/${grupo}`
       );
       setProyectos(data.data);
       if (data.data.length > 0) {
-        if (grupo) {
-          setSolicitud({
-            ...solicitud,
-            proyecto: data.data[0].id,
-            grupo: grupo,
-          });
-        } else {
-          setSolicitud({ ...solicitud, proyecto: data.data[0].id });
-        }
+        setSolicitud({ ...solicitud, proyecto: data.data[0].id, grupo: grupo });
       } else {
-        setSolicitud({ ...solicitud, proyecto: grupos[0].id });
-        getProyectos(grupos[0].id);
+        setSolicitud({ ...solicitud, proyecto: "", grupo: grupos[0].id });
       }
       setAuthorizedGet({ ...authorizedGet, proyectos: false });
     } catch (error) {
@@ -146,11 +135,15 @@ function DashboardSolicitudesPage() {
     if (
       authorizedGet.proyectos === true &&
       userLogged.id !== 0 &&
-      userLogged.role === "user" &&
-      solicitud.grupo !== ""
+      userLogged.role === "user"
     )
-      getProyectos();
+      getProyectos(solicitud.grupo);
   }, [userLogged.id, authorizedGet]);
+
+  const handleChangeGrupo = (e) => {
+    setSolicitud({ ...solicitud, grupo: e.target.value });
+    getProyectos(e.target.value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,10 +174,6 @@ function DashboardSolicitudesPage() {
       });
       setShowMessage(false);
     }
-  };
-
-  const handleChangeGrupo = (e) => {
-    getProyectos(e.target.value);
   };
 
   return (

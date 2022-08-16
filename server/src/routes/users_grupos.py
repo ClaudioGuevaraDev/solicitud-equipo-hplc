@@ -50,14 +50,24 @@ def get_users_grupos_by_user(user_id: int):
 
         data = []
         for user_grupo in users_grupos:
-            cur.execute("SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
-            grupo_found = cur.fetchone()
+            cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s", [user_grupo[1]])
+            proyectos_found = cur.fetchall()
+            key = False
+            for proyecto_found in proyectos_found:
+                cur.execute("SELECT * FROM users_proyectos WHERE proyectos_id = %s", [proyecto_found[0]])
+                if cur.fetchone():
+                    key = True
+                    break
 
-            if grupo_found:
-                data.append({
-                    "id": grupo_found[0],
-                    "name": grupo_found[1]
-                })
+            if key == True:
+                cur.execute("SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
+                grupo_found = cur.fetchone()
+
+                if grupo_found:
+                    data.append({
+                        "id": grupo_found[0],
+                        "name": grupo_found[1]
+                    })
 
         return {"data": data}
     except Exception as error:
