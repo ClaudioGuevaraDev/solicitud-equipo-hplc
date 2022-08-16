@@ -136,15 +136,25 @@ function DashboardProyectosPage() {
           `/api/proyectos/${selectedProyecto}`,
           proyecto
         );
-        setProyectos(
-          proyectos.map((p) => (p.id === data.data.id ? data.data : p))
+        pagination(
+          originalProyectos.map((p) => (p.id === data.data.id ? data.data : p)),
+          elementsPagination.firstElement,
+          elementsPagination.lastElement
+        );
+        setOriginalProyectos(
+          originalProyectos.map((p) => (p.id === data.data.id ? data.data : p))
         );
         toast.success(data.detail, {
           duration: 5000,
         });
       } else {
         const { data } = await axios.post("/api/proyectos", proyecto);
-        setProyectos([data.data, ...proyectos]);
+        pagination(
+          [...originalProyectos, data.data],
+          elementsPagination.firstElement,
+          elementsPagination.lastElement
+        );
+        setOriginalProyectos([...originalProyectos, data.data]);
         toast.success(data.detail, {
           duration: 5000,
         });
@@ -184,7 +194,12 @@ function DashboardProyectosPage() {
   const deleteProyecto = async (id) => {
     try {
       const { data } = await axios.delete(`/api/proyectos/${id}`);
-      setProyectos(proyectos.filter((f) => f.id !== id));
+      pagination(
+        originalProyectos.filter((f) => f.id !== id),
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
+      setOriginalProyectos(originalProyectos.filter((f) => f.id !== id));
       toast.success(data.detail, {
         duration: 5000,
       });
@@ -555,7 +570,7 @@ function DashboardProyectosPage() {
                         <li className="page-item">
                           <button
                             className={`page-link ${
-                              elementsPagination.lastElement >=
+                              elementsPagination.lastElement + 1 >=
                               originalProyectos.length
                                 ? "disabled"
                                 : ""

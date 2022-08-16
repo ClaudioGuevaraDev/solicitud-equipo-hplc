@@ -11,6 +11,7 @@ import LoadingComponent from "../components/LoadingComponent";
 function DashboardGruposPage() {
   const { userLogged } = useContext(AppContext);
   const [grupos, setGrupos] = useState([]);
+  const [originalGrupos, setOriginalGrupos] = useState([]);
   const [selectedGrupo, setSelectedGrupo] = useState(null);
   const [selectedDeleteGrupo, setSelectedDeleteGrupo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -26,13 +27,22 @@ function DashboardGruposPage() {
   const [loadingGrupos, setLoadingGrupos] = useState(true);
   const [valueSearch, setValueSearch] = useState("");
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [elementsPagination, setElementsPagination] = useState({
+    firstElement: 0,
+    lastElement: 9,
+  });
 
   const getGrupos = async (search) => {
     try {
       const { data } = await axios.get(
         `/api/grupos/${userLogged.id}/${handleShowGrupos}/${search}`
       );
-      setGrupos(data.data);
+      pagination(
+        data.data,
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
+      setOriginalGrupos(data.data);
       setUsersGrupos(data.users_grupos);
       setLoadingGrupos(false);
     } catch (error) {
@@ -44,6 +54,43 @@ function DashboardGruposPage() {
       setUsersGrupos([]);
       setLoadingGrupos(false);
     }
+  };
+
+  const pagination = (dataGrupos, firstElement, lastElement) => {
+    const filterGrupos = [];
+    for (let [index, value] of dataGrupos.entries()) {
+      if (filterGrupos.length === 10) {
+        break;
+      }
+      if (index >= firstElement && index <= lastElement) {
+        filterGrupos.push(value);
+      }
+    }
+    setGrupos(filterGrupos);
+  };
+
+  const handleNextPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement + 10,
+      lastElement: elementsPagination.lastElement + 10,
+    });
+    pagination(
+      originalGrupos,
+      elementsPagination.firstElement + 10,
+      elementsPagination.lastElement + 10
+    );
+  };
+
+  const handlePreviusPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement - 10,
+      lastElement: elementsPagination.lastElement - 10,
+    });
+    pagination(
+      originalGrupos,
+      elementsPagination.firstElement - 10,
+      elementsPagination.lastElement - 10
+    );
   };
 
   useEffect(() => {
@@ -60,13 +107,25 @@ function DashboardGruposPage() {
     try {
       if (selectedGrupo) {
         const { data } = await axios.put(`/api/grupos/${selectedGrupo}`, grupo);
-        setGrupos(grupos.map((g) => (g.id === data.data.id ? data.data : g)));
+        pagination(
+          originalGrupos.map((g) => (g.id === data.data.id ? data.data : g)),
+          elementsPagination.firstElement,
+          elementsPagination.lastElement
+        );
+        setOriginalGrupos(
+          originalGrupos.map((g) => (g.id === data.data.id ? data.data : g))
+        );
         toast.success(data.detail, {
           duration: 5000,
         });
       } else {
         const { data } = await axios.post("/api/grupos", grupo);
-        setGrupos([data.data, ...grupos]);
+        pagination(
+          [...originalGrupos, data.data],
+          elementsPagination.firstElement,
+          elementsPagination.lastElement
+        );
+        setOriginalGrupos([...originalGrupos, data.data]);
         toast.success(data.detail, {
           duration: 5000,
         });
@@ -111,7 +170,12 @@ function DashboardGruposPage() {
   const deleteGrupo = async (id) => {
     try {
       const { data } = await axios.delete(`/api/grupos/${id}`);
-      setGrupos(grupos.filter((f) => f.id !== data.data.id));
+      pagination(
+        originalGrupos.filter((f) => f.id !== data.data.id),
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
+      setOriginalGrupos(originalGrupos.filter((f) => f.id !== data.data.id));
       toast.success(data.detail, {
         duration: 5000,
       });
@@ -371,10 +435,29 @@ function DashboardGruposPage() {
                       <nav aria-label="Page navigation example">
                         <ul className="pagination justify-content-end">
                           <li className="page-item">
-                            <button className="page-link">Previous</button>
+                            <button
+                              className={`page-link ${
+                                elementsPagination.firstElement === 0
+                                  ? "disabled"
+                                  : ""
+                              }`}
+                              onClick={handlePreviusPage}
+                            >
+                              Previous
+                            </button>
                           </li>
                           <li className="page-item">
-                            <button className="page-link">Next</button>
+                            <button
+                              className={`page-link ${
+                                elementsPagination.lastElement + 1 >=
+                                originalGrupos.length
+                                  ? "disabled"
+                                  : ""
+                              }`}
+                              onClick={handleNextPage}
+                            >
+                              Next
+                            </button>
                           </li>
                         </ul>
                       </nav>
