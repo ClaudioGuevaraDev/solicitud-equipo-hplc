@@ -547,7 +547,7 @@ function DashboardProyectosPage() {
                           className="btn btn-outline-success"
                           type="submit"
                         >
-                          Search
+                          Buscar
                         </button>
                       )}
                     </form>
@@ -564,7 +564,7 @@ function DashboardProyectosPage() {
                             }`}
                             onClick={handlePreviusPage}
                           >
-                            Previous
+                            Anterior
                           </button>
                         </li>
                         <li className="page-item">
@@ -577,7 +577,7 @@ function DashboardProyectosPage() {
                             }`}
                             onClick={handleNextPage}
                           >
-                            Next
+                            Siguiente
                           </button>
                         </li>
                       </ul>

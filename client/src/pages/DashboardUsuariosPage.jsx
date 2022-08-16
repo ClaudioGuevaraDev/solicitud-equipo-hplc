@@ -8,14 +8,24 @@ import LoadingComponent from "../components/LoadingComponent";
 
 function DashboardUsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
+  const [originalUsuarios, setOriginalUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [valueSearch, setValueSearch] = useState("");
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [elementsPagination, setElementsPagination] = useState({
+    firstElement: 0,
+    lastElement: 9,
+  });
 
   const getUsuarios = async (search) => {
     try {
       const { data } = await axios.get(`/api/users/${search}`);
-      setUsuarios(data.data);
+      pagination(
+        data.data,
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
+      setOriginalUsuarios(data.data);
       setLoading(false);
     } catch (error) {
       toast.error("Error al listar los usuarios.", {
@@ -24,6 +34,43 @@ function DashboardUsuariosPage() {
       setUsuarios([]);
       setLoading(false);
     }
+  };
+
+  const pagination = (dataUsuarios, firstElement, lastElement) => {
+    const filterUsuarios = [];
+    for (let [index, value] of dataUsuarios.entries()) {
+      if (filterUsuarios.length === 10) {
+        break;
+      }
+      if (index >= firstElement && index <= lastElement) {
+        filterUsuarios.push(value);
+      }
+    }
+    setUsuarios(filterUsuarios);
+  };
+
+  const handleNextPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement + 10,
+      lastElement: elementsPagination.lastElement + 10,
+    });
+    pagination(
+      originalUsuarios,
+      elementsPagination.firstElement + 10,
+      elementsPagination.lastElement + 10
+    );
+  };
+
+  const handlePreviusPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement - 10,
+      lastElement: elementsPagination.lastElement - 10,
+    });
+    pagination(
+      originalUsuarios,
+      elementsPagination.firstElement - 10,
+      elementsPagination.lastElement - 10
+    );
   };
 
   useEffect(() => {
@@ -88,7 +135,7 @@ function DashboardUsuariosPage() {
                       </button>
                     ) : (
                       <button className="btn btn-outline-success" type="submit">
-                        Search
+                        Buscar
                       </button>
                     )}
                   </form>
@@ -97,10 +144,29 @@ function DashboardUsuariosPage() {
                   <nav aria-label="Page navigation example">
                     <ul className="pagination justify-content-end">
                       <li className="page-item">
-                        <button className="page-link">Previous</button>
+                        <button
+                          className={`page-link ${
+                            elementsPagination.firstElement === 0
+                              ? "disabled"
+                              : ""
+                          }`}
+                          onClick={handlePreviusPage}
+                        >
+                          Anterior
+                        </button>
                       </li>
                       <li className="page-item">
-                        <button className="page-link">Next</button>
+                        <button
+                          className={`page-link ${
+                            elementsPagination.lastElement + 1 >=
+                            originalUsuarios.length
+                              ? "disabled"
+                              : ""
+                          }`}
+                          onClick={handleNextPage}
+                        >
+                          Siguiente
+                        </button>
                       </li>
                     </ul>
                   </nav>
