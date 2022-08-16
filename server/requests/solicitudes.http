@@ -1,7 +1,7 @@
 @api = http://localhost:8000/api/solicitudes
 
 ###
-GET {{api}}
+GET {{api}}/1
 ###
 POST {{api}}
 Content-Type: application/json

@@ -9,11 +9,29 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=200)
-def get_solicitudes():
+@router.get("/{user_id}", status_code=200)
+def get_solicitudes(user_id: int):
+    cur.execute("SELECT * FROM users WHERE id = %s", [user_id])
+    user_found = cur.fetchone()
+    if user_found == None:
+        raise HTTPException(
+            status_code=404, detail="Error al listar las solicitudes.")
+
+    cur.execute("SELECT * FROM roles WHERE id = %s", [user_found[9]])
+    role_found = cur.fetchone()
+    if role_found == None:
+        raise HTTPException(
+            status_code=404, detail="Error al listar las solicitudes.")
+
     try:
-        cur.execute("SELECT * FROM solicitudes")
-        solicitudes = cur.fetchall()
+        solicitudes = []
+        if role_found[1] == "admin":
+            cur.execute("SELECT * FROM solicitudes")
+            solicitudes = cur.fetchall()
+        elif role_found[1] == "user":
+            cur.execute(
+                "SELECT * FROM solicitudes WHERE user_id = %s", [user_found[0]])
+            solicitudes = cur.fetchall()
 
         data = []
         for solicitud in solicitudes:
@@ -21,7 +39,8 @@ def get_solicitudes():
                 "solicitud": solicitud[0],
                 "created_at": solicitud[5],
                 "assigned_date": solicitud[6],
-                "canceled": solicitud[7]
+                "canceled": solicitud[7],
+                "user": user_found[3]
             }
 
             cur.execute("SELECT * FROM users WHERE id = %s", [solicitud[1]])

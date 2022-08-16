@@ -3,18 +3,23 @@ import { useState, useEffect, useContext } from "react";
 import LayoutDashboardComponent from "../components/LayoutDashboardComponent";
 import AppContext from "../context/AppContext";
 import toast from "react-hot-toast";
+import { FcCancel } from "@react-icons/all-files/fc/FcCancel";
+import { AiOutlineLine } from "@react-icons/all-files/ai/AiOutlineLine";
 
 function DashboardSolicitudesPage() {
   const { userLogged } = useContext(AppContext);
+  const [solicitudes, setSolicitudes] = useState([]);
   const [equipos, setEquipos] = useState([]);
   const [grupos, setGrupos] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [getErrors, setGetErrors] = useState({
+    equipos: false,
     grupos: false,
     proyectos: false,
   });
   const [authorizedGet, setAuthorizedGet] = useState({
-    equipos: true,
+    solicitudes: true,
+    equipos: false,
     grupos: false,
     proyectos: false,
   });
@@ -23,6 +28,23 @@ function DashboardSolicitudesPage() {
     grupo: "",
     proyecto: "",
   });
+
+  const getSolicitudes = async () => {
+    try {
+      const { data } = await axios.get(`/api/solicitudes/${userLogged.id}`);
+      setSolicitudes(data.data);
+      setAuthorizedGet({ ...authorizedGet, solicitudes: false, equipos: true });
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+      }
+      setSolicitudes([]);
+      setAuthorizedGet({ ...authorizedGet, solicitudes: false, equipos: true });
+    }
+  };
 
   const getEquipos = async () => {
     try {
@@ -84,6 +106,8 @@ function DashboardSolicitudesPage() {
   };
 
   useEffect(() => {
+    if (authorizedGet.solicitudes === true && userLogged.id !== 0)
+      getSolicitudes();
     if (authorizedGet.equipos === true && userLogged.id !== 0) getEquipos();
     if (authorizedGet.grupos === true && userLogged.id !== 0) getGrupos();
     if (authorizedGet.proyectos === true && userLogged.id !== 0) getProyectos();
@@ -97,7 +121,12 @@ function DashboardSolicitudesPage() {
         ...solicitud,
         user: userLogged.id,
       });
-      console.log(data);
+      setSolicitudes([...solicitudes, data.data])
+      setSolicitud({
+        grupo: grupos[0].id,
+        equipo: equipos[0].id,
+        proyecto: proyectos[0].id,
+      });
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -130,7 +159,8 @@ function DashboardSolicitudesPage() {
             <strong>No hay equipos para solicitar.</strong>
           </div>
         )}
-        {grupos.length === 0 && userLogged.role === "user" &&
+        {grupos.length === 0 &&
+          userLogged.role === "user" &&
           (getErrors.grupos === true ? (
             <div
               className="alert alert-warning"
@@ -148,7 +178,8 @@ function DashboardSolicitudesPage() {
               <strong>No estás inscrito en ningún grupo.</strong>
             </div>
           ))}
-        {proyectos.length === 0 && userLogged.role === "user" &&
+        {proyectos.length === 0 &&
+          userLogged.role === "user" &&
           (getErrors.proyectos === true ? (
             <div
               className="alert alert-warning"
@@ -166,97 +197,164 @@ function DashboardSolicitudesPage() {
               <strong>No estás inscrito en ningún proyecto.</strong>
             </div>
           ))}
-        {grupos.length > 0 && equipos.length > 0 && proyectos.length > 0 && userLogged.role === "user" && (
-          <div className="row">
-            <div className="col-12" style={{ maxWidth: 1000 }}>
-              <div className="card">
-                <div className="card-body">
-                  <form onSubmit={handleSubmit}>
-                    <div className="row gy-3">
-                      <div className="col-xl-4 col-lg-4 col-md-4">
-                        <label htmlFor="equipos-input" className="form-label">
-                          Equipos
-                        </label>
-                        <select
-                          className="form-select"
-                          id="equipos-input"
-                          value={solicitud.equipo}
-                          onChange={(e) =>
-                            setSolicitud({
-                              ...solicitud,
-                              equipo: e.target.value,
-                            })
-                          }
-                        >
-                          {equipos.map((e) => (
-                            <option key={e.id} value={e.id}>
-                              {e.name}
-                            </option>
-                          ))}
-                        </select>
+        {grupos.length > 0 &&
+          equipos.length > 0 &&
+          proyectos.length > 0 &&
+          userLogged.role === "user" && (
+            <div className="row">
+              <div className="col-12" style={{ maxWidth: 1000 }}>
+                <div className="card">
+                  <div className="card-body">
+                    <form onSubmit={handleSubmit}>
+                      <div className="row gy-3">
+                        <div className="col-xl-4 col-lg-4 col-md-4">
+                          <label htmlFor="equipos-input" className="form-label">
+                            Equipos
+                          </label>
+                          <select
+                            className="form-select"
+                            id="equipos-input"
+                            value={solicitud.equipo}
+                            onChange={(e) =>
+                              setSolicitud({
+                                ...solicitud,
+                                equipo: e.target.value,
+                              })
+                            }
+                          >
+                            {equipos.map((e) => (
+                              <option key={e.id} value={e.id}>
+                                {e.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-xl-4 col-lg-4 col-md-4">
+                          <label htmlFor="grupos-input" className="form-label">
+                            Grupos
+                          </label>
+                          <select
+                            className="form-select"
+                            id="grupos-input"
+                            value={solicitud.grupo}
+                            onChange={(e) =>
+                              setSolicitud({
+                                ...solicitud,
+                                grupo: e.target.value,
+                              })
+                            }
+                          >
+                            {grupos.map((g) => (
+                              <option key={g.id} value={g.id}>
+                                {g.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-xl-4 col-lg-4 col-md-4">
+                          <label
+                            htmlFor="proyectos-input"
+                            className="form-label"
+                          >
+                            Proyectos
+                          </label>
+                          <select
+                            className="form-select"
+                            id="proyectos-input"
+                            value={solicitud.proyecto}
+                            onChange={(e) =>
+                              setSolicitud({
+                                ...solicitud,
+                                proyecto: e.target.value,
+                              })
+                            }
+                          >
+                            {proyectos.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
-                      <div className="col-xl-4 col-lg-4 col-md-4">
-                        <label htmlFor="grupos-input" className="form-label">
-                          Grupos
-                        </label>
-                        <select
-                          className="form-select"
-                          id="grupos-input"
-                          value={solicitud.grupo}
-                          onChange={(e) =>
-                            setSolicitud({
-                              ...solicitud,
-                              grupo: e.target.value,
-                            })
-                          }
-                        >
-                          {grupos.map((g) => (
-                            <option key={g.id} value={g.id}>
-                              {g.name}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="row mt-3">
+                        <div className="col-12">
+                          <button
+                            className="btn btn-success"
+                            disabled={
+                              solicitud.equipo === "" ||
+                              solicitud.grupo === "" ||
+                              solicitud.proyecto === ""
+                            }
+                          >
+                            SOLICITAR
+                          </button>
+                        </div>
                       </div>
-                      <div className="col-xl-4 col-lg-4 col-md-4">
-                        <label htmlFor="proyectos-input" className="form-label">
-                          Proyectos
-                        </label>
-                        <select
-                          className="form-select"
-                          id="proyectos-input"
-                          value={solicitud.proyecto}
-                          onChange={(e) =>
-                            setSolicitud({
-                              ...solicitud,
-                              proyecto: e.target.value,
-                            })
-                          }
-                        >
-                          {proyectos.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <div className="row mt-3">
-                      <div className="col-12">
-                        <button
-                          className="btn btn-success"
-                          disabled={
-                            solicitud.equipo === "" ||
-                            solicitud.grupo === "" ||
-                            solicitud.proyecto === ""
-                          }
-                        >
-                          SOLICITAR
-                        </button>
-                      </div>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </div>
               </div>
+            </div>
+          )}
+        {solicitudes.length === 0 ? (
+          <div
+            className="alert alert-warning"
+            style={{ maxWidth: 300 }}
+            role="alert"
+          >
+            <strong>No hay solicitudes para listar.</strong>
+          </div>
+        ) : (
+          <div className="row mt-3">
+            <div className="col-12 table-responsive">
+              <table
+                className="table
+                table-hover
+                table-stripped
+                text-center
+                table-bordered
+                shadow"
+              >
+                <thead className="table-dark">
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Equipo</th>
+                    <th>Grupo</th>
+                    <th>Proyecto</th>
+                    <th>Fecha de la Solicitud</th>
+                    <th>Fecha Asignada</th>
+                    <th>Estado</th>
+                    <th>Cancelada</th>
+                    <th>Opciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {solicitudes.map((s) => (
+                    <tr key={s.solicitud}>
+                      <td>{s.user}</td>
+                      <td>{s.equipo}</td>
+                      <td>{s.grupo}</td>
+                      <td>{s.proyecto}</td>
+                      <td>{`${s.created_at.split("T")[0]} - ${
+                        s.created_at.split("T")[1].split(".")[0]
+                      }`}</td>
+                      <td>
+                        {s.assigned_date ? s.assigned_date : "Sin asignar"}
+                      </td>
+                      <td>{s.estado}</td>
+                      <td>
+                        <i className="h2">
+                          {s.canceled ? <FcCancel /> : <AiOutlineLine />}
+                        </i>
+                      </td>
+                      <td>
+                        <button className="btn btn-danger">CANCELAR</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
