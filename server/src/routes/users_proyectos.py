@@ -43,8 +43,13 @@ def get_users_proyectos():
             status_code=500, detail="Error al listar los usuarios con sus proyectos.")
 
 
-@router.get("/{user_id}")
-def get_users_proyectos_by_user(user_id: int):
+@router.get("/{user_id}/{grupo_id}")
+def get_users_proyectos_by_user(user_id: int, grupo_id: int):
+    cur.execute("SELECT * FROM grupos WHERE id = %s", [grupo_id])
+    if cur.fetchone() == None:
+        raise HTTPException(
+            status_code=404, detail="Error al listar los proyectos.")
+
     try:
         cur.execute(
             "SELECT * FROM users_proyectos WHERE users_id = %s", [user_id])
@@ -52,8 +57,8 @@ def get_users_proyectos_by_user(user_id: int):
 
         data = []
         for user_proyecto in user_proyectos:
-            cur.execute("SELECT * FROM proyectos WHERE id = %s",
-                        [user_proyecto[1]])
+            cur.execute("SELECT * FROM proyectos WHERE id = %s AND grupo_id = %s",
+                        [user_proyecto[1], grupo_id])
             proyecto_found = cur.fetchone()
             if proyecto_found:
                 data.append({

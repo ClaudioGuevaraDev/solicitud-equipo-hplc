@@ -12,7 +12,7 @@ router = APIRouter(
 @router.get("/", status_code=200)
 def get_proyectos():
     try:
-        cur.execute("SELECT * FROM proyectos")
+        cur.execute("SELECT * FROM proyectos ORDER BY id ASC")
         proyectos = cur.fetchall()
 
         data = []
@@ -250,6 +250,87 @@ def get_proyectos_by_user(user_id: int, type_filter: str, id_value: int, value_s
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al listar los proyectos.")
+    # cur.execute("SELECT * FROM users_proyectos WHERE users_id = %s", [user_id])
+    # users_proyectos_found = cur.fetchall()
+    # users_proyectos_list = []
+    # for user_proyecto_found in users_proyectos_found:
+    #     users_proyectos_list.append(user_proyecto_found[1])
+
+    # data = []
+    # if type_filter == "all":
+    #     cur.execute(
+    #         "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
+    #     users_grupos = cur.fetchall()
+    #     for user_grupo in users_grupos:
+    #         cur.execute("SELECT * FROM grupos WHERE id = %s", [user_grupo[1]])
+    #         grupo_found = cur.fetchone()
+
+    #         if value_search == "null":
+    #             cur.execute(
+    #                 "SELECT * FROM proyectos WHERE grupo_id = %s AND id >= %s ORDER BY id ASC", [user_grupo[1], id_value])
+    #             proyectos = cur.fetchall()
+    #         else:
+    #             cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s AND name LIKE %s AND id >= %s ORDER BY id ASC",
+    #                         [user_grupo[1], f"%{value_search}%", id_value])
+    #             proyectos = cur.fetchall()
+
+    #         for proyecto in proyectos:
+    #             if len(data) < 10:
+    #                     data.append({
+    #                     "id": proyecto[0],
+    #                     "folio": proyecto[1],
+    #                     "name": proyecto[2],
+    #                     "start_date": proyecto[3],
+    #                     "termination_date": proyecto[4],
+    #                     "score": proyecto[5],
+    #                     "grupo": grupo_found[1] if grupo_found else None
+    #                 })
+    # else:
+    #     cur.execute(
+    #         "SELECT * FROM users_proyectos WHERE users_id = %s", [user_id])
+    #     users_proyectos = cur.fetchall()
+    #     for user_proyecto in users_proyectos:
+    #         cur.execute("SELECT * FROM proyectos WHERE id = %s",
+    #                     [user_proyecto[1]])
+    #         proyecto_found = cur.fetchone()
+
+    #         cur.execute("SELECT * FROM grupos WHERE id = %s",
+    #                     [proyecto_found[6]])
+    #         grupo_found = cur.fetchone()
+
+    #         data.append({
+    #             "id": proyecto_found[0],
+    #             "folio": proyecto_found[1],
+    #             "name": proyecto_found[2],
+    #             "start_date": proyecto_found[3],
+    #             "termination_date": proyecto_found[4],
+    #             "score": proyecto_found[5],
+    #             "grupo": grupo_found[1] if grupo_found else None
+    #         })
+
+    # next_page = 0
+    # if type_filter == "all":
+    #     if len(data) > 0:
+    #         next_page = data[len(data)-1]["id"] + 1
+
+    # first_page = False
+    # first_element = None
+    # if type_filter == "all":
+    #     if (len(users_grupos) > 0):
+    #         if value_search == "":
+    #             cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC LIMIT 1",
+    #                         [users_grupos[0][1]])
+    #             first_element = cur.fetchone()
+    #         else:
+    #             cur.execute("SELECT * FROM proyectos WHERE grupo_id = %s AND name LIKE %s ORDER BY id ASC LIMIT 1",
+    #                         [users_grupos[0][1], f"%{value_search}%"])
+    #             first_element = cur.fetchone()
+    #         if ((first_element) and (len(data) > 0)):
+    #             if data[0]["id"] == first_element[0]:
+    #                 first_page = True
+        
+
+    # return {"data": data, "users_proyectos": users_proyectos_list, "next_page": next_page, "first_page": first_page}
 
 
 @router.post("/", status_code=201)

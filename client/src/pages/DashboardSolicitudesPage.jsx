@@ -85,9 +85,13 @@ function DashboardSolicitudesPage() {
     }
   };
 
-  const getProyectos = async () => {
+  const getProyectos = async (grupo) => {
     try {
-      const { data } = await axios.get(`/api/users-proyectos/${userLogged.id}`);
+      const { data } = await axios.get(
+        `/api/users-proyectos/${userLogged.id}/${
+          grupo ? grupo : solicitud.grupo
+        }`
+      );
       setProyectos(data.data);
       if (data.data.length > 0)
         setSolicitud({ ...solicitud, proyecto: data.data[0].id });
@@ -108,9 +112,24 @@ function DashboardSolicitudesPage() {
   useEffect(() => {
     if (authorizedGet.solicitudes === true && userLogged.id !== 0)
       getSolicitudes();
-    if (authorizedGet.equipos === true && userLogged.id !== 0) getEquipos();
-    if (authorizedGet.grupos === true && userLogged.id !== 0) getGrupos();
-    if (authorizedGet.proyectos === true && userLogged.id !== 0) getProyectos();
+    if (
+      authorizedGet.equipos === true &&
+      userLogged.id !== 0 &&
+      userLogged.role === "user"
+    )
+      getEquipos();
+    if (
+      authorizedGet.grupos === true &&
+      userLogged.id !== 0 &&
+      userLogged.role === "user"
+    )
+      getGrupos();
+    if (
+      authorizedGet.proyectos === true &&
+      userLogged.id !== 0 &&
+      userLogged.role === "user"
+    )
+      getProyectos();
   }, [userLogged.id, authorizedGet]);
 
   const handleSubmit = async (e) => {
@@ -121,7 +140,7 @@ function DashboardSolicitudesPage() {
         ...solicitud,
         user: userLogged.id,
       });
-      setSolicitudes([...solicitudes, data.data])
+      setSolicitudes([...solicitudes, data.data]);
       setSolicitud({
         grupo: grupos[0].id,
         equipo: equipos[0].id,
@@ -140,6 +159,11 @@ function DashboardSolicitudesPage() {
         proyecto: proyectos[0].id,
       });
     }
+  };
+
+  const handleChangeGrupo = (e) => {
+    getProyectos(e.target.value);
+    setSolicitud({ ...solicitud, grupo: e.target.value });
   };
 
   return (
@@ -237,12 +261,7 @@ function DashboardSolicitudesPage() {
                             className="form-select"
                             id="grupos-input"
                             value={solicitud.grupo}
-                            onChange={(e) =>
-                              setSolicitud({
-                                ...solicitud,
-                                grupo: e.target.value,
-                              })
-                            }
+                            onChange={handleChangeGrupo}
                           >
                             {grupos.map((g) => (
                               <option key={g.id} value={g.id}>
@@ -299,7 +318,7 @@ function DashboardSolicitudesPage() {
           )}
         {solicitudes.length === 0 ? (
           <div
-            className="alert alert-warning"
+            className="alert alert-warning mt-3"
             style={{ maxWidth: 300 }}
             role="alert"
           >
