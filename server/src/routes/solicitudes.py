@@ -26,11 +26,11 @@ def get_solicitudes(user_id: int):
     try:
         solicitudes = []
         if role_found[1] == "admin":
-            cur.execute("SELECT * FROM solicitudes")
+            cur.execute("SELECT * FROM solicitudes ORDER BY created_at DESC")
             solicitudes = cur.fetchall()
         elif role_found[1] == "user":
             cur.execute(
-                "SELECT * FROM solicitudes WHERE user_id = %s", [user_found[0]])
+                "SELECT * FROM solicitudes WHERE user_id = %s ORDER BY created_at DESC", [user_found[0]])
             solicitudes = cur.fetchall()
 
         data = []
@@ -159,3 +159,58 @@ def delete_solicitud(solicitud_id: int):
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al eliminar la solicitud.")
+
+
+@router.put("/canceled/{solicitud_id}", status_code=200)
+def handle_canceled(solicitud_id: int):
+    cur.execute("SELECT * FROM estado_solicitudes WHERE name = %s",
+                ["Cancelada"])
+    estado_solicitud = cur.fetchone()
+    if estado_solicitud == None:
+        raise HTTPException(
+            status_code=404, detail="Error al cancelar la solicitud.")
+
+    cur.execute("SELECT * FROM solicitudes WHERE id = %s", [solicitud_id])
+    if cur.fetchone() == None:
+        raise HTTPException(
+            status_code=404, detail="Error al cancelar la solicitud.")
+
+    try:
+        cur.execute("UPDATE solicitudes SET canceled = %s, estado_solicitud_id = %s WHERE id = %s RETURNING *",
+                    [True, estado_solicitud[0], solicitud_id])
+        conn.commit()
+
+        updated_solicitud = cur.fetchone()
+
+        cur.execute("SELECT * FROM users WHERE id = %s",
+                    [updated_solicitud[1]])
+        user_found = cur.fetchone()
+
+        cur.execute("SELECT * FROM grupos WHERE id = %s",
+                    [updated_solicitud[2]])
+        grupo_found = cur.fetchone()
+
+        cur.execute("SELECT * FROM proyectos WHERE id = %s",
+                    [updated_solicitud[3]])
+        proyecto_found = cur.fetchone()
+
+        cur.execute("SELECT * FROM equipos WHERE id = %s",
+                    [updated_solicitud[4]])
+        equipo_found = cur.fetchone()
+
+        data = {
+            "solicitud": updated_solicitud[0],
+            "user": user_found[3],
+            "equipo": equipo_found[1],
+            "grupo": grupo_found[1],
+            "proyecto": proyecto_found[2],
+            "created_at": updated_solicitud[5],
+            "assigned_date": updated_solicitud[6],
+            "canceled": updated_solicitud[7],
+            "estado": estado_solicitud[1]
+        }
+
+        return {"data": data}
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Error al cancelar la solicitud.")

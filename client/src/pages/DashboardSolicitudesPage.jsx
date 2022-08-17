@@ -36,6 +36,7 @@ function DashboardSolicitudesPage() {
     firstElement: 0,
     lastElement: 9,
   });
+  const [selectedSolicitud, setSelectedSolicitud] = useState("");
 
   const getSolicitudes = async () => {
     try {
@@ -98,7 +99,7 @@ function DashboardSolicitudesPage() {
 
   const getEquipos = async () => {
     try {
-      const { data } = await axios.get("/api/equipos");
+      const { data } = await axios.get("/api/equipos/operativos");
       setEquipos(data.data);
       if (data.data.length > 0) {
         setSolicitud({ ...solicitud, equipo: data.data[0].id });
@@ -204,7 +205,8 @@ function DashboardSolicitudesPage() {
         ...solicitud,
         user: userLogged.id,
       });
-      setSolicitudes([...solicitudes, data.data]);
+      pagination([data.data, ...originalSolicitudes], elementsPagination.firstElement, elementsPagination.lastElement)
+      setOriginalSolicitudes([data.data, ...originalSolicitudes]);
       setSolicitud({
         grupo: grupos[0].id,
         equipo: equipos[0].id,
@@ -227,8 +229,31 @@ function DashboardSolicitudesPage() {
     }
   };
 
-  const handleCanceled = (solicitudId) => {
-    console.log(solicitudId);
+  const handleCanceled = async (solicitudId) => {
+    try {
+      const { data } = await axios.put(
+        `/api/solicitudes/canceled/${solicitudId}`
+      );
+      pagination(
+        originalSolicitudes.map((o) =>
+          o.solicitud === data.data.solicitud ? data.data : o
+        ),
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
+      setOriginalSolicitudes(
+        originalSolicitudes.map((o) =>
+          o.solicitud === data.data.solicitud ? data.data : o
+        )
+      );
+    } catch (error) {
+      if (error.response.data.detail) {
+        const error_message = error.response.data.detail;
+        toast.error(error_message, {
+          duration: 6000,
+        });
+      }
+    }
   };
 
   return (
@@ -290,37 +315,6 @@ function DashboardSolicitudesPage() {
               <strong>No estás inscrito en ningún proyecto.</strong>
             </div>
           ))}
-        <div className="row">
-          <div className="col-12 mb-1">
-            <nav aria-label="Page navigation example">
-              <ul className="pagination justify-content-end">
-                <li className="page-item">
-                  <button
-                    className={`page-link ${
-                      elementsPagination.firstElement === 0 ? "disabled" : ""
-                    }`}
-                    onClick={handlePreviusPage}
-                  >
-                    Anterior
-                  </button>
-                </li>
-                <li className="page-item">
-                  <button
-                    className={`page-link ${
-                      elementsPagination.lastElement + 1 >=
-                      originalSolicitudes.length
-                        ? "disabled"
-                        : ""
-                    }`}
-                    onClick={handleNextPage}
-                  >
-                    Siguiente
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
         {userLogged.role === "user" && (
           <div className="row">
             <div className="col-12" style={{ maxWidth: 1000 }}>
@@ -437,6 +431,37 @@ function DashboardSolicitudesPage() {
             ></button>
           </div>
         )}
+        <div className="row">
+          <div className="col-12 mb-1">
+            <nav aria-label="Page navigation example">
+              <ul className="pagination justify-content-end">
+                <li className="page-item">
+                  <button
+                    className={`page-link ${
+                      elementsPagination.firstElement === 0 ? "disabled" : ""
+                    }`}
+                    onClick={handlePreviusPage}
+                  >
+                    Anterior
+                  </button>
+                </li>
+                <li className="page-item">
+                  <button
+                    className={`page-link ${
+                      elementsPagination.lastElement + 1 >=
+                      originalSolicitudes.length
+                        ? "disabled"
+                        : ""
+                    }`}
+                    onClick={handleNextPage}
+                  >
+                    Siguiente
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
         {solicitudes.length === 0 ? (
           <div
             className="alert alert-warning mt-3"
@@ -495,6 +520,7 @@ function DashboardSolicitudesPage() {
                           type="button"
                           data-bs-toggle="modal"
                           data-bs-target="#canceledModal"
+                          onClick={() => setSelectedSolicitud(s.solicitud)}
                         >
                           CANCELAR
                         </button>
@@ -507,7 +533,7 @@ function DashboardSolicitudesPage() {
           </div>
         )}
       </div>
-      <CanceledModal handleCanceled={handleCanceled} />
+      <CanceledModal handleCanceled={() => handleCanceled(selectedSolicitud)} />
     </LayoutDashboardComponent>
   );
 }

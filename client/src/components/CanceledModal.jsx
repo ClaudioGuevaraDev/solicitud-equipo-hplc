@@ -26,7 +26,7 @@ function CanceledModal({ handleCanceled }) {
               className="btn btn-secondary"
               data-bs-dismiss="modal"
             >
-              Cerrar
+              NO CANCELAR
             </button>
             <button
               type="button"

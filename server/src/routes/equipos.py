@@ -28,7 +28,46 @@ def get_equipos():
                 "date_obtained": equipo[3],
             }
 
-            cur.execute("SELECT * FROM estado_equipos WHERE id = %s", [equipo[4]])
+            cur.execute(
+                "SELECT * FROM estado_equipos WHERE id = %s", [equipo[4]])
+            estado_found = cur.fetchone()
+            if estado_found == None:
+                new_data["estado"] = None
+            else:
+                new_data["estado"] = estado_found[1]
+
+            data.append(new_data)
+
+        return {"data": data}
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail="Error al listar los equipos.")
+
+
+@router.get("/operativos", status_code=200)
+def get_equipos():
+    data = []
+    cur.execute("SELECT * FROM estado_equipos WHERE name = %s", ["Operativo"])
+    estado_equipo_found = cur.fetchone()
+    if estado_equipo_found == None:
+        raise HTTPException(
+            status_code=404, detail="Error al listar los equipos.")
+
+    try:
+        cur.execute("SELECT * FROM equipos WHERE estado_equipo_id = %s",
+                    [estado_equipo_found[0]])
+        equipos = cur.fetchall()
+
+        for equipo in equipos:
+            new_data = {
+                "id": equipo[0],
+                "name": equipo[1],
+                "url_image": equipo[2],
+                "date_obtained": equipo[3],
+            }
+
+            cur.execute(
+                "SELECT * FROM estado_equipos WHERE id = %s", [equipo[4]])
             estado_found = cur.fetchone()
             if estado_found == None:
                 new_data["estado"] = None
