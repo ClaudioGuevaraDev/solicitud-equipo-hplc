@@ -1,4 +1,5 @@
 import uvicorn
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -7,7 +8,6 @@ from routes import auth, roles, users, jerarquias, lideres, grupos, proyectos, e
 from db.initial_db import initial_roles, initial_jerarquias, inital_user_admin, initial_estado_equipos, initial_estado_solicitudes
 from config.config import frontend_url
 from utils.initial_folders import initial_folders
-
 # Initilized database
 initial_roles()
 initial_estado_equipos()

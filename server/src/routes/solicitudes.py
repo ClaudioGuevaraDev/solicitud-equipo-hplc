@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi import APIRouter, HTTPException
 
 from db.connection import cur, conn
@@ -122,8 +124,9 @@ def create_solicitud(solicitud: SolicitudModel):
             status_code=404, detail="Error al crear la solicitud.")
 
     try:
+        created_at = datetime.datetime.now()
         cur.execute(
-            "INSERT INTO solicitudes (user_id, grupo_id, proyecto_id, equipo_id, estado_solicitud_id) VALUES (%s, %s, %s, %s, %s) RETURNING *", [solicitud.user, solicitud.grupo, solicitud.proyecto, solicitud.equipo, estado_solicitud_found[0]])
+            "INSERT INTO solicitudes (user_id, grupo_id, proyecto_id, equipo_id, estado_solicitud_id, created_at) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *", [solicitud.user, solicitud.grupo, solicitud.proyecto, solicitud.equipo, estado_solicitud_found[0], created_at])
         conn.commit()
 
         created_solicitud = cur.fetchone()

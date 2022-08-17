@@ -60,7 +60,7 @@ CREATE TABLE "solicitudes" (
   "grupo_id" int,
   "proyecto_id" int,
   "equipo_id" int,
-  "created_at" timestamp DEFAULT (now()),
+  "created_at" timestamp,
   "assigned_date" timestamp,
   "canceled" boolean DEFAULT false,
   "estado_solicitud_id" int
@@ -82,7 +82,6 @@ ALTER TABLE "proyectos" ADD FOREIGN KEY ("grupo_id") REFERENCES "grupos" ("id") 
 CREATE TABLE "users_grupos" (
   "users_id" int NOT NULL,
   "grupos_id" int NOT NULL,
-  "created_at" TIMESTAMP DEFAULT (now()),
   PRIMARY KEY ("users_id", "grupos_id")
 );
 
@@ -94,7 +93,6 @@ ALTER TABLE "users_grupos" ADD FOREIGN KEY ("grupos_id") REFERENCES "grupos" ("i
 CREATE TABLE "users_proyectos" (
   "users_id" int NOT NULL,
   "proyectos_id" int NOT NULL,
-  "created_at" TIMESTAMP DEFAULT (now()),
   PRIMARY KEY ("users_id", "proyectos_id")
 );
 
