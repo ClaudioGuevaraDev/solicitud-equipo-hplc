@@ -185,6 +185,7 @@ function DashboardUsuariosPage() {
                           <th>Grupos</th>
                           <th>Proyectos</th>
                           <th>Verificado</th>
+                          <th>Prioridad</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -231,6 +232,7 @@ function DashboardUsuariosPage() {
                                 />
                               )}
                             </td>
+                            <td>{u.priority}</td>
                           </tr>
                         ))}
                       </tbody>

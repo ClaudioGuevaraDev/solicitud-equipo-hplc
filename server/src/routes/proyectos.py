@@ -56,11 +56,11 @@ def get_proyectos_by_user(user_id: int, role: str, type_filter: str, value_searc
 
         if role == "admin":
             if value_search == "null":
-                cur.execute("SELECT * FROM proyectos")
+                cur.execute("SELECT * FROM proyectos ORDER BY id ASC")
                 proyectos = cur.fetchall()
             else:
                 cur.execute(
-                    "SELECT * FROM proyectos WHERE name LIKE %s", [f"%{value_search}%"])
+                    "SELECT * FROM proyectos WHERE name LIKE %s ORDER BY id ASC", [f"%{value_search}%"])
                 proyectos = cur.fetchall()
             for proyecto in proyectos:
                 cur.execute("SELECT * FROM grupos WHERE id = %s",
@@ -83,11 +83,11 @@ def get_proyectos_by_user(user_id: int, role: str, type_filter: str, value_searc
             for user_grupo in users_grupos:
                 if value_search == "null":
                     cur.execute(
-                        "SELECT * FROM proyectos WHERE grupo_id = %s", [user_grupo[1]])
+                        "SELECT * FROM proyectos WHERE grupo_id = %s ORDER BY id ASC", [user_grupo[1]])
                     proyectos = cur.fetchall()
                 else:
                     cur.execute(
-                        "SELECT * FROM proyectos WHERE grupo_id = %s AND name LIKE %s", [user_grupo[1], f"%{value_search}%"])
+                        "SELECT * FROM proyectos WHERE grupo_id = %s AND name LIKE %s ORDER BY id ASC", [user_grupo[1], f"%{value_search}%"])
                     proyectos = cur.fetchall()
                 for proyecto in proyectos:
                     cur.execute(

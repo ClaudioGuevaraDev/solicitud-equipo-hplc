@@ -45,10 +45,10 @@ def get_grupos_by_user(user_id: int, type_filter: str, value_search: str):
         data = []
 
         if value_search == "null":
-            cur.execute("SELECT * FROM grupos")
+            cur.execute("SELECT * FROM grupos ORDER BY id ASC")
             grupos = cur.fetchall()
         else:
-            cur.execute("SELECT * FROM grupos WHERE name LIKE %s",
+            cur.execute("SELECT * FROM grupos WHERE name LIKE %s ORDER BY id ASC",
                         [f"%{value_search}%"])
             grupos = cur.fetchall()
         for grupo in grupos:

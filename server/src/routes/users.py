@@ -25,11 +25,11 @@ def get_users(value_search: str):
 
     try:
         if value_search == "null":
-            cur.execute("SELECT * FROM users WHERE role_id = %s",
+            cur.execute("SELECT * FROM users WHERE role_id = %s ORDER BY id ASC",
                         [role_found[0]])
             users = cur.fetchall()
         else:
-            cur.execute("SELECT * FROM users WHERE role_id = %s AND email LIKE %s",
+            cur.execute("SELECT * FROM users WHERE role_id = %s AND email LIKE %s ORDER BY id ASC",
                         [role_found[0], f"%{value_search}%"])
             users = cur.fetchall()
         for user in users:
@@ -64,7 +64,8 @@ def get_users(value_search: str):
                 "verified": user[6],
                 "jerarquia": jerarquia_found[1] if jerarquia_found else None,
                 "proyectos": proyectos,
-                "grupos": grupos
+                "grupos": grupos,
+                "priority": user[10]
             })
 
         return {"data": data}
