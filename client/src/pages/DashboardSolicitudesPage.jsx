@@ -10,6 +10,7 @@ import CanceledModal from "../components/CanceledModal";
 function DashboardSolicitudesPage() {
   const { userLogged } = useContext(AppContext);
   const [solicitudes, setSolicitudes] = useState([]);
+  const [originalSolicitudes, setOriginalSolicitudes] = useState([]);
   const [equipos, setEquipos] = useState([]);
   const [grupos, setGrupos] = useState([]);
   const [proyectos, setProyectos] = useState([]);
@@ -31,11 +32,20 @@ function DashboardSolicitudesPage() {
   });
   const [showMessage, setShowMessage] = useState(false);
   const [showMessageGrupos, setShowMessageGrupos] = useState(false);
+  const [elementsPagination, setElementsPagination] = useState({
+    firstElement: 0,
+    lastElement: 9,
+  });
 
   const getSolicitudes = async () => {
     try {
       const { data } = await axios.get(`/api/solicitudes/${userLogged.id}`);
-      setSolicitudes(data.data);
+      pagination(
+        data.data,
+        elementsPagination.firstElement,
+        elementsPagination.lastElement
+      );
+      setOriginalSolicitudes(data.data);
       setAuthorizedGet({ ...authorizedGet, solicitudes: false, equipos: true });
     } catch (error) {
       if (error.response.data.detail) {
@@ -47,6 +57,43 @@ function DashboardSolicitudesPage() {
       setSolicitudes([]);
       setAuthorizedGet({ ...authorizedGet, solicitudes: false, equipos: true });
     }
+  };
+
+  const pagination = (dataSolicitudes, firstElement, lastElement) => {
+    const filterSolicitudes = [];
+    for (let [index, value] of dataSolicitudes.entries()) {
+      if (filterSolicitudes.length === 10) {
+        break;
+      }
+      if (index >= firstElement && index <= lastElement) {
+        filterSolicitudes.push(value);
+      }
+    }
+    setSolicitudes(filterSolicitudes);
+  };
+
+  const handleNextPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement + 10,
+      lastElement: elementsPagination.lastElement + 10,
+    });
+    pagination(
+      originalSolicitudes,
+      elementsPagination.firstElement + 10,
+      elementsPagination.lastElement + 10
+    );
+  };
+
+  const handlePreviusPage = () => {
+    setElementsPagination({
+      firstElement: elementsPagination.firstElement - 10,
+      lastElement: elementsPagination.lastElement - 10,
+    });
+    pagination(
+      originalSolicitudes,
+      elementsPagination.firstElement - 10,
+      elementsPagination.lastElement - 10
+    );
   };
 
   const getEquipos = async () => {
@@ -243,6 +290,37 @@ function DashboardSolicitudesPage() {
               <strong>No estás inscrito en ningún proyecto.</strong>
             </div>
           ))}
+        <div className="row">
+          <div className="col-12 mb-1">
+            <nav aria-label="Page navigation example">
+              <ul className="pagination justify-content-end">
+                <li className="page-item">
+                  <button
+                    className={`page-link ${
+                      elementsPagination.firstElement === 0 ? "disabled" : ""
+                    }`}
+                    onClick={handlePreviusPage}
+                  >
+                    Anterior
+                  </button>
+                </li>
+                <li className="page-item">
+                  <button
+                    className={`page-link ${
+                      elementsPagination.lastElement + 1 >=
+                      originalSolicitudes.length
+                        ? "disabled"
+                        : ""
+                    }`}
+                    onClick={handleNextPage}
+                  >
+                    Siguiente
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
         {userLogged.role === "user" && (
           <div className="row">
             <div className="col-12" style={{ maxWidth: 1000 }}>
@@ -368,7 +446,7 @@ function DashboardSolicitudesPage() {
             <strong>No hay solicitudes para listar.</strong>
           </div>
         ) : (
-          <div className="row mt-3">
+          <div className="row">
             <div className="col-12 table-responsive">
               <table
                 className="table
