@@ -30,6 +30,7 @@ function DashboardSolicitudesPage() {
     proyecto: "",
   });
   const [showMessage, setShowMessage] = useState(false);
+  const [showMessageGrupos, setShowMessageGrupos] = useState(false);
 
   const getSolicitudes = async () => {
     try {
@@ -73,13 +74,15 @@ function DashboardSolicitudesPage() {
   const getGrupos = async () => {
     try {
       const { data } = await axios.get(`/api/users-grupos/${userLogged.id}`);
+      setShowMessageGrupos(data.show_grupos);
       setGrupos(data.data);
       if (data.data.length > 0) {
         setSolicitud({ ...solicitud, grupo: data.data[0].id });
+        setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: true });
       } else {
         setSolicitud({ ...solicitud, grupo: "" });
+        setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: false });
       }
-      setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: true });
     } catch (error) {
       if (error.response.data.detail) {
         const error_message = error.response.data.detail;
@@ -89,7 +92,7 @@ function DashboardSolicitudesPage() {
       }
       setGrupos([]);
       setGetErrors({ ...getErrors, grupos: true });
-      setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: true });
+      setAuthorizedGet({ ...authorizedGet, grupos: false, proyectos: false });
     }
   };
 
@@ -178,8 +181,8 @@ function DashboardSolicitudesPage() {
   };
 
   const handleCanceled = (solicitudId) => {
-    console.log(solicitudId)
-  }
+    console.log(solicitudId);
+  };
 
   return (
     <LayoutDashboardComponent>
@@ -192,7 +195,7 @@ function DashboardSolicitudesPage() {
         {equipos.length === 0 && userLogged.role === "user" && (
           <div
             className="alert alert-warning"
-            style={{ maxWidth: 300 }}
+            style={{ maxWidth: 400 }}
             role="alert"
           >
             <strong>No hay equipos para solicitar.</strong>
@@ -203,7 +206,7 @@ function DashboardSolicitudesPage() {
           (getErrors.grupos === true ? (
             <div
               className="alert alert-warning"
-              style={{ maxWidth: 300 }}
+              style={{ maxWidth: 400 }}
               role="alert"
             >
               <strong>No hay grupos para solicitar.</strong>
@@ -211,10 +214,14 @@ function DashboardSolicitudesPage() {
           ) : (
             <div
               className="alert alert-warning"
-              style={{ maxWidth: 300 }}
+              style={{ maxWidth: 400 }}
               role="alert"
             >
-              <strong>No estás inscrito en ningún grupo.</strong>
+              <strong>
+                {showMessageGrupos
+                  ? "No tienes ningún grupo asociado a un proyecto."
+                  : "No estás inscrito en ningún grupo."}
+              </strong>
             </div>
           ))}
         {proyectos.length === 0 &&
@@ -222,7 +229,7 @@ function DashboardSolicitudesPage() {
           (getErrors.proyectos === true ? (
             <div
               className="alert alert-warning"
-              style={{ maxWidth: 300 }}
+              style={{ maxWidth: 400 }}
               role="alert"
             >
               <strong>No hay proyectos para solicitar.</strong>
@@ -230,7 +237,7 @@ function DashboardSolicitudesPage() {
           ) : (
             <div
               className="alert alert-warning"
-              style={{ maxWidth: 300 }}
+              style={{ maxWidth: 400 }}
               role="alert"
             >
               <strong>No estás inscrito en ningún proyecto.</strong>
@@ -355,7 +362,7 @@ function DashboardSolicitudesPage() {
         {solicitudes.length === 0 ? (
           <div
             className="alert alert-warning mt-3"
-            style={{ maxWidth: 300 }}
+            style={{ maxWidth: 400 }}
             role="alert"
           >
             <strong>No hay solicitudes para listar.</strong>
@@ -404,9 +411,15 @@ function DashboardSolicitudesPage() {
                         </i>
                       </td>
                       <td>
-                        <button className="btn btn-danger" disabled={s.canceled === true} type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#canceledModal">CANCELAR</button>
+                        <button
+                          className="btn btn-danger"
+                          disabled={s.canceled === true}
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#canceledModal"
+                        >
+                          CANCELAR
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -416,7 +429,7 @@ function DashboardSolicitudesPage() {
           </div>
         )}
       </div>
-      <CanceledModal handleCanceled={handleCanceled}/>
+      <CanceledModal handleCanceled={handleCanceled} />
     </LayoutDashboardComponent>
   );
 }

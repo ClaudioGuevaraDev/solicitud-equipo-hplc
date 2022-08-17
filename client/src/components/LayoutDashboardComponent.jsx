@@ -9,13 +9,16 @@ function LayoutDashboardComponent({ children }) {
 
   return (
     <div className="container-dashboard">
-      <div className="container-dashboard__sidebar shadow-lg d-none d-sm-block">
+      <div
+        className="container-dashboard__sidebar shadow-lg d-none d-sm-block"
+        style={{ background: "#f9fafb" }}
+      >
         <SidebarComponent />
       </div>
 
       <main
         className="container-dashboard__main"
-        style={{ backgroundColor: "#f3f4f6" }}
+        style={{ backgroundColor: "#f5f6f8" }}
       >
         <div className="container-fluid p-4">
           <div className="d-block d-md-none mb-3">
@@ -44,7 +47,7 @@ function LayoutDashboardComponent({ children }) {
                 ></button>
               </div>
               <div className="offcanvas-body">
-                <SidebarComponent/>
+                <SidebarComponent />
               </div>
             </div>
           </div>

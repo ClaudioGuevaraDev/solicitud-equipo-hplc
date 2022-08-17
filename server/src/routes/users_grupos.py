@@ -47,6 +47,10 @@ def get_users_grupos_by_user(user_id: int):
         cur.execute(
             "SELECT * FROM users_grupos WHERE users_id = %s", [user_id])
         users_grupos = cur.fetchall()
+        if len(users_grupos) > 0:
+            show_grupos = True
+        else:
+            show_grupos = False
 
         data = []
         for user_grupo in users_grupos:
@@ -69,7 +73,8 @@ def get_users_grupos_by_user(user_id: int):
                         "name": grupo_found[1]
                     })
 
-        return {"data": data}
+
+        return {"data": data, "show_grupos": show_grupos}
     except Exception as error:
         raise HTTPException(
             status_code=500, detail="Error al listar los grupos del usuario.")
